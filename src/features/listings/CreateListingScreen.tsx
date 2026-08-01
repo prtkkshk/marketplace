@@ -56,7 +56,16 @@ export const CreateListingScreen: React.FC = () => {
       .filter((path): path is string => !!path);
 
     if (uploadedPaths.length === 0) {
-      setFormError('Please upload at least 1 photo of your item.');
+      const isUploading = photos.some((p) => p.progress < 100 && !p.error);
+      const hasErrors = photos.some((p) => !!p.error);
+
+      if (isUploading) {
+        setFormError('Please wait for your photos to finish uploading before submitting.');
+      } else if (hasErrors) {
+        setFormError('Photo upload failed. Please tap "Retry" on the failed photo thumbnail.');
+      } else {
+        setFormError('Please upload at least 1 photo of your item.');
+      }
       return;
     }
 

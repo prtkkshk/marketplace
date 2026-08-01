@@ -10,6 +10,7 @@ import {
 import { fetchContactNumber } from '../../lib/data/contact';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
+import { getPhotoPublicUrls } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
@@ -77,16 +78,12 @@ export const ListingDetailScreen: React.FC = () => {
   }
 
   const isOwner = profile?.id === listing.userId || isAdmin;
+
   const isSold = listing.status === 'sold';
   const isExpired = listing.status === 'expired';
   const isDisabled = isSold || isExpired;
 
-  const photoUrls =
-    listing.photoPaths && listing.photoPaths.length > 0
-      ? listing.photoPaths.map(
-          (p) => `https://mxvgzdmxdrevxcjiyvqt.supabase.co/storage/v1/object/public/listing-photos/${p}`
-        )
-      : ['https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80'];
+  const photoUrls = getPhotoPublicUrls(listing.photoPaths);
 
   const conditionLabels: Record<string, string> = {
     brand_new: 'Brand New',

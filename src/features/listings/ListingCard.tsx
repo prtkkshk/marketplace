@@ -7,6 +7,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
+import { getPhotoPublicUrl } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
 import { ReportSheet } from '../../components/ui/ReportSheet';
 import { Heart, MessageCircle, MoreVertical, Flag, Pin, Loader2 } from 'lucide-react';
@@ -36,10 +37,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isExpired = listing.status === 'expired';
   const isDisabled = isSold || isExpired;
 
-  const photoUrl =
-    listing.photoPaths && listing.photoPaths.length > 0
-      ? `https://mxvgzdmxdrevxcjiyvqt.supabase.co/storage/v1/object/public/listing-photos/${listing.photoPaths[0]}`
-      : 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=400&q=80';
+  const photoUrl = getPhotoPublicUrl(listing.photoPaths?.[0]);
 
   const conditionLabels: Record<string, string> = {
     brand_new: 'Brand New',

@@ -3,6 +3,7 @@ import { formatINR } from '../../src/lib/utils/formatINR';
 import { whatsappLink } from '../../src/lib/utils/whatsappLink';
 import { timeAgo } from '../../src/lib/utils/timeAgo';
 import { cn } from '../../src/lib/utils/cn';
+import { getPhotoPublicUrl, DEFAULT_FALLBACK_PHOTO } from '../../src/lib/utils/image';
 
 describe('Utility Functions', () => {
   describe('formatINR', () => {
@@ -40,6 +41,18 @@ describe('Utility Functions', () => {
     it('combines conditional classes cleanly', () => {
       expect(cn('btn', true && 'btn-primary', false && 'hidden')).toBe('btn btn-primary');
       expect(cn('base', { active: true, disabled: false })).toBe('base active');
+    });
+  });
+
+  describe('getPhotoPublicUrl', () => {
+    it('returns default fallback when path is null or undefined', () => {
+      expect(getPhotoPublicUrl(null)).toBe(DEFAULT_FALLBACK_PHOTO);
+      expect(getPhotoPublicUrl('')).toBe(DEFAULT_FALLBACK_PHOTO);
+    });
+
+    it('returns full HTTP URLs unchanged', () => {
+      const externalUrl = 'https://example.com/photo.jpg';
+      expect(getPhotoPublicUrl(externalUrl)).toBe(externalUrl);
     });
   });
 });
