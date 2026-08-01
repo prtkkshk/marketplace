@@ -81,6 +81,23 @@ export const CreateWantedRequestScreen: React.FC = () => {
           <span>Back</span>
         </button>
 
+        {/* Post Type Toggle */}
+        <div className="flex bg-slate-200/60 p-1 rounded-xl mb-6">
+          <button
+            type="button"
+            onClick={() => navigate('/new')}
+            className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-content-muted hover:text-content-primary transition-colors text-center"
+          >
+            🛍️ Sell an Item
+          </button>
+          <button
+            type="button"
+            className="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-brand-primary shadow-xs text-center"
+          >
+            📢 Wanted Request
+          </button>
+        </div>
+
         <h1 className="text-xl font-bold text-content-primary mb-1">Post a Wanted Request</h1>
         <p className="text-xs text-content-muted mb-6">Let fellow KGPians know what you are looking for</p>
 

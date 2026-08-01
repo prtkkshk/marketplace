@@ -19,12 +19,16 @@ export const wantedRequestSchema = z.object({
     .or(z.literal('')),
   category: categoryEnum,
   maxBudget: z
-    .number({ invalid_type_error: 'Budget must be a valid number' })
-    .int('Budget must be a whole rupee amount')
-    .min(0, 'Budget cannot be negative')
-    .max(500000, 'Budget cannot exceed ₹500,000')
-    .optional()
-    .nullable(),
+    .preprocess(
+      (val) => (val === '' || val === null || val === undefined || (typeof val === 'number' && isNaN(val)) ? null : Number(val)),
+      z
+        .number({ invalid_type_error: 'Budget must be a valid number' })
+        .int('Budget must be a whole rupee amount')
+        .min(0, 'Budget cannot be negative')
+        .max(500000, 'Budget cannot exceed ₹500,000')
+        .nullable()
+        .optional()
+    ),
   hallOfResidence: z.enum(KGP_HALLS, {
     errorMap: () => ({ message: 'Invalid hall of residence' }),
   }),
