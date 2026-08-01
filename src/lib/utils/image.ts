@@ -1,7 +1,10 @@
 import { supabase } from '../supabase';
 
+export const DEFAULT_FALLBACK_PHOTO: string =
+  'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80';
+
 export const CATEGORY_FALLBACK_PHOTOS: Record<string, string> = {
-  cycles: 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80',
+  cycles: DEFAULT_FALLBACK_PHOTO,
   books: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
   electronics: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80',
   room_essentials: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
@@ -9,11 +12,10 @@ export const CATEGORY_FALLBACK_PHOTOS: Record<string, string> = {
   other: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80',
 };
 
-export const DEFAULT_FALLBACK_PHOTO = CATEGORY_FALLBACK_PHOTOS.cycles;
-
 export function getCategoryFallback(category?: string | null): string {
   if (!category) return DEFAULT_FALLBACK_PHOTO;
-  return CATEGORY_FALLBACK_PHOTOS[category] || DEFAULT_FALLBACK_PHOTO;
+  const match = CATEGORY_FALLBACK_PHOTOS[category];
+  return match ?? DEFAULT_FALLBACK_PHOTO;
 }
 
 /**
