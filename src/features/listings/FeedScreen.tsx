@@ -70,10 +70,6 @@ export const FeedScreen: React.FC = () => {
     }
   };
 
-  const handleContactClick = (listing: ListingItem) => {
-    // In Phase 6, this calls get_contact_number RPC.
-    showToast(`WhatsApp contact for "${listing.title}" will be activated in Phase 6.`, 'info');
-  };
 
   const handleReportClick = (listing: ListingItem) => {
     showToast(`Report submitted for "${listing.title}". Admin will review.`, 'info');

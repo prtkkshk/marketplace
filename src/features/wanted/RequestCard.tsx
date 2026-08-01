@@ -19,7 +19,7 @@ export const RequestCard: React.FC<RequestCardProps> = ({ request, onReportClick
   const [isResponding, setIsResponding] = useState<boolean>(false);
 
   const isFulfilled = request.status === 'fulfilled';
-  const isCancelled = request.status === 'cancelled';
+  const isCancelled = request.status === 'hidden' || request.status === 'expired';
   const isDisabled = isFulfilled || isCancelled;
 
   const handleRespondTap = async () => {

@@ -1,6 +1,7 @@
 import { supabase } from '../supabase';
 import type {
   AnnouncementType,
+  ReportReason,
   ReportStatus,
 } from '../database.types';
 
@@ -23,11 +24,19 @@ export interface AdminStats {
   }>;
 }
 
+export interface DashboardStats extends AdminStats {
+  categoryDistribution: Array<{ category: string; count: number }>;
+  hallDistribution: Array<{ hall: string; count: number }>;
+  recentActivity: Array<{ action: string; time: string }>;
+}
+
 export interface AdminReportItem {
   id: string;
   reporterId: string;
+  reporterName?: string;
   listingId: string | null;
   requestId: string | null;
+  targetTitle?: string;
   reason: string;
   details: string | null;
   status: ReportStatus;
@@ -66,9 +75,11 @@ export interface AdminAuditRow {
   id: string;
   actorId: string | null;
   actorName?: string;
+  adminName?: string;
   action: string;
   targetId: string | null;
   targetTable: string | null;
+  targetType?: string | null;
   reason: string | null;
   createdAt: string;
 }
@@ -127,6 +138,29 @@ export async function fetchAdminStats(): Promise<AdminStats> {
   };
 }
 
+export async function fetchDashboardStats(): Promise<DashboardStats> {
+  const stats = await fetchAdminStats();
+  const categoryDistribution = Object.entries(stats.categoryBreakdown).map(([category, count]) => ({
+    category,
+    count,
+  }));
+  const hallDistribution = Object.entries(stats.hallBreakdown).map(([hall, count]) => ({
+    hall,
+    count,
+  }));
+  const recentActivity = stats.recentListings.map((l) => ({
+    action: `New listing: "${l.title}"`,
+    time: l.createdAt,
+  }));
+
+  return {
+    ...stats,
+    categoryDistribution,
+    hallDistribution,
+    recentActivity,
+  };
+}
+
 export async function fetchAdminReports(statusFilter: ReportStatus = 'pending'): Promise<AdminReportItem[]> {
   return fetchReportsQueue(statusFilter);
 }
@@ -154,7 +188,7 @@ export async function fetchReportsQueue(
     query = query.eq('status', statusFilter as ReportStatus);
   }
   if (reasonFilter !== 'all') {
-    query = query.eq('reason', reasonFilter as any);
+    query = query.eq('reason', reasonFilter as ReportReason);
   }
 
   const { data, error } = await query;
@@ -166,8 +200,10 @@ export async function fetchReportsQueue(
   return (data || []).map((row) => ({
     id: row.id,
     reporterId: row.reporter_id,
+    reporterName: 'Student',
     listingId: row.listing_id,
     requestId: row.request_id,
+    targetTitle: row.listing_id ? 'Listing' : row.request_id ? 'Wanted Request' : 'Item',
     reason: row.reason,
     details: row.details,
     status: row.status,
@@ -274,7 +310,7 @@ export async function updateUserAdminStatus(
     payload.is_admin = updates.isAdmin;
   }
 
-  const { error } = await supabase.from('profiles').update(payload).eq('id', targetUser.id);
+  const { error } = await supabase.from('profiles').update(payload as any).eq('id', targetUser.id);
 
   if (error) throw new Error(error.message);
 
@@ -311,7 +347,7 @@ export async function updateListingAdminAction(
     payload.sold_at = new Date().toISOString();
   }
 
-  const { error } = await supabase.from('listings').update(payload).eq('id', listingId);
+  const { error } = await supabase.from('listings').update(payload as any).eq('id', listingId);
   if (error) throw new Error(error.message);
 
   await supabase.from('admin_audit_log').insert({
@@ -413,9 +449,12 @@ export async function fetchAuditLogs(): Promise<AdminAuditRow[]> {
   return (data || []).map((row) => ({
     id: row.id,
     actorId: row.actor_id,
+    actorName: 'Admin',
+    adminName: 'Admin',
     action: row.action,
     targetId: row.target_id,
     targetTable: row.target_table,
+    targetType: row.target_table,
     reason: row.reason,
     createdAt: row.created_at,
   }));

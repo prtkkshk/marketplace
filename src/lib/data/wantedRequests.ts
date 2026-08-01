@@ -242,7 +242,7 @@ export async function unmarkWantedRequestFulfilled(id: string): Promise<WantedRe
 export async function deleteWantedRequest(id: string): Promise<void> {
   const { error } = await supabase
     .from('wanted_requests')
-    .update({ status: 'cancelled', deleted_at: new Date().toISOString() })
+    .update({ status: 'hidden', deleted_at: new Date().toISOString() })
     .eq('id', id);
 
   if (error) {
