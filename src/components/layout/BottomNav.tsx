@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Home, Megaphone, Plus, User } from 'lucide-react';
+import { Home, Plus, User } from 'lucide-react';
 import { PostChooserSheet } from './PostChooserSheet';
 
 export const BottomNav: React.FC = () => {
