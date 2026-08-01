@@ -28,7 +28,6 @@ export function mapProfileRow(row: ProfileRow): StudentProfile {
     whatsappNumber: row.whatsapp_number,
     isProfileComplete: row.is_profile_complete,
     isAdmin: row.is_admin,
-    isBanned: row.is_banned,
     bannedReason: row.banned_reason,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -53,7 +52,7 @@ export async function fetchProfile(userId: string): Promise<StudentProfile | nul
   return mapProfileRow(data);
 }
 
-/** Updates user profile fields */
+/** Updates or inserts user profile fields (upsert ensures compatibility for users created prior to DB setup) */
 export async function updateProfile(
   userId: string,
   updates: {
@@ -62,9 +61,19 @@ export async function updateProfile(
     hallOfResidence?: string;
     whatsappNumber?: string;
     isProfileComplete?: boolean;
+    email?: string;
   }
 ): Promise<StudentProfile> {
-  const payload: Partial<ProfileRow> = {};
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userEmail = updates.email || sessionData.session?.user?.email || '';
+
+  const payload: Record<string, unknown> = {
+    id: userId,
+  };
+
+  if (userEmail) {
+    payload.email = userEmail;
+  }
 
   if (updates.fullName !== undefined) payload.full_name = updates.fullName;
   if (updates.rollNumber !== undefined) payload.roll_number = updates.rollNumber.toUpperCase();
@@ -74,8 +83,7 @@ export async function updateProfile(
 
   const { data, error } = await supabase
     .from('profiles')
-    .update(payload)
-    .eq('id', userId)
+    .upsert(payload as any, { onConflict: 'id' })
     .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, created_at, updated_at')
     .single();
 
