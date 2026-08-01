@@ -6,30 +6,30 @@ import { MyRequestsTab } from '../wanted/MyRequestsTab';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
+import { Dialog } from '../../components/ui/Dialog';
 import { KGP_HALLS } from '../../lib/constants';
+import { ShoppingBag, Megaphone, Bookmark, Shield, LogOut, Trash2, Edit3, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { User, LogOut, Shield, Trash2, Edit3, Heart, ShoppingBag, Radio } from 'lucide-react';
 
 export const ProfileScreen: React.FC = () => {
-  const { profile, isAdmin, signOut, refreshProfile } = useAuth();
-
-  const [activeTab, setActiveTab] = useState<'listings' | 'requests' | 'saved' | 'settings'>('listings');
+  const { profile, signOut, isAdmin, refetchProfile } = useAuth();
+  const [activeTab, setActiveTab] = useState<'listings' | 'requests' | 'saved'>('listings');
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  // Edit form state
+  // Form State
   const [fullName, setFullName] = useState<string>(profile?.fullName || '');
   const [hall, setHall] = useState<string>(profile?.hallOfResidence || '');
   const [whatsapp, setWhatsapp] = useState<string>(profile?.whatsappNumber || '');
-  const [saveLoading, setSaveLoading] = useState<boolean>(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSaveProfile = async (e: React.FormEvent) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile?.id) return;
 
-    setSaveLoading(true);
-    setSaveError(null);
+    setLoading(true);
+    setError(null);
 
     try {
       await updateProfile(profile.id, {
@@ -37,23 +37,28 @@ export const ProfileScreen: React.FC = () => {
         hallOfResidence: hall,
         whatsappNumber: whatsapp,
       });
-      await refreshProfile();
+
+      await refetchProfile();
       setIsEditing(false);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Save failed';
-      setSaveError(msg);
+      const msg = err instanceof Error ? err.message : 'Failed to update profile';
+      setError(msg);
     } finally {
-      setSaveLoading(false);
+      setLoading(false);
     }
   };
 
   const handleDeleteAccount = async () => {
     if (!profile?.id) return;
+    setLoading(true);
+
     try {
       await deleteAccount(profile.id);
+      await signOut();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Delete failed';
-      alert(msg);
+      const msg = err instanceof Error ? err.message : 'Failed to delete account';
+      setError(msg);
+      setLoading(false);
     }
   };
 
@@ -94,8 +99,19 @@ export const ProfileScreen: React.FC = () => {
           </button>
         </div>
 
+        {/* Action Links Row */}
+        <div className="mt-4 pt-4 border-t border-surface-border flex items-center justify-between">
+          <Link
+            to="/rules"
+            className="text-xs font-semibold text-content-muted hover:text-brand-primary flex items-center gap-1.5"
+          >
+            <FileText className="w-4 h-4 text-brand-primary" />
+            <span>Campus Trading Rules & Policy</span>
+          </Link>
+        </div>
+
         {isAdmin && (
-          <div className="mt-4 pt-4 border-t border-surface-border flex items-center justify-between">
+          <div className="mt-3 pt-3 border-t border-surface-border flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-medium text-brand-primary">
               <Shield className="w-4 h-4" />
               <span>Administrator Privileges</span>
@@ -123,6 +139,7 @@ export const ProfileScreen: React.FC = () => {
           <ShoppingBag className="w-4 h-4" />
           <span>My Listings</span>
         </button>
+
         <button
           onClick={() => setActiveTab('requests')}
           className={`flex-1 py-2.5 text-xs font-medium border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
@@ -131,106 +148,100 @@ export const ProfileScreen: React.FC = () => {
               : 'border-transparent text-content-muted hover:text-content-primary'
           }`}
         >
-          <Radio className="w-4 h-4" />
+          <Megaphone className="w-4 h-4" />
           <span>My Requests</span>
         </button>
-        <button
-          onClick={() => setActiveTab('saved')}
-          className={`flex-1 py-2.5 text-xs font-medium border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
-            activeTab === 'saved'
-              ? 'border-brand-primary text-brand-primary'
-              : 'border-transparent text-content-muted hover:text-content-primary'
-          }`}
+
+        <Link
+          to="/profile/saved"
+          className="flex-1 py-2.5 text-xs font-medium border-b-2 border-transparent text-content-muted hover:text-content-primary flex items-center justify-center gap-1.5 transition-colors"
         >
-          <Heart className="w-4 h-4" />
+          <Bookmark className="w-4 h-4" />
           <span>Saved</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('settings')}
-          className={`flex-1 py-2.5 text-xs font-medium border-b-2 flex items-center justify-center gap-1.5 transition-colors ${
-            activeTab === 'settings'
-              ? 'border-brand-primary text-brand-primary'
-              : 'border-transparent text-content-muted hover:text-content-primary'
-          }`}
-        >
-          <User className="w-4 h-4" />
-          <span>Settings</span>
-        </button>
+        </Link>
       </div>
 
       {/* Tab Panels */}
       {activeTab === 'listings' && profile?.id && <MyListingsTab userId={profile.id} />}
       {activeTab === 'requests' && profile?.id && <MyRequestsTab userId={profile.id} />}
 
-      {activeTab === 'saved' && (
-        <div className="p-8 text-center bg-surface-card border border-surface-border rounded-2xl">
-          <Heart className="w-10 h-10 text-content-muted mx-auto mb-2 opacity-50" />
-          <p className="text-sm font-medium text-content-primary">No saved items</p>
-          <p className="text-xs text-content-muted mt-1">Items you bookmark will appear here.</p>
-        </div>
-      )}
+      {/* Account Actions */}
+      <div className="mt-12 pt-6 border-t border-surface-border flex flex-col gap-3">
+        <Button
+          variant="ghost"
+          className="w-full text-content-muted justify-center"
+          onClick={() => signOut()}
+          leftIcon={<LogOut className="w-4 h-4" />}
+        >
+          Sign Out
+        </Button>
 
-      {activeTab === 'settings' && (
-        <div className="bg-surface-card border border-surface-border rounded-2xl p-4 flex flex-col gap-3">
-          <Button variant="outline" className="w-full justify-start text-content-primary" onClick={() => signOut()}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+        <Button
+          variant="ghost"
+          className="w-full text-status-danger hover:bg-rose-50 justify-center"
+          onClick={() => setIsDeleting(true)}
+          leftIcon={<Trash2 className="w-4 h-4" />}
+        >
+          Delete Account
+        </Button>
+      </div>
 
-          <Button variant="danger" className="w-full justify-start" onClick={() => setIsDeleting(true)}>
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete Account
-          </Button>
-        </div>
-      )}
+      {/* Edit Profile Dialog */}
+      <Dialog isOpen={isEditing} onClose={() => setIsEditing(false)} title="Edit Profile">
+        <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4 text-left">
+          {error && <div className="p-3 bg-rose-50 text-status-danger text-xs rounded-xl">{error}</div>}
 
-      {/* Edit Profile Modal */}
-      {isEditing && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-sm text-left">
-            <h2 className="text-lg font-bold text-content-primary mb-4">Edit Profile</h2>
+          <Input
+            label="Full Name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+          />
 
-            {saveError && <p className="text-xs text-status-danger mb-3">{saveError}</p>}
+          <Select
+            label="Hall of Residence"
+            value={hall}
+            onChange={(e) => setHall(e.target.value)}
+            options={KGP_HALLS}
+            required
+          />
 
-            <form onSubmit={handleSaveProfile} className="flex flex-col gap-4">
-              <Input label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
-              <Select label="Hall of Residence" value={hall} onChange={(e) => setHall(e.target.value)} options={KGP_HALLS} />
-              <Input label="WhatsApp Number" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} required />
+          <Input
+            label="WhatsApp Contact Number"
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            placeholder="+919876543210"
+            required
+          />
 
-              <div className="flex gap-2 justify-end mt-2">
-                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" variant="primary" isLoading={saveLoading}>
-                  Save Changes
-                </Button>
-              </div>
-            </form>
+          <div className="flex gap-2 justify-end mt-4">
+            <Button variant="outline" type="button" onClick={() => setIsEditing(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit" isLoading={loading}>
+              Save Changes
+            </Button>
+          </div>
+        </form>
+      </Dialog>
+
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog isOpen={isDeleting} onClose={() => setIsDeleting(false)} title="Delete Account">
+        <div className="text-left flex flex-col gap-4">
+          <p className="text-xs text-content-muted leading-relaxed">
+            Are you sure you want to delete your account? This will hide all your active listings and remove your profile data.
+          </p>
+
+          <div className="flex gap-3">
+            <Button variant="outline" className="flex-1" onClick={() => setIsDeleting(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" className="flex-1" isLoading={loading} onClick={handleDeleteAccount}>
+              Permanently Delete
+            </Button>
           </div>
         </div>
-      )}
-
-      {/* Delete Account Confirmation Modal */}
-      {isDeleting && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-surface-card border border-surface-border rounded-2xl p-6 w-full max-w-sm text-center">
-            <Trash2 className="w-10 h-10 text-status-danger mx-auto mb-3" />
-            <h2 className="text-lg font-bold text-content-primary mb-2">Delete Account?</h2>
-            <p className="text-xs text-content-muted mb-6">
-              This will permanently delete your profile, listings, wanted requests, and uploaded photos. This action cannot be undone.
-            </p>
-
-            <div className="flex gap-3">
-              <Button variant="outline" className="flex-1" onClick={() => setIsDeleting(false)}>
-                Cancel
-              </Button>
-              <Button variant="danger" className="flex-1" onClick={handleDeleteAccount}>
-                Permanently Delete
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      </Dialog>
     </div>
   );
 };

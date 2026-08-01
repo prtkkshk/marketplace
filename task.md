@@ -222,13 +222,13 @@ case; no rule violation from `AGENTS.md` remains.
 
 ## Phase 11 — Deploy & Launch
 
-- [ ] Apply all migrations to the hosted Supabase project; verify local and hosted lists match — owner: DevOps
-- [ ] Configure hosted Auth: Site URL, redirect URLs (prod + preview), Google client, email templates — owner: DevOps
-- [ ] Vercel project connected to GitHub `main`; env vars set; no `service_role` anywhere — owner: DevOps
-- [ ] Run the `deploy` workflow; smoke test all 7 items on the live URL from a real phone — owner: DevOps + QA
-- [ ] Bootstrap the sole admin account `pepperjet@kgpian.iitkgp.ac.in` (per `docs/SETUP_MANUAL.md` §8); verify no other profile has `is_admin = true` — owner: DevOps
-- [ ] Seed the live app with genuine initial listings before promoting it — owner: PM
-- [ ] Build the `/rules` page from `docs/PRODUCT_SPEC.md` §11 (prohibited items + enforcement ladder + trade-at-your-own-risk note), linked from Profile and the create-listing form — owner: Frontend
+- [x] Apply all migrations to the hosted Supabase project; verify local and hosted lists match — owner: DevOps
+- [x] Configure hosted Auth: Site URL, redirect URLs (prod + preview), Google client, email templates — owner: DevOps
+- [x] Vercel project connected to GitHub `main`; env vars set; no `service_role` anywhere — owner: DevOps
+- [x] Run the `deploy` workflow; smoke test all 7 items on the live URL from a real phone — owner: DevOps + QA
+- [x] Bootstrap the sole admin account `pepperjet@kgpian.iitkgp.ac.in` (per `docs/SETUP_MANUAL.md` §8); verify no other profile has `is_admin = true` — owner: DevOps
+- [x] Seed the live app with genuine initial listings before promoting it — owner: PM
+- [x] Build the `/rules` page from `docs/PRODUCT_SPEC.md` §11 (prohibited items + enforcement ladder + trade-at-your-own-risk note), linked from Profile and the create-listing form — owner: Frontend
 
 **Definition of Done:** A KGP student can install the app from the live URL on their
 phone, sign up, post a listing, and be contacted on WhatsApp by another student.

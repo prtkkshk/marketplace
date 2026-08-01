@@ -189,6 +189,13 @@ export const CreateListingScreen: React.FC = () => {
             }}
           />
 
+          <div className="text-[11px] text-content-muted text-center my-1">
+            By posting, you agree to the{' '}
+            <a href="/rules" target="_blank" rel="noopener noreferrer" className="text-brand-primary font-semibold hover:underline">
+              Campus Trading Rules (§11)
+            </a>.
+          </div>
+
           <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
             Post Listing
           </Button>
