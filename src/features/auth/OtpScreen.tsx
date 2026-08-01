@@ -1,87 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Input } from '../../components/ui/Input';
+import React, { useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
-import { otpSchema, type OtpInput } from '../../lib/validation/auth';
 import { supabase } from '../../lib/supabase';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, MailCheck, ArrowLeft } from 'lucide-react';
 
 export const OtpScreen: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const email = (location.state as { email?: string })?.email || '';
 
   const [formError, setFormError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isResending, setIsResending] = useState<boolean>(false);
 
-  // Resend cooldown & rate limit state
-  const [cooldown, setCooldown] = useState<number>(60);
-  const [resendCount, setResendCount] = useState<number>(0);
-  const maxResends = 3;
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<OtpInput>({
-    resolver: zodResolver(otpSchema),
-    defaultValues: { otp: '' },
-  });
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (cooldown > 0) {
-      timer = setInterval(() => {
-        setCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [cooldown]);
-
-  const onSubmit = async (data: OtpInput) => {
+  const handleResendLink = async () => {
     if (!email) {
-      setFormError('Email address is missing. Please return to signup.');
+      setFormError('Email address is missing. Please return to sign up.');
       return;
     }
 
-    setIsSubmitting(true);
-    setFormError(null);
-
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: data.otp,
-        type: 'signup',
-      });
-
-      if (error) {
-        setFormError(error.message);
-        return;
-      }
-
-      setSuccessMsg('Email verified successfully!');
-      setTimeout(() => {
-        navigate('/complete-profile');
-      }, 1000);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Verification failed';
-      setFormError(msg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    if (cooldown > 0) return;
-
-    if (resendCount >= maxResends) {
-      setFormError('Maximum 3 resend attempts reached per 15 minutes. Please try again later.');
-      return;
-    }
-
+    setIsResending(true);
     setFormError(null);
     setSuccessMsg(null);
 
@@ -89,6 +26,9 @@ export const OtpScreen: React.FC = () => {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/complete-profile`,
+        },
       });
 
       if (error) {
@@ -96,69 +36,59 @@ export const OtpScreen: React.FC = () => {
         return;
       }
 
-      setResendCount((prev) => prev + 1);
-      setCooldown(60);
-      setSuccessMsg('A new OTP has been sent to your email.');
+      setSuccessMsg('A new confirmation link has been sent to your email.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Resend failed';
       setFormError(msg);
+    } finally {
+      setIsResending(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
-        <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-content-primary">Verify Your Email</h1>
-          <p className="text-xs text-content-muted mt-1">
-            We sent a 6-digit code to{' '}
-            <span className="font-semibold text-content-primary">{email || 'your email'}</span>
-          </p>
+      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm text-center">
+        <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
+          <MailCheck className="w-8 h-8" />
         </div>
 
+        <h1 className="text-xl font-bold text-content-primary mb-2">Check Your Email</h1>
+        <p className="text-xs text-content-muted mt-1 leading-relaxed mb-6">
+          We sent a magic confirmation link to{' '}
+          <span className="font-semibold text-content-primary">{email || 'your institute email'}</span>. Please click the link to confirm your account and log in.
+        </p>
+
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2 text-left">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-status-success text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-status-success text-xs flex items-start gap-2 text-left">
             <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{successMsg}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <Input
-            label="6-Digit OTP Code"
-            placeholder="123456"
-            maxLength={6}
-            autoFocus
-            error={errors.otp?.message}
-            {...register('otp')}
-          />
-
-          <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
-            Verify Code
-          </Button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <button
+        {email && (
+          <Button
             type="button"
-            disabled={cooldown > 0 || resendCount >= maxResends}
-            onClick={handleResendOtp}
-            className="text-xs font-semibold text-brand-primary hover:underline disabled:text-content-muted disabled:no-underline"
+            variant="outline"
+            className="w-full mb-3"
+            isLoading={isResending}
+            onClick={handleResendLink}
           >
-            {cooldown > 0
-              ? `Resend OTP in ${cooldown}s`
-              : resendCount >= maxResends
-              ? 'Max resends reached'
-              : 'Resend OTP'}
-          </button>
-        </div>
+            Resend Confirmation Link
+          </Button>
+        )}
+
+        <Link to="/auth/signin">
+          <Button variant="ghost" className="w-full" leftIcon={<ArrowLeft className="w-4 h-4" />}>
+            Return to Sign In
+          </Button>
+        </Link>
       </div>
     </div>
   );
