@@ -71,7 +71,7 @@ export async function fetchWantedRequests(
   let query = supabase
     .from('wanted_requests')
     .select(
-      'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles!user_id(full_name, hall_of_residence)'
+      'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles!wanted_requests_user_id_fkey(full_name, hall_of_residence)'
     )
     .is('deleted_at', null);
 
@@ -113,7 +113,7 @@ export async function fetchWantedRequestById(id: string): Promise<WantedRequestI
   const { data, error } = await supabase
     .from('wanted_requests')
     .select(
-      'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles!user_id(full_name, hall_of_residence)'
+      'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles!wanted_requests_user_id_fkey(full_name, hall_of_residence)'
     )
     .eq('id', id)
     .is('deleted_at', null)
