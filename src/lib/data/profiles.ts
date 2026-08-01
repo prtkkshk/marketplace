@@ -41,7 +41,7 @@ export async function fetchProfile(userId: string): Promise<StudentProfile | nul
     .from('profiles')
     .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, created_at, updated_at')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     if (error.code === 'PGRST116') {
@@ -50,10 +50,10 @@ export async function fetchProfile(userId: string): Promise<StudentProfile | nul
     throw new Error(`Failed to fetch profile: ${error.message}`);
   }
 
-  return mapProfileRow(data);
+  return data ? mapProfileRow(data) : null;
 }
 
-/** Updates or inserts user profile fields (upsert ensures compatibility for users created prior to DB setup) */
+/** Updates or inserts user profile fields safely using upsert and maybeSingle */
 export async function updateProfile(
   userId: string,
   updates: {
@@ -65,8 +65,9 @@ export async function updateProfile(
     email?: string;
   }
 ): Promise<StudentProfile> {
+  const { data: userData } = await supabase.auth.getUser();
   const { data: sessionData } = await supabase.auth.getSession();
-  const userEmail = updates.email || sessionData.session?.user?.email || '';
+  const userEmail = updates.email || userData?.user?.email || sessionData?.session?.user?.email || '';
 
   const payload: Record<string, unknown> = {
     id: userId,
@@ -86,13 +87,35 @@ export async function updateProfile(
     .from('profiles')
     .upsert(payload as any, { onConflict: 'id' })
     .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, created_at, updated_at')
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Failed to update profile: ${error.message}`);
   }
 
-  return mapProfileRow(data);
+  if (data) {
+    return mapProfileRow(data);
+  }
+
+  const fetched = await fetchProfile(userId);
+  if (fetched) {
+    return fetched;
+  }
+
+  return {
+    id: userId,
+    email: userEmail,
+    fullName: updates.fullName || null,
+    rollNumber: updates.rollNumber || null,
+    hallOfResidence: updates.hallOfResidence || null,
+    whatsappNumber: updates.whatsappNumber || null,
+    isProfileComplete: updates.isProfileComplete ?? true,
+    isAdmin: false,
+    isBanned: false,
+    bannedReason: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
 }
 
 /** Completes initial mandatory student profile setup */
