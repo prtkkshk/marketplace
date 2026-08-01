@@ -10,7 +10,7 @@ export const CategoryPills: React.FC<CategoryPillsProps> = ({ selectedCategory, 
   const allCategories = [{ id: 'all', label: 'All', icon: '✨' }, ...CATEGORIES];
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 px-1 -mx-1 select-none">
+    <div className="flex items-center gap-2 overflow-x-auto thin-scrollbar pb-2.5 pt-1 px-1 -mx-1 select-none">
       {allCategories.map((cat) => {
         const isSelected = selectedCategory === cat.id || (!selectedCategory && cat.id === 'all');
         return (

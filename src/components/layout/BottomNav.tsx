@@ -11,8 +11,7 @@ export const BottomNav: React.FC = () => {
 
   const navItems = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/wanted', label: 'Wanted', icon: Megaphone },
-    { path: '#chooser', label: 'Sell / Request', icon: Plus, isFab: true },
+    { path: '#chooser', label: 'Post', icon: Plus, isFab: true },
     { path: '/profile', label: 'Profile', icon: User },
   ];
 
