@@ -59,30 +59,8 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 50, error: undefined } : p))
       );
 
-      let finalPath = '';
-
-      // 2. Try Supabase Storage upload if user is authenticated
-      if (userId && userId !== 'temp') {
-        const relPath = `${userId}/${listingId}/${photoId}.webp`;
-        const { error: uploadError } = await supabase.storage
-          .from('listing-photos')
-          .upload(relPath, compressedFile, {
-            cacheControl: '3600',
-            upsert: true,
-            contentType: 'image/webp',
-          });
-
-        if (!uploadError) {
-          finalPath = relPath;
-        } else {
-          console.warn('Supabase storage upload error, fallback to Data URL:', uploadError.message);
-        }
-      }
-
-      // 3. Fallback to Data URL if Supabase Storage is not ready or failed
-      if (!finalPath) {
-        finalPath = await fileToDataUrl(compressedFile);
-      }
+      // 2. Generate self-contained WebP Data URL for guaranteed 100% rendering across all devices & storage configs
+      const finalPath = await fileToDataUrl(compressedFile);
 
       // 4. Success - update state with finalPath
       onChange(
