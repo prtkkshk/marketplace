@@ -13,7 +13,7 @@ import { Sheet } from '../../components/ui/Sheet';
 import { Textarea } from '../../components/ui/Textarea';
 import { Badge } from '../../components/ui/Badge';
 import { timeAgo } from '../../lib/utils/timeAgo';
-import { Flag, Eye, Trash2, CheckCircle2, UserX, AlertCircle } from 'lucide-react';
+import { Flag, Eye, Trash2, UserX, AlertCircle } from 'lucide-react';
 
 export const AdminReportsScreen: React.FC = () => {
   const { session } = useAuth();

@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import type { Database, ReportReason } from '../database.types';
+import type { ReportReason } from '../database.types';
 
 export interface CreateReportInput {
   listingId?: string;
@@ -38,4 +38,17 @@ export async function fetchPendingReportsCount(): Promise<number> {
   }
 
   return count || 0;
+}
+
+export function subscribeToReportsChange(onChange: () => void): () => void {
+  const channel = supabase
+    .channel('reports-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'reports' }, () => {
+      onChange();
+    })
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
 }

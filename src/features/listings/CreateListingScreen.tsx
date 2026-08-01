@@ -40,7 +40,7 @@ export const CreateListingScreen: React.FC = () => {
       price: 0,
       isNegotiable: false,
       condition: 'good',
-      hallOfResidence: profile?.hallOfResidence || 'Patel',
+      hallOfResidence: (profile?.hallOfResidence as any) || 'Patel',
       photoPaths: [],
     },
   });
@@ -113,7 +113,7 @@ export const CreateListingScreen: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-4">
           <Input
             label="Title"
             placeholder="e.g. Hero Hawk 21-Speed Cycle"

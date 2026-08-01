@@ -4,7 +4,7 @@ import { SegmentedControl } from './SegmentedControl';
 import { SearchBar } from './SearchBar';
 import { CategoryPills } from './CategoryPills';
 import { SortDropdown } from './SortDropdown';
-import { FilterSheet, type FilterState } from './FilterSheet';
+import { FilterSheet } from './FilterSheet';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { ListingCard } from './ListingCard';
 import { ListingSkeleton } from './ListingSkeleton';
@@ -170,7 +170,6 @@ export const FeedScreen: React.FC = () => {
               <ListingCard
                 key={listing.id}
                 listing={listing}
-                onContactClick={handleContactClick}
                 onReportClick={handleReportClick}
               />
             ))}

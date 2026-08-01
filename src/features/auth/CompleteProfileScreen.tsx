@@ -28,7 +28,7 @@ export const CompleteProfileScreen: React.FC = () => {
     defaultValues: {
       fullName: defaultName,
       rollNumber: '',
-      hallOfResidence: '',
+      hallOfResidence: KGP_HALLS[0],
       whatsappNumber: '',
     },
   });
@@ -80,7 +80,7 @@ export const CompleteProfileScreen: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-4">
           <Input
             label="Full Name"
             placeholder="e.g. Prateek Sharma"

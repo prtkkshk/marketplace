@@ -34,7 +34,7 @@ export const CreateWantedRequestScreen: React.FC = () => {
       description: '',
       category: 'cycles',
       maxBudget: null,
-      hallOfResidence: profile?.hallOfResidence || 'Patel',
+      hallOfResidence: (profile?.hallOfResidence as any) || 'Patel',
     },
   });
 
@@ -88,7 +88,7 @@ export const CreateWantedRequestScreen: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-4">
           <Input
             label="What are you looking for?"
             placeholder="e.g. Electric Kettle or Engineering Drawing Kit"

@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import type { Database, ListingCategory, WantedRequestStatus } from '../database.types';
+import type { Database, ListingCategory, RequestStatus } from '../database.types';
 import { whatsappLink } from '../utils/whatsappLink';
 
 type WantedRequestRow = Database['public']['Tables']['wanted_requests']['Row'];
@@ -12,7 +12,7 @@ export interface WantedRequestItem {
   category: ListingCategory;
   maxBudget: number | null;
   hallOfResidence: string;
-  status: WantedRequestStatus;
+  status: RequestStatus;
   deletedAt: string | null;
   createdAt: string;
   updatedAt: string;

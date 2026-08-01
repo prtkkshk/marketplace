@@ -5,7 +5,6 @@ import { ListingSkeleton } from '../listings/ListingSkeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export const MyListingsTab: React.FC<{ userId: string }> = ({ userId }) => {
   const [segment, setSegment] = useState<'active' | 'sold'>('active');

@@ -12,7 +12,7 @@ import { ShoppingBag, Megaphone, Bookmark, Shield, LogOut, Trash2, Edit3, FileTe
 import { Link } from 'react-router-dom';
 
 export const ProfileScreen: React.FC = () => {
-  const { profile, signOut, isAdmin, refetchProfile } = useAuth();
+  const { profile, signOut, isAdmin, refreshProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'listings' | 'requests' | 'saved'>('listings');
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -38,7 +38,7 @@ export const ProfileScreen: React.FC = () => {
         whatsappNumber: whatsapp,
       });
 
-      await refetchProfile();
+      await refreshProfile();
       setIsEditing(false);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to update profile';

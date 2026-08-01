@@ -81,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initAuth();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
       if (newSession?.user) {
         const userEmail = newSession.user.email ?? '';
         if (!userEmail.endsWith(ALLOWED_EMAIL_DOMAIN)) {

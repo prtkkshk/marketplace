@@ -4,11 +4,11 @@ test.describe('Golden Path 3: Reporting, Moderation Queue & Audit Log', () => {
   test('reports a listing, admin sees it, deletes it, and verifies audit log entry', async ({ page }) => {
     // 1. Visit feed and open listing options menu
     await page.goto('/');
-    await page.click('button[aria-label="Options"]').first();
+    await page.locator('button[aria-label="Options"]').first().click();
     await page.click('text=Report');
 
     // 2. Select reason and submit report
-    await page.selectOption('select', 'prohibited_item');
+    await page.selectOption('select', 'prohibited');
     await page.fill('textarea', 'Item violates campus policy.');
     await page.click('button:has-text("Submit Report")');
 

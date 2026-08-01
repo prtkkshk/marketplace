@@ -2,7 +2,6 @@ import { supabase } from '../supabase';
 import type { Database, ListingCategory, ItemCondition, ListingStatus } from '../database.types';
 
 type ListingRow = Database['public']['Tables']['listings']['Row'];
-type AnnouncementRow = Database['public']['Tables']['announcements']['Row'];
 
 export interface ListingItem {
   id: string;

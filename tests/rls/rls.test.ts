@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import type { Database } from '../../src/lib/database.types';
 
 // Mock/test types for RLS matrix assertion
 interface TestUser {

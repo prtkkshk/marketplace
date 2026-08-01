@@ -18,12 +18,12 @@ export interface ReportSheetProps {
 }
 
 const REPORT_REASONS: { value: ReportReason; label: string }[] = [
-  { value: 'prohibited_item', label: 'Prohibited item (alcohol/drugs/weapons/academic paper/sublet)' },
-  { value: 'misleading', label: 'Misleading or false description' },
-  { value: 'overpriced', label: 'Extremely overpriced or suspicious price' },
-  { value: 'spam', label: 'Spam or duplicate posting' },
+  { value: 'prohibited', label: 'Prohibited item (alcohol/drugs/weapons/academic paper/sublet)' },
+  { value: 'spam_scam', label: 'Spam, scam, or fake listing' },
+  { value: 'offensive', label: 'Offensive or inappropriate content' },
   { value: 'wrong_category', label: 'Wrong category selection' },
-  { value: 'inappropriate', label: 'Inappropriate image or text content' },
+  { value: 'already_sold', label: 'Item already sold / no longer available' },
+  { value: 'harassment', label: 'Harassment or suspicious contact' },
   { value: 'other', label: 'Other policy violation' },
 ];
 
@@ -37,7 +37,7 @@ export const ReportSheet: React.FC<ReportSheetProps> = ({
   const { session } = useAuth();
   const { showToast } = useToast();
 
-  const [reason, setReason] = useState<ReportReason>('prohibited_item');
+  const [reason, setReason] = useState<ReportReason>('prohibited');
   const [details, setDetails] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

@@ -79,6 +79,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       listings: {
         Row: {
@@ -138,6 +139,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       wanted_requests: {
         Row: {
@@ -188,6 +190,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       saved_items: {
         Row: {
@@ -205,6 +208,7 @@ export interface Database {
           listing_id?: string
           created_at?: string
         }
+        Relationships: []
       }
       reports: {
         Row: {
@@ -246,6 +250,7 @@ export interface Database {
           resolution_note?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       announcements: {
         Row: {
@@ -278,6 +283,7 @@ export interface Database {
           created_by?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       admin_audit_log: {
         Row: {
@@ -310,6 +316,7 @@ export interface Database {
           metadata?: Json | null
           created_at?: string
         }
+        Relationships: []
       }
       contact_events: {
         Row: {
@@ -333,6 +340,7 @@ export interface Database {
           request_id?: string | null
           created_at?: string
         }
+        Relationships: []
       }
     }
     Views: {

@@ -8,7 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
-import { Pin, Eye, EyeOff, Trash2, CheckCircle2, RotateCcw } from 'lucide-react';
+import { Pin, EyeOff, Trash2, CheckCircle2, RotateCcw } from 'lucide-react';
 
 export const AdminListingsScreen: React.FC = () => {
   const { session } = useAuth();

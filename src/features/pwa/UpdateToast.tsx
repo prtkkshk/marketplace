@@ -8,10 +8,10 @@ export const UpdateToast: React.FC = () => {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
-    onRegistered(r) {
+    onRegistered(r: ServiceWorkerRegistration | undefined) {
       console.log('SW Registered:', r);
     },
-    onRegisterError(error) {
+    onRegisterError(error: unknown) {
       console.error('SW registration error', error);
     },
   });
