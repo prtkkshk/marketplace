@@ -12,12 +12,14 @@ import { createWantedRequest } from '../../lib/data/wantedRequests';
 import { useAuth } from '../auth/AuthProvider';
 import { CATEGORIES } from '../../lib/constants';
 import { useToast } from '../../components/ui/Toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 
 export const CreateWantedRequestScreen: React.FC = () => {
   const { session, profile } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
 
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -57,6 +59,7 @@ export const CreateWantedRequestScreen: React.FC = () => {
       });
 
       confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } });
+      await queryClient.invalidateQueries({ queryKey: ['wantedRequests'] });
       showToast('Wanted request posted successfully!', 'success');
       navigate('/wanted');
     } catch (err: unknown) {

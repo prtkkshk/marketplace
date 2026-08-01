@@ -17,6 +17,7 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Sheet } from '../../components/ui/Sheet';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   MessageCircle,
@@ -30,6 +31,7 @@ export const RequestDetailScreen: React.FC = () => {
   const navigate = useNavigate();
   const { profile, isAdmin } = useAuth();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
 
   const [request, setRequest] = useState<WantedRequestItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -94,6 +96,7 @@ export const RequestDetailScreen: React.FC = () => {
         setRequest(updated);
         showToast('Request marked as fulfilled', 'info');
       }
+      await queryClient.invalidateQueries({ queryKey: ['wantedRequests'] });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Action failed';
       showToast(msg, 'error');
@@ -107,6 +110,7 @@ export const RequestDetailScreen: React.FC = () => {
     setActionLoading(true);
     try {
       await deleteWantedRequest(id);
+      await queryClient.invalidateQueries({ queryKey: ['wantedRequests'] });
       showToast('Request deleted', 'info');
       navigate('/wanted');
     } catch (err: unknown) {

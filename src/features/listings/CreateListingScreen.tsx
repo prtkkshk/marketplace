@@ -13,12 +13,14 @@ import { createListing } from '../../lib/data/listings';
 import { useAuth } from '../auth/AuthProvider';
 import { CATEGORIES, CONDITIONS } from '../../lib/constants';
 import { useToast } from '../../components/ui/Toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 
 export const CreateListingScreen: React.FC = () => {
   const { session, profile } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
   const generatedListingId = useId().replace(/:/g, '') + Date.now().toString(36);
 
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
@@ -90,6 +92,9 @@ export const CreateListingScreen: React.FC = () => {
         spread: 60,
         origin: { y: 0.6 },
       });
+
+      await queryClient.invalidateQueries({ queryKey: ['listings'] });
+      await queryClient.invalidateQueries({ queryKey: ['myListings'] });
 
       showToast('Listing posted successfully!', 'success');
       navigate(`/listing/${newListing.id}`);

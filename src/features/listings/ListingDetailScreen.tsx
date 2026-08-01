@@ -18,6 +18,7 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Sheet } from '../../components/ui/Sheet';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Heart,
@@ -35,6 +36,7 @@ export const ListingDetailScreen: React.FC = () => {
   const navigate = useNavigate();
   const { profile, isAdmin } = useAuth();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
 
   const [listing, setListing] = useState<ListingItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -105,6 +107,8 @@ export const ListingDetailScreen: React.FC = () => {
         setListing(updated);
         showToast('Listing marked as sold', 'info');
       }
+      await queryClient.invalidateQueries({ queryKey: ['listings'] });
+      await queryClient.invalidateQueries({ queryKey: ['myListings'] });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Action failed';
       showToast(msg, 'error');
@@ -118,8 +122,11 @@ export const ListingDetailScreen: React.FC = () => {
     setActionLoading(true);
     try {
       await deleteListing(id);
-      showToast('Listing deleted', 'info');
-      navigate('/');
+      await queryClient.invalidateQueries({ queryKey: ['listings'] });
+      await queryClient.invalidateQueries({ queryKey: ['myListings'] });
+      await queryClient.invalidateQueries({ queryKey: ['savedItems'] });
+      showToast('Listing deleted successfully', 'info');
+      navigate('/', { replace: true });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Delete failed';
       showToast(msg, 'error');

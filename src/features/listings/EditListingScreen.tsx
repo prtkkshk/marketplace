@@ -12,6 +12,7 @@ import { listingSchema, type ListingFormInput } from '../../lib/validation/listi
 import { CATEGORIES, CONDITIONS } from '../../lib/constants';
 import { useToast } from '../../components/ui/Toast';
 import { useAuth } from '../auth/AuthProvider';
+import { useQueryClient } from '@tanstack/react-query';
 import { PhotoUploader, type PhotoItem } from './PhotoUploader';
 import { getPhotoPublicUrl } from '../../lib/utils/image';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
@@ -21,6 +22,7 @@ export const EditListingScreen: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const { session } = useAuth();
+  const queryClient = useQueryClient();
 
   const [listing, setListing] = useState<ListingItem | null>(null);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
@@ -88,6 +90,9 @@ export const EditListingScreen: React.FC = () => {
         condition: data.condition as any,
         photoPaths: uploadedPaths,
       });
+
+      await queryClient.invalidateQueries({ queryKey: ['listings'] });
+      await queryClient.invalidateQueries({ queryKey: ['myListings'] });
 
       showToast('Listing updated successfully', 'success');
       navigate(`/listing/${id}`);
