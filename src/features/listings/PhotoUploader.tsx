@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '../../lib/supabase';
-import { Camera, X, Loader2, AlertCircle } from 'lucide-react';
+import { Camera, Image as ImageIcon, X, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 export interface PhotoItem {
   id: string;
@@ -26,9 +26,15 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   onChange,
 }) => {
   const [isCompressing, setIsCompressing] = useState<boolean>(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
-  const processAndUploadFile = async (file: File, photoId: string) => {
+  const processAndUploadFile = async (file: File, photoId: string, currentPhotos: PhotoItem[]) => {
     try {
+      if (!userId || userId === 'temp') {
+        throw new Error('Please complete profile & sign in to upload photos.');
+      }
+
       // 1. Compress image to max 1600px long edge, convert to WebP, strip EXIF
       const options = {
         maxSizeMB: 1.5,
@@ -44,7 +50,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
       // Update progress to 50%
       onChange(
-        photos.map((p) => (p.id === photoId ? { ...p, progress: 50 } : p))
+        currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 50, error: undefined } : p))
       );
 
       // 3. Upload to Supabase Storage
@@ -57,19 +63,22 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         });
 
       if (uploadError) {
+        if (uploadError.message.includes('row-level security') || uploadError.message.includes('unauthorized')) {
+          throw new Error('Upload blocked: Profile incomplete or session expired.');
+        }
         throw new Error(uploadError.message);
       }
 
-      // Success
+      // Success - update state
       onChange(
-        photos.map((p) =>
+        currentPhotos.map((p) =>
           p.id === photoId ? { ...p, storagePath, progress: 100, error: undefined } : p
         )
       );
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Upload failed';
       onChange(
-        photos.map((p) => (p.id === photoId ? { ...p, progress: 0, error: msg } : p))
+        currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 0, error: msg } : p))
       );
     }
   };
@@ -93,13 +102,17 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
       };
     });
 
-    const updated = [...photos, ...newPhotos];
-    onChange(updated);
+    let updatedList = [...photos, ...newPhotos];
+    onChange(updatedList);
 
-    // Process each new photo independently so one failure doesn't ruin the batch
+    // Process each new photo independently
     for (const photo of newPhotos) {
       if (photo.file) {
-        await processAndUploadFile(photo.file, photo.id);
+        await processAndUploadFile(photo.file, photo.id, updatedList);
+        // Keep updated state in sync
+        updatedList = updatedList.map((p) =>
+          p.id === photo.id && p.progress === 100 ? { ...p } : p
+        );
       }
     }
 
@@ -107,13 +120,17 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
     e.target.value = '';
   };
 
+  const handleRetry = async (photo: PhotoItem) => {
+    if (!photo.file) return;
+    onChange(photos.map((p) => (p.id === photo.id ? { ...p, progress: 10, error: undefined } : p)));
+    await processAndUploadFile(photo.file, photo.id, photos);
+  };
+
   const handleRemove = async (id: string) => {
     const target = photos.find((p) => p.id === id);
     if (target?.storagePath) {
-      // Remove from storage if uploaded
       supabase.storage.from('listing-photos').remove([target.storagePath]).catch(console.error);
     }
-
     onChange(photos.filter((p) => p.id !== id));
   };
 
@@ -123,7 +140,27 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         Photos (1–4 images)
       </label>
 
-      <div className="grid grid-cols-4 gap-2">
+      {/* Hidden File Inputs */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileSelect}
+        disabled={isCompressing}
+        className="hidden"
+      />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={handleFileSelect}
+        disabled={isCompressing}
+        className="hidden"
+      />
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {photos.map((photo) => (
           <div key={photo.id} className="relative aspect-square rounded-xl bg-slate-100 border border-surface-border overflow-hidden group">
             <img src={photo.previewUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -132,7 +169,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
             <button
               type="button"
               onClick={() => handleRemove(photo.id)}
-              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-slate-900/70 text-white flex items-center justify-center hover:bg-rose-600 transition-colors"
+              className="absolute top-1 right-1 w-6 h-6 rounded-full bg-slate-900/70 text-white flex items-center justify-center hover:bg-rose-600 transition-colors z-10"
               aria-label="Remove photo"
             >
               <X className="w-3.5 h-3.5" />
@@ -140,41 +177,67 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
             {/* Upload Progress Overlay */}
             {photo.progress < 100 && !photo.error && (
-              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center">
-                <Loader2 className="w-5 h-5 text-white animate-spin" />
+              <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs flex flex-col items-center justify-center text-white">
+                <Loader2 className="w-5 h-5 animate-spin mb-1" />
+                <span className="text-[10px] font-medium">{photo.progress}%</span>
               </div>
             )}
 
-            {/* Upload Error Indicator */}
+            {/* Upload Error Overlay & Retry */}
             {photo.error && (
-              <div className="absolute inset-0 bg-rose-900/60 p-1 flex flex-col items-center justify-center text-white text-[10px] text-center">
-                <AlertCircle className="w-4 h-4 mb-0.5" />
-                <span className="line-clamp-1">Failed</span>
+              <div className="absolute inset-0 bg-rose-950/80 p-2 flex flex-col items-center justify-center text-white text-center">
+                <AlertCircle className="w-5 h-5 text-rose-300 mb-1" />
+                <span className="text-[10px] line-clamp-2 leading-tight mb-1.5">{photo.error}</span>
+                {photo.file && (
+                  <button
+                    type="button"
+                    onClick={() => handleRetry(photo)}
+                    className="px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded text-[10px] font-medium flex items-center gap-1 transition-colors"
+                  >
+                    <RefreshCw className="w-3 h-3" /> Retry
+                  </button>
+                )}
               </div>
             )}
           </div>
         ))}
 
-        {/* Upload Trigger Button */}
+        {/* Upload Action Card */}
         {photos.length < 4 && (
-          <label className="aspect-square rounded-xl border-2 border-dashed border-slate-300 hover:border-brand-primary bg-slate-50 flex flex-col items-center justify-center cursor-pointer transition-colors text-content-muted hover:text-brand-primary">
-            <Camera className="w-6 h-6 mb-1" />
-            <span className="text-[10px] font-medium">Add Photo</span>
-            <input
-              type="file"
-              accept="image/png, image/jpeg, image/webp"
-              multiple
-              onChange={handleFileSelect}
-              disabled={isCompressing}
-              className="hidden"
-            />
-          </label>
+          <div className="aspect-square rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center p-2 gap-2 text-content-muted">
+            <span className="text-[11px] font-semibold text-content-secondary uppercase tracking-wider">
+              Add Photo
+            </span>
+            <div className="flex gap-1.5 w-full">
+              <button
+                type="button"
+                onClick={() => cameraInputRef.current?.click()}
+                disabled={isCompressing}
+                className="flex-1 py-2 px-1 bg-brand-primary text-white rounded-lg flex flex-col items-center justify-center text-[10px] font-medium hover:bg-brand-primary/90 transition-colors shadow-xs"
+                title="Take photo with device camera"
+              >
+                <Camera className="w-4 h-4 mb-0.5" />
+                <span>Camera</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => galleryInputRef.current?.click()}
+                disabled={isCompressing}
+                className="flex-1 py-2 px-1 bg-slate-200 text-slate-800 rounded-lg flex flex-col items-center justify-center text-[10px] font-medium hover:bg-slate-300 transition-colors shadow-xs"
+                title="Select photo from library"
+              >
+                <ImageIcon className="w-4 h-4 mb-0.5 text-slate-700" />
+                <span>Gallery</span>
+              </button>
+            </div>
+          </div>
         )}
       </div>
 
       <span className="text-xs text-content-muted">
-        Photos are compressed to WebP (≤1600px) and EXIF metadata is automatically stripped for privacy.
+        Select 📷 Camera to snap directly or 📁 Gallery to pick existing images. Images are automatically converted to WebP (≤1600px) with EXIF metadata stripped.
       </span>
     </div>
   );
 };
+
