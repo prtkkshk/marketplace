@@ -7,7 +7,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
-import { getPhotoPublicUrl } from '../../lib/utils/image';
+import { getPhotoPublicUrl, getCategoryFallback } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
 import { ReportSheet } from '../../components/ui/ReportSheet';
 import { Heart, MessageCircle, MoreVertical, Flag, Pin, Loader2 } from 'lucide-react';
@@ -37,7 +37,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isExpired = listing.status === 'expired';
   const isDisabled = isSold || isExpired;
 
-  const photoUrl = getPhotoPublicUrl(listing.photoPaths?.[0]);
+  const photoUrl = getPhotoPublicUrl(listing.photoPaths?.[0], listing.category);
 
   const conditionLabels: Record<string, string> = {
     brand_new: 'Brand New',
@@ -112,8 +112,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             isSold ? 'grayscale' : 'hover:scale-105'
           }`}
           onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=400&q=80';
+            const target = e.target as HTMLImageElement;
+            const fallback = getCategoryFallback(listing.category);
+            if (target.src !== fallback) {
+              target.src = fallback;
+            }
           }}
         />
 

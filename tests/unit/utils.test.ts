@@ -50,6 +50,12 @@ describe('Utility Functions', () => {
       expect(getPhotoPublicUrl('')).toBe(DEFAULT_FALLBACK_PHOTO);
     });
 
+    it('returns category-specific fallback when path is missing', () => {
+      const bookFallback = getPhotoPublicUrl(null, 'books');
+      expect(bookFallback).toContain('unsplash');
+      expect(bookFallback).not.toBe('');
+    });
+
     it('returns full HTTP URLs unchanged', () => {
       const externalUrl = 'https://example.com/photo.jpg';
       expect(getPhotoPublicUrl(externalUrl)).toBe(externalUrl);

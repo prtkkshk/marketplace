@@ -10,7 +10,7 @@ import {
 import { fetchContactNumber } from '../../lib/data/contact';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
-import { getPhotoPublicUrls } from '../../lib/utils/image';
+import { getPhotoPublicUrls, getCategoryFallback } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
@@ -83,7 +83,7 @@ export const ListingDetailScreen: React.FC = () => {
   const isExpired = listing.status === 'expired';
   const isDisabled = isSold || isExpired;
 
-  const photoUrls = getPhotoPublicUrls(listing.photoPaths);
+  const photoUrls = getPhotoPublicUrls(listing.photoPaths, listing.category);
 
   const conditionLabels: Record<string, string> = {
     brand_new: 'Brand New',
@@ -192,8 +192,11 @@ export const ListingDetailScreen: React.FC = () => {
           alt={listing.title}
           className="w-full h-full object-cover"
           onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              'https://images.unsplash.com/photo-1584438784894-089d6a62b8fa?auto=format&fit=crop&w=800&q=80';
+            const target = e.target as HTMLImageElement;
+            const fallback = getCategoryFallback(listing.category);
+            if (target.src !== fallback) {
+              target.src = fallback;
+            }
           }}
         />
 
