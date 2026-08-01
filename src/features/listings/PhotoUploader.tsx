@@ -29,8 +29,8 @@ function fileToDataUrl(file: Blob): Promise<string> {
 }
 
 export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
-  userId,
-  listingId,
+  userId: _userId,
+  listingId: _listingId,
   photos,
   onChange,
 }) => {
