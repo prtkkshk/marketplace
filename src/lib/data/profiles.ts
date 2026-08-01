@@ -28,6 +28,7 @@ export function mapProfileRow(row: ProfileRow): StudentProfile {
     whatsappNumber: row.whatsapp_number,
     isProfileComplete: row.is_profile_complete,
     isAdmin: row.is_admin,
+    isBanned: row.is_banned,
     bannedReason: row.banned_reason,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
