@@ -11,14 +11,19 @@ import { fetchListingById, updateListing, type ListingItem } from '../../lib/dat
 import { listingSchema, type ListingFormInput } from '../../lib/validation/listing';
 import { CATEGORIES, CONDITIONS } from '../../lib/constants';
 import { useToast } from '../../components/ui/Toast';
+import { useAuth } from '../auth/AuthProvider';
+import { PhotoUploader, type PhotoItem } from './PhotoUploader';
+import { getPhotoPublicUrl } from '../../lib/utils/image';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 
 export const EditListingScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { session } = useAuth();
 
   const [listing, setListing] = useState<ListingItem | null>(null);
+  const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -27,6 +32,7 @@ export const EditListingScreen: React.FC = () => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<ListingFormInput>({
     mode: 'onBlur',
@@ -40,6 +46,13 @@ export const EditListingScreen: React.FC = () => {
       .then((item) => {
         if (item) {
           setListing(item);
+          const initialPhotos: PhotoItem[] = (item.photoPaths || []).map((p, idx) => ({
+            id: `existing_${idx}_${Date.now()}`,
+            previewUrl: getPhotoPublicUrl(p, item.category),
+            storagePath: p,
+            progress: 100,
+          }));
+          setPhotos(initialPhotos);
           reset({
             title: item.title,
             description: item.description || '',
@@ -61,6 +74,10 @@ export const EditListingScreen: React.FC = () => {
     setIsSubmitting(true);
     setFormError(null);
 
+    const uploadedPaths = photos
+      .map((p) => p.storagePath)
+      .filter((path): path is string => !!path);
+
     try {
       await updateListing(id, {
         title: data.title,
@@ -69,6 +86,7 @@ export const EditListingScreen: React.FC = () => {
         price: data.price,
         isNegotiable: data.isNegotiable,
         condition: data.condition as any,
+        photoPaths: uploadedPaths,
       });
 
       showToast('Listing updated successfully', 'success');
@@ -155,6 +173,19 @@ export const EditListingScreen: React.FC = () => {
             disabled={isSubmitting}
             error={errors.description?.message}
             {...register('description')}
+          />
+
+          <PhotoUploader
+            userId={session?.user?.id || listing?.userId || 'temp'}
+            listingId={id || 'edit'}
+            photos={photos}
+            onChange={(updated) => {
+              setPhotos(updated);
+              setValue(
+                'photoPaths',
+                updated.map((p) => p.storagePath).filter((p): p is string => !!p)
+              );
+            }}
           />
 
           <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
