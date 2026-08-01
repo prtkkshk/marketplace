@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4787F9"/>
+      <stop offset="1" stop-color="#346BEE"/>
+    </linearGradient>
+    <linearGradient id="bag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EEF3FE"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
+  <circle cx="470" cy="440" r="360" fill="#FFFFFF" opacity="0.06"/>
+  <!-- bag handle -->
+  <path d="M512 150c-101 0-183 82-183 183v54h84v-54c0-55 44-99 99-99s99 44 99 99v54h84v-54c0-101-82-183-183-183z" fill="#C3D4FB"/>
+  <!-- bag body -->
+  <path d="M291 367h442l-38 419c-4 44-41 78-85 78H414c-44 0-81-34-85-78L291 367z" fill="url(#bag)"/>
+  <!-- check badge -->
+  <circle cx="512" cy="611" r="96" fill="#4A90F7"/>
+  <path d="M466 611l32 34 66-78" fill="none" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

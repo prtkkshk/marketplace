@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Safari pinned-tab icon. Must be a single flat black path; Safari recolours it. -->
+  <path fill="black" d="M512 150c-101 0-183 82-183 183v34h84v-34c0-55 44-99 99-99s99 44 99 99v34h84v-34c0-101-82-183-183-183z"/>
+  <path fill="black" d="M291 367h442l-38 419c-4 44-41 78-85 78H414c-44 0-81-34-85-78L291 367zm221 148c-53 0-96 43-96 96s43 96 96 96 96-43 96-96-43-96-96-96zm44 55l14 18-63 79-40-42 16-17 23 24 50-62z"/>
+</svg>
