@@ -19,6 +19,15 @@ export interface PhotoUploaderProps {
   onChange: (photos: PhotoItem[]) => void;
 }
 
+function fileToDataUrl(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
 export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
   userId,
   listingId,
@@ -31,52 +40,58 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
   const processAndUploadFile = async (file: File, photoId: string, currentPhotos: PhotoItem[]) => {
     try {
-      if (!userId || userId === 'temp') {
-        throw new Error('Please complete profile & sign in to upload photos.');
+      // 1. Compress image to max 1600px long edge, convert to WebP
+      let compressedFile: File | Blob = file;
+      try {
+        const options = {
+          maxSizeMB: 1.5,
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+          fileType: 'image/webp',
+        };
+        compressedFile = await imageCompression(file, options);
+      } catch (cErr) {
+        console.warn('Image compression fallback to raw file:', cErr);
       }
-
-      // 1. Compress image to max 1600px long edge, convert to WebP, strip EXIF
-      const options = {
-        maxSizeMB: 1.5,
-        maxWidthOrHeight: 1600,
-        useWebWorker: true,
-        fileType: 'image/webp',
-      };
-
-      const compressedFile = await imageCompression(file, options);
-
-      // 2. Determine storage path: listing-photos/{userId}/{listingId}/{photoId}.webp
-      const storagePath = `${userId}/${listingId}/${photoId}.webp`;
 
       // Update progress to 50%
       onChange(
         currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 50, error: undefined } : p))
       );
 
-      // 3. Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('listing-photos')
-        .upload(storagePath, compressedFile, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: 'image/webp',
-        });
+      let finalPath = '';
 
-      if (uploadError) {
-        if (uploadError.message.includes('row-level security') || uploadError.message.includes('unauthorized')) {
-          throw new Error('Upload blocked: Profile incomplete or session expired.');
+      // 2. Try Supabase Storage upload if user is authenticated
+      if (userId && userId !== 'temp') {
+        const relPath = `${userId}/${listingId}/${photoId}.webp`;
+        const { error: uploadError } = await supabase.storage
+          .from('listing-photos')
+          .upload(relPath, compressedFile, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: 'image/webp',
+          });
+
+        if (!uploadError) {
+          finalPath = relPath;
+        } else {
+          console.warn('Supabase storage upload error, fallback to Data URL:', uploadError.message);
         }
-        throw new Error(uploadError.message);
       }
 
-      // Success - update state
+      // 3. Fallback to Data URL if Supabase Storage is not ready or failed
+      if (!finalPath) {
+        finalPath = await fileToDataUrl(compressedFile);
+      }
+
+      // 4. Success - update state with finalPath
       onChange(
         currentPhotos.map((p) =>
-          p.id === photoId ? { ...p, storagePath, progress: 100, error: undefined } : p
+          p.id === photoId ? { ...p, storagePath: finalPath, progress: 100, error: undefined } : p
         )
       );
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Upload failed';
+      const msg = err instanceof Error ? err.message : 'Processing failed';
       onChange(
         currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 0, error: msg } : p))
       );

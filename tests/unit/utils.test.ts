@@ -56,9 +56,12 @@ describe('Utility Functions', () => {
       expect(bookFallback).not.toBe('');
     });
 
-    it('returns full HTTP URLs unchanged', () => {
+    it('returns full HTTP URLs and Base64 Data URIs unchanged', () => {
       const externalUrl = 'https://example.com/photo.jpg';
       expect(getPhotoPublicUrl(externalUrl)).toBe(externalUrl);
+
+      const dataUrl = 'data:image/webp;base64,UklGRiQAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEAAQAcJaQAA3AA/v3AgAA=';
+      expect(getPhotoPublicUrl(dataUrl)).toBe(dataUrl);
     });
   });
 });

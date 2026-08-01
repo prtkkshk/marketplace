@@ -23,7 +23,7 @@ export function getCategoryFallback(category?: string | null): string {
 export function getPhotoPublicUrl(photoPath?: string | null, category?: string | null): string {
   const fallback = getCategoryFallback(category);
   if (!photoPath || photoPath.trim() === '') return fallback;
-  if (photoPath.startsWith('http://') || photoPath.startsWith('https://')) {
+  if (photoPath.startsWith('http://') || photoPath.startsWith('https://') || photoPath.startsWith('data:')) {
     return photoPath;
   }
   const cleanPath = photoPath.replace(/^\/+/, '');
