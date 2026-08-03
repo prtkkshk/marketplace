@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ListingItem } from '../../lib/data/listings';
 import { fetchContactNumber } from '../../lib/data/contact';
-import { toggleSavedItem } from '../../lib/data/saved_items';
+import { useToggleSaveMutation } from '../../lib/hooks/useToggleSaveMutation';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
 import { formatINR } from '../../lib/utils/formatINR';
@@ -11,7 +11,6 @@ import { getPhotoPublicUrl, getCategoryFallback } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
 import { ReportSheet } from '../../components/ui/ReportSheet';
 import { Heart, MessageCircle, MoreVertical, Flag, Pin, Loader2 } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 
 export interface ListingCardProps {
   listing: ListingItem;
@@ -26,7 +25,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 }) => {
   const { session } = useAuth();
   const { showToast } = useToast();
-  const queryClient = useQueryClient();
+  const toggleSaveMutation = useToggleSaveMutation();
 
   const [isSaved, setIsSaved] = useState<boolean>(initialIsSaved);
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -62,7 +61,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     }
   };
 
-  const handleToggleSave = async (e: React.MouseEvent) => {
+  const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -72,18 +71,26 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     }
 
     const previousState = isSaved;
-    setIsSaved(!previousState);
+    setIsSaved(!previousState); // Optimistic UI local state
 
-    try {
-      const nextState = await toggleSavedItem(session.user.id, listing.id, previousState);
-      setIsSaved(nextState);
-      showToast(nextState ? 'Saved to bookmarks' : 'Removed from bookmarks', 'info');
-      queryClient.invalidateQueries({ queryKey: ['savedItems'] });
-    } catch (err: unknown) {
-      setIsSaved(previousState);
-      const msg = err instanceof Error ? err.message : 'Save toggle failed';
-      showToast(msg, 'error');
-    }
+    toggleSaveMutation.mutate(
+      {
+        userId: session.user.id,
+        listingId: listing.id,
+        previousState,
+        listing: { ...listing, isSaved: !previousState }, // Optional for cache
+      },
+      {
+        onSuccess: () => {
+          showToast(!previousState ? 'Saved to bookmarks' : 'Removed from bookmarks', 'info');
+        },
+        onError: (err) => {
+          setIsSaved(previousState); // Rollback local state
+          const msg = err instanceof Error ? err.message : 'Save toggle failed';
+          showToast(msg, 'error');
+        },
+      }
+    );
   };
 
   return (

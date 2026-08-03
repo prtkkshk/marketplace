@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   fetchWantedRequestById,
-  markWantedRequestFulfilled,
-  unmarkWantedRequestFulfilled,
-  deleteWantedRequest,
   fetchRequesterContactNumber,
   type WantedRequestItem,
 } from '../../lib/data/wantedRequests';
+import { useToggleFulfilledMutation } from '../../lib/hooks/useToggleFulfilledMutation';
+import { useDeleteWantedRequestMutation } from '../../lib/hooks/useDeleteWantedRequestMutation';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
 import { Badge } from '../../components/ui/Badge';
@@ -17,7 +16,6 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Sheet } from '../../components/ui/Sheet';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   MessageCircle,
@@ -31,13 +29,15 @@ export const RequestDetailScreen: React.FC = () => {
   const navigate = useNavigate();
   const { profile, isAdmin } = useAuth();
   const { showToast } = useToast();
-  const queryClient = useQueryClient();
+
+  const toggleFulfilledMutation = useToggleFulfilledMutation();
+  const deleteRequestMutation = useDeleteWantedRequestMutation();
 
   const [request, setRequest] = useState<WantedRequestItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteSheet, setShowDeleteSheet] = useState<boolean>(false);
-  const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [isContacting, setIsContacting] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -70,8 +70,8 @@ export const RequestDetailScreen: React.FC = () => {
   const isFulfilled = request.status === 'fulfilled';
 
   const handleRespondTap = async () => {
-    if (isFulfilled || actionLoading) return;
-    setActionLoading(true);
+    if (isFulfilled || isContacting) return;
+    setIsContacting(true);
     try {
       const result = await fetchRequesterContactNumber(request.id, request.title);
       window.open(result.whatsappDeepLink, '_blank', 'noopener,noreferrer');
@@ -79,46 +79,41 @@ export const RequestDetailScreen: React.FC = () => {
       const msg = err instanceof Error ? err.message : 'Contact failed';
       showToast(msg, 'error');
     } finally {
-      setActionLoading(false);
+      setIsContacting(false);
     }
   };
 
-  const handleToggleFulfilled = async () => {
-    if (!id) return;
-    setActionLoading(true);
-    try {
-      if (isFulfilled) {
-        const updated = await unmarkWantedRequestFulfilled(id);
-        setRequest(updated);
-        showToast('Request restored to open status', 'success');
-      } else {
-        const updated = await markWantedRequestFulfilled(id);
-        setRequest(updated);
-        showToast('Request marked as fulfilled', 'info');
+  const handleToggleFulfilled = () => {
+    if (!id || !request) return;
+    const previousStatus = request.status;
+    setRequest({ ...request, status: isFulfilled ? 'open' : 'fulfilled' });
+
+    toggleFulfilledMutation.mutate(
+      { requestId: id, isFulfilled },
+      {
+        onSuccess: () => showToast(isFulfilled ? 'Request restored to open status' : 'Request marked as fulfilled', 'success'),
+        onError: (err) => {
+          setRequest({ ...request, status: previousStatus });
+          const msg = err instanceof Error ? err.message : 'Action failed';
+          showToast(msg, 'error');
+        },
       }
-      await queryClient.invalidateQueries({ queryKey: ['wantedRequests'] });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Action failed';
-      showToast(msg, 'error');
-    } finally {
-      setActionLoading(false);
-    }
+    );
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!id) return;
-    setActionLoading(true);
-    try {
-      await deleteWantedRequest(id);
-      await queryClient.invalidateQueries({ queryKey: ['wantedRequests'] });
-      showToast('Request deleted', 'info');
-      navigate('/wanted');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Delete failed';
-      showToast(msg, 'error');
-    } finally {
-      setActionLoading(false);
-    }
+    deleteRequestMutation.mutate(id, {
+      onSuccess: () => {
+        showToast('Request deleted', 'info');
+        navigate('/wanted');
+      },
+      onError: (err) => {
+        const msg = err instanceof Error ? err.message : 'Delete failed';
+        showToast(msg, 'error');
+      },
+      onSettled: () => setShowDeleteSheet(false),
+    });
   };
 
   return (
@@ -178,7 +173,7 @@ export const RequestDetailScreen: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={handleToggleFulfilled}
-            isLoading={actionLoading}
+            isLoading={toggleFulfilledMutation.isPending}
             leftIcon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}
           >
             {isFulfilled ? 'Unmark as Fulfilled' : 'Mark as Found / Fulfilled'}
@@ -203,7 +198,7 @@ export const RequestDetailScreen: React.FC = () => {
               variant="primary"
               className="flex-1 bg-brand-primary font-bold"
               disabled={isFulfilled}
-              isLoading={actionLoading}
+              isLoading={isContacting}
               onClick={handleRespondTap}
               leftIcon={<MessageCircle className="w-5 h-5" />}
             >
@@ -226,7 +221,7 @@ export const RequestDetailScreen: React.FC = () => {
             <Button variant="outline" className="flex-1" onClick={() => setShowDeleteSheet(false)}>
               Cancel
             </Button>
-            <Button variant="danger" className="flex-1" isLoading={actionLoading} onClick={handleDelete}>
+            <Button variant="danger" className="flex-1" isLoading={deleteRequestMutation.isPending} onClick={handleDelete}>
               Delete Request
             </Button>
           </div>

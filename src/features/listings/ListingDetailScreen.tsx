@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   fetchListingById,
-  markListingSold,
-  unmarkListingSold,
-  deleteListing,
   type ListingItem,
 } from '../../lib/data/listings';
+import { useToggleSoldMutation } from '../../lib/hooks/useToggleSoldMutation';
+import { useDeleteListingMutation } from '../../lib/hooks/useDeleteListingMutation';
+import { useToggleSaveMutation } from '../../lib/hooks/useToggleSaveMutation';
 import { fetchContactNumber } from '../../lib/data/contact';
 import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
@@ -18,7 +18,6 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Sheet } from '../../components/ui/Sheet';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   Heart,
@@ -34,9 +33,12 @@ import {
 export const ListingDetailScreen: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { profile, isAdmin } = useAuth();
+  const { profile, isAdmin, session } = useAuth();
   const { showToast } = useToast();
-  const queryClient = useQueryClient();
+
+  const toggleSoldMutation = useToggleSoldMutation();
+  const deleteListingMutation = useDeleteListingMutation();
+  const toggleSaveMutation = useToggleSaveMutation();
 
   const [listing, setListing] = useState<ListingItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,7 +46,7 @@ export const ListingDetailScreen: React.FC = () => {
   const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
   const [isSaved, setIsSaved] = useState<boolean>(false);
   const [showDeleteSheet, setShowDeleteSheet] = useState<boolean>(false);
-  const [actionLoading, setActionLoading] = useState<boolean>(false);
+  const [isContacting, setIsContacting] = useState<boolean>(false);
 
   useEffect(() => {
     if (!id) return;
@@ -94,50 +96,70 @@ export const ListingDetailScreen: React.FC = () => {
     fair: 'Fair',
   };
 
-  const handleToggleSold = async () => {
-    if (!id) return;
-    setActionLoading(true);
-    try {
-      if (isSold) {
-        const updated = await unmarkListingSold(id);
-        setListing(updated);
-        showToast('Listing marked as active', 'success');
-      } else {
-        const updated = await markListingSold(id);
-        setListing(updated);
-        showToast('Listing marked as sold', 'info');
+  const handleToggleSold = () => {
+    if (!id || !listing) return;
+    const previousStatus = listing.status;
+    setListing({ ...listing, status: isSold ? 'active' : 'sold' });
+
+    toggleSoldMutation.mutate(
+      { listingId: id, isSold },
+      {
+        onSuccess: () => showToast(isSold ? 'Listing marked as active' : 'Listing marked as sold', 'success'),
+        onError: (err) => {
+          setListing({ ...listing, status: previousStatus });
+          const msg = err instanceof Error ? err.message : 'Action failed';
+          showToast(msg, 'error');
+        },
       }
-      await queryClient.invalidateQueries({ queryKey: ['listings'] });
-      await queryClient.invalidateQueries({ queryKey: ['myListings'] });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Action failed';
-      showToast(msg, 'error');
-    } finally {
-      setActionLoading(false);
-    }
+    );
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!id) return;
-    setActionLoading(true);
-    try {
-      await deleteListing(id);
-      await queryClient.invalidateQueries({ queryKey: ['listings'] });
-      await queryClient.invalidateQueries({ queryKey: ['myListings'] });
-      await queryClient.invalidateQueries({ queryKey: ['savedItems'] });
-      showToast('Listing deleted successfully', 'info');
-      navigate('/', { replace: true });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Delete failed';
-      showToast(msg, 'error');
-    } finally {
-      setActionLoading(false);
+    deleteListingMutation.mutate(id, {
+      onSuccess: () => {
+        showToast('Listing deleted successfully', 'info');
+        navigate('/', { replace: true });
+      },
+      onError: (err) => {
+        const msg = err instanceof Error ? err.message : 'Delete failed';
+        showToast(msg, 'error');
+      },
+      onSettled: () => setShowDeleteSheet(false),
+    });
+  };
+
+  const handleToggleSave = () => {
+    if (!session?.user?.id || !listing) {
+      showToast('Please sign in to save items', 'info');
+      return;
     }
+    const previousState = isSaved;
+    setIsSaved(!previousState);
+
+    toggleSaveMutation.mutate(
+      {
+        userId: session.user.id,
+        listingId: listing.id,
+        previousState,
+        listing,
+      },
+      {
+        onSuccess: () => {
+          showToast(!previousState ? 'Saved to bookmarks' : 'Removed from bookmarks', 'info');
+        },
+        onError: (err) => {
+          setIsSaved(previousState);
+          const msg = err instanceof Error ? err.message : 'Save toggle failed';
+          showToast(msg, 'error');
+        },
+      }
+    );
   };
 
   const handleContactTap = async () => {
-    if (isDisabled || actionLoading) return;
-    setActionLoading(true);
+    if (isDisabled || isContacting) return;
+    setIsContacting(true);
     try {
       const result = await fetchContactNumber(listing.id, listing.title, listing.price);
       window.open(result.whatsappDeepLink, '_blank', 'noopener,noreferrer');
@@ -145,7 +167,7 @@ export const ListingDetailScreen: React.FC = () => {
       const msg = err instanceof Error ? err.message : 'Contact failed';
       showToast(msg, 'error');
     } finally {
-      setActionLoading(false);
+      setIsContacting(false);
     }
   };
 
@@ -173,7 +195,7 @@ export const ListingDetailScreen: React.FC = () => {
           )}
 
           <button
-            onClick={() => setIsSaved(!isSaved)}
+            onClick={handleToggleSave}
             className="p-2 rounded-full border border-surface-border bg-white text-content-muted hover:text-rose-500"
             aria-label="Save listing"
           >
@@ -276,7 +298,7 @@ export const ListingDetailScreen: React.FC = () => {
             variant="outline"
             size="sm"
             onClick={handleToggleSold}
-            isLoading={actionLoading}
+            isLoading={toggleSoldMutation.isPending}
             leftIcon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}
           >
             {isSold ? 'Unmark as Sold' : 'Mark as Sold'}
@@ -300,7 +322,7 @@ export const ListingDetailScreen: React.FC = () => {
             variant="primary"
             className="flex-1 bg-emerald-600 hover:bg-emerald-700 font-bold"
             disabled={isDisabled}
-            isLoading={actionLoading}
+            isLoading={isContacting}
             onClick={handleContactTap}
             leftIcon={<MessageCircle className="w-5 h-5" />}
           >
@@ -322,7 +344,7 @@ export const ListingDetailScreen: React.FC = () => {
             <Button variant="outline" className="flex-1" onClick={() => setShowDeleteSheet(false)}>
               Cancel
             </Button>
-            <Button variant="danger" className="flex-1" isLoading={actionLoading} onClick={handleDelete}>
+            <Button variant="danger" className="flex-1" isLoading={deleteListingMutation.isPending} onClick={handleDelete}>
               Permanently Delete
             </Button>
           </div>

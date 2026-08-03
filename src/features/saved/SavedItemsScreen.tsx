@@ -1,32 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { fetchSavedListings } from '../../lib/data/saved_items';
-import type { ListingItem } from '../../lib/data/listings';
 import { ListingCard } from '../listings/ListingCard';
 import { ListingSkeleton } from '../listings/ListingSkeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { ArrowLeft, Bookmark } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export const SavedItemsScreen: React.FC = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
 
-  const [savedItems, setSavedItems] = useState<ListingItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: savedItems = [],
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ['savedItems'],
+    queryFn: () => fetchSavedListings(session!.user!.id),
+    enabled: !!session?.user?.id,
+  });
 
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    setLoading(true);
-    setError(null);
-
-    fetchSavedListings(session.user.id)
-      .then((items) => setSavedItems(items))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [session?.user?.id]);
+  const error = queryError instanceof Error ? queryError.message : null;
 
   return (
     <div className="p-4 max-w-4xl mx-auto text-left py-6 pb-24">
