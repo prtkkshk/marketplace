@@ -329,26 +329,27 @@ export async function updateListingAdminAction(
   reason: string,
   adminId: string
 ): Promise<void> {
-  const payload: Record<string, unknown> = {};
-
-  if (action === 'pin') payload.is_pinned = true;
-  if (action === 'unpin') payload.is_pinned = false;
-  if (action === 'hide') payload.status = 'hidden';
-  if (action === 'restore') {
-    payload.status = 'active';
-    payload.deleted_at = null;
-  }
   if (action === 'delete') {
-    payload.status = 'hidden';
-    payload.deleted_at = new Date().toISOString();
-  }
-  if (action === 'force_sold') {
-    payload.status = 'sold';
-    payload.sold_at = new Date().toISOString();
-  }
+    const { error } = await supabase.from('listings').delete().eq('id', listingId);
+    if (error) throw new Error(error.message);
+  } else {
+    const payload: Record<string, unknown> = {};
 
-  const { error } = await supabase.from('listings').update(payload as any).eq('id', listingId);
-  if (error) throw new Error(error.message);
+    if (action === 'pin') payload.is_pinned = true;
+    if (action === 'unpin') payload.is_pinned = false;
+    if (action === 'hide') payload.status = 'hidden';
+    if (action === 'restore') {
+      payload.status = 'active';
+      payload.deleted_at = null;
+    }
+    if (action === 'force_sold') {
+      payload.status = 'sold';
+      payload.sold_at = new Date().toISOString();
+    }
+
+    const { error } = await supabase.from('listings').update(payload as any).eq('id', listingId);
+    if (error) throw new Error(error.message);
+  }
 
   await supabase.from('admin_audit_log').insert({
     actor_id: adminId,

@@ -119,21 +119,21 @@ export const AdminListingsScreen: React.FC = () => {
                   </Button>
                 )}
 
-                {item.status === 'hidden' || item.deleted_at ? (
+                {item.status === 'hidden' && !item.deleted_at && (
                   <Button variant="outline" size="sm" onClick={() => handleAdminAction(item.id, 'restore')} disabled={actionLoading} leftIcon={<RotateCcw className="w-3.5 h-3.5 text-emerald-600" />}>
                     Restore
                   </Button>
-                ) : (
+                )}
+                
+                {item.status !== 'hidden' && !item.deleted_at && (
                   <Button variant="outline" size="sm" onClick={() => handleAdminAction(item.id, 'hide')} disabled={actionLoading} leftIcon={<EyeOff className="w-3.5 h-3.5" />}>
                     Hide
                   </Button>
                 )}
 
-                {!item.deleted_at && (
-                  <Button variant="danger" size="sm" onClick={() => handleAdminAction(item.id, 'delete')} disabled={actionLoading} leftIcon={<Trash2 className="w-3.5 h-3.5" />}>
-                    Delete
-                  </Button>
-                )}
+                <Button variant="danger" size="sm" onClick={() => handleAdminAction(item.id, 'delete')} disabled={actionLoading} leftIcon={<Trash2 className="w-3.5 h-3.5" />}>
+                  Delete
+                </Button>
               </div>
             </Card>
           ))}
