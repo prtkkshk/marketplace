@@ -78,7 +78,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         userId: session.user.id,
         listingId: listing.id,
         previousState,
-        listing: { ...listing, isSaved: !previousState }, // Optional for cache
+        listing, // Optional for cache
       },
       {
         onSuccess: () => {

@@ -69,7 +69,7 @@ export function useToggleSoldMutation() {
       // but returning a simple boolean to signify optimistic update happened.
       return { optimisticUpdated: true };
     },
-    onError: (err, variables, context) => {
+    onError: () => {
       // In a real app we might revert the specific item, but invalidating is safer if we updated multiple caches loosely.
       queryClient.invalidateQueries({ queryKey: ['listings'] });
       queryClient.invalidateQueries({ queryKey: ['myListings'] });

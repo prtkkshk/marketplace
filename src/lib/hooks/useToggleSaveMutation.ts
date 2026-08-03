@@ -39,7 +39,7 @@ export function useToggleSaveMutation() {
 
       return { previousSavedItems };
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       if (context?.previousSavedItems) {
         queryClient.setQueryData(['savedItems'], context.previousSavedItems);
       }
