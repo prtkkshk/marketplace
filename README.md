@@ -9,19 +9,24 @@ items across campus halls. Discovery in-app, deals closed on WhatsApp and in per
 
 ## Read these in order
 
+This repo (`codebase/`) holds only what's needed to run the app. Prompts, plans,
+and agent config live one level up, outside git:
+
 | File | What it's for |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | Project context + the agent team. The AI coding agent reads this first. |
-| [`implementation_plan.md`](implementation_plan.md) | Architecture, 12 phases, resolved decisions, risks |
-| [`task.md`](task.md) | Every task, per phase, with Definition of Done |
-| [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) | What the app does — the source of truth for behaviour |
-| [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) | Postgres schema, RLS policy matrix, storage design |
-| [`docs/SETUP_MANUAL.md`](docs/SETUP_MANUAL.md) | **What you must configure by hand** — Supabase, Google OAuth, Vercel, admin bootstrap |
-| [`docs/AGENT_PROMPTS.md`](docs/AGENT_PROMPTS.md) | **Copy-paste prompts, one per phase** |
-| `PROJECT_SPECIFICATIONS.md` | Original brief. Superseded by `docs/PRODUCT_SPEC.md`. |
+| [`../prompts/AGENTS.md`](../prompts/AGENTS.md) | Project context + the agent team. The AI coding agent reads this first. |
+| [`../plans/implementation_plan.md`](../plans/implementation_plan.md) | Architecture, 12 phases, resolved decisions, risks |
+| [`../plans/task.md`](../plans/task.md) | Every task, per phase, with Definition of Done |
+| [`../plans/PRODUCT_SPEC.md`](../plans/PRODUCT_SPEC.md) | What the app does — the source of truth for behaviour |
+| [`../plans/DATA_MODEL.md`](../plans/DATA_MODEL.md) | Postgres schema, RLS policy matrix, storage design |
+| [`docs/SETUP_MANUAL.md`](docs/SETUP_MANUAL.md) | **What you must configure by hand** — Supabase, Google OAuth, Vercel, admin bootstrap (kept in-repo, it's setup documentation for this code) |
+| [`../prompts/AGENT_PROMPTS.md`](../prompts/AGENT_PROMPTS.md) | **Copy-paste prompts, one per phase** |
+| [`../plans/PROJECT_SPECIFICATIONS.md`](../plans/PROJECT_SPECIFICATIONS.md) | Original brief. Superseded by `PRODUCT_SPEC.md`. |
 
-Agent config lives in `.agents/` — `rules/` (standards), `skills/` (reusable
-capabilities), `workflows/` (`/ship-feature`, `/verify-phase`, `/deploy`).
+Agent config lives in [`../.agents/`](../.agents/) — `rules/` (standards), `skills/`
+(reusable capabilities), `workflows/` (`/ship-feature`, `/verify-phase`, `/deploy`).
+Open the parent folder (not just `codebase/`) in your agent IDE so it can read
+these — the agent should only ever write files inside `codebase/`.
 
 ## Stack
 
