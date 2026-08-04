@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment variables
+.env*
+!.env.example
+
+# Test outputs
+playwright-report/
+test-results/
+coverage/
+audit-artifacts/
+AUDIT_REPORT.md
+
+# Deployment & IDE
+.vercel/
+.DS_Store
