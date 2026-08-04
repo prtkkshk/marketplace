@@ -73,13 +73,13 @@ export const ReportSheet: React.FC<ReportSheetProps> = ({
   return (
     <Sheet isOpen={isOpen} onClose={onClose} title="Report Item">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left py-2">
-        <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-medium text-status-danger">
+        <div className="flex items-center gap-2 p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs font-medium text-danger">
           <Flag className="w-4 h-4 shrink-0" />
           <span>Reporting: "{title}"</span>
         </div>
 
         {error && (
-          <div className="p-3 bg-rose-50 border border-rose-200 text-status-danger text-xs rounded-xl flex items-center gap-2">
+          <div className="p-3 bg-rose-50 border border-rose-200 text-danger text-xs rounded-xl flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -103,7 +103,7 @@ export const ReportSheet: React.FC<ReportSheetProps> = ({
           rows={3}
         />
 
-        <div className="flex gap-2 justify-end mt-2 pt-3 border-t border-surface-border">
+        <div className="flex gap-2 justify-end mt-2 pt-3 border-t border-line">
           <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>

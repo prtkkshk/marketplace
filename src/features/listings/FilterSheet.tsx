@@ -91,14 +91,14 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
             id="filter-negotiable"
             checked={isNegotiable}
             onChange={(e) => setIsNegotiable(e.target.checked)}
-            className="w-4 h-4 rounded text-brand-primary focus:ring-brand-light"
+            className="w-4 h-4 rounded text-brand focus:ring-brand-light"
           />
-          <label htmlFor="filter-negotiable" className="text-sm font-medium text-content-primary cursor-pointer">
+          <label htmlFor="filter-negotiable" className="text-sm font-medium text-ink cursor-pointer">
             Negotiable Price Only
           </label>
         </div>
 
-        <div className="flex gap-2 justify-end mt-4 pt-4 border-t border-surface-border">
+        <div className="flex gap-2 justify-end mt-4 pt-4 border-t border-line">
           <Button variant="outline" onClick={handleReset}>
             Reset Filters
           </Button>

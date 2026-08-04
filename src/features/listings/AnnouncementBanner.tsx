@@ -9,17 +9,9 @@ export const AnnouncementBanner: React.FC<{ announcement: AnnouncementItem | nul
     return null;
   }
 
-  const typeStyles = {
-    info: 'bg-brand-wash border-sky-200 text-brand-primary',
-    warning: 'bg-amber-50 border-amber-200 text-amber-900',
-    success: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-  };
-
   return (
     <div
-      className={`p-3.5 mb-4 rounded-2xl border flex items-start justify-between gap-3 text-xs font-medium ${
-        typeStyles[announcement.type]
-      }`}
+      className="p-3.5 mb-4 rounded-2xl border flex items-start justify-between gap-3 text-xs font-medium bg-accent-wash border-accent-line text-ink"
     >
       <div className="flex items-start gap-2.5">
         <Megaphone className="w-4 h-4 shrink-0 mt-0.5" />

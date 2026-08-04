@@ -25,11 +25,11 @@ export const MyRequestsTab: React.FC<{ userId: string }> = ({ userId }) => {
   return (
     <div className="flex flex-col gap-4 text-left">
       {/* Open / Fulfilled Segmented Control */}
-      <div className="flex bg-slate-200/60 p-1 rounded-xl w-48 mx-auto">
+      <div className="flex bg-surface-alt p-1 rounded-xl w-48 mx-auto border border-line">
         <button
           onClick={() => setSegment('open')}
           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-            segment === 'open' ? 'bg-white text-brand-primary shadow-xs' : 'text-content-muted'
+            segment === 'open' ? 'bg-surface text-accent shadow-1 border border-line' : 'text-ink-3'
           }`}
         >
           Open
@@ -37,7 +37,7 @@ export const MyRequestsTab: React.FC<{ userId: string }> = ({ userId }) => {
         <button
           onClick={() => setSegment('fulfilled')}
           className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
-            segment === 'fulfilled' ? 'bg-white text-brand-primary shadow-xs' : 'text-content-muted'
+            segment === 'fulfilled' ? 'bg-surface text-accent shadow-1 border border-line' : 'text-ink-3'
           }`}
         >
           Fulfilled
@@ -50,7 +50,7 @@ export const MyRequestsTab: React.FC<{ userId: string }> = ({ userId }) => {
         <ErrorState message={error} onRetry={() => setSegment(segment)} />
       ) : requests.length === 0 ? (
         <EmptyState
-          icon={<Megaphone className="w-10 h-10 text-content-muted" />}
+          icon={<Megaphone className="w-10 h-10 text-ink-3" />}
           title={`No ${segment} wanted requests`}
           description={
             segment === 'open'

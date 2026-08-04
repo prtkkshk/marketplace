@@ -7,6 +7,7 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Textarea } from '../../components/ui/Textarea';
 import { Button } from '../../components/ui/Button';
+import { SectionLabel } from '../../components/ui/SectionLabel';
 import { PhotoUploader, type PhotoItem } from './PhotoUploader';
 import { listingSchema, type ListingFormInput } from '../../lib/validation/listing';
 import { createListing } from '../../lib/data/listings';
@@ -42,6 +43,7 @@ export const CreateListingScreen: React.FC = () => {
       price: 0,
       isNegotiable: false,
       condition: 'good',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       hallOfResidence: (profile?.hallOfResidence as any) || 'Patel',
       photoPaths: [],
     },
@@ -78,9 +80,11 @@ export const CreateListingScreen: React.FC = () => {
       const newListing = await createListing(session.user.id, {
         title: data.title,
         description: data.description || undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         category: data.category as any,
         price: data.price,
         isNegotiable: data.isNegotiable,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         condition: data.condition as any,
         photoPaths: uploadedPaths,
         hallOfResidence: profile?.hallOfResidence || 'Patel',
@@ -98,7 +102,8 @@ export const CreateListingScreen: React.FC = () => {
 
       showToast('Listing posted successfully!', 'success');
       navigate(`/listing/${newListing.id}`);
-    } catch (err: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       const msg = err instanceof Error ? err.message : 'Failed to post listing';
       setFormError(msg);
     } finally {
@@ -107,129 +112,136 @@ export const CreateListingScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8 pb-24">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm text-left">
+    <div className="min-h-screen bg-paper flex flex-col items-center px-4 py-8 pb-32">
+      <div className="w-full max-w-[390px] bg-surface border border-line rounded-2xl p-6 shadow-sm text-left relative">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-xs font-semibold text-content-muted hover:text-content-primary mb-4"
+          className="flex items-center gap-1 text-xs font-semibold text-ink-3 hover:text-ink mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
 
         {/* Post Type Toggle */}
-        <div className="flex bg-slate-200/60 p-1 rounded-xl mb-6">
+        <div className="flex bg-surface-alt p-1 rounded-xl mb-6 border border-line">
           <button
             type="button"
-            className="flex-1 py-1.5 text-xs font-bold rounded-lg bg-white text-brand-primary shadow-xs text-center"
+            className="flex-1 py-1.5 text-xs font-bold rounded-lg bg-surface text-brand shadow-1 text-center border border-line"
           >
             🛍️ Sell an Item
           </button>
           <button
             type="button"
             onClick={() => navigate('/new-request')}
-            className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-content-muted hover:text-content-primary transition-colors text-center"
+            className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-ink-3 hover:text-ink transition-colors text-center"
           >
             📢 Wanted Request
           </button>
         </div>
 
-        <h1 className="text-xl font-bold text-content-primary mb-1">Sell an Item</h1>
-        <p className="text-xs text-content-muted mb-6">Post a second-hand item for IIT Kharagpur campus</p>
+        <h1 className="text-xl font-bold text-ink mb-1">Sell an Item</h1>
+        <p className="text-xs text-ink-3 mb-6">Post a second-hand item for IIT Kharagpur campus</p>
 
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-4">
-          <Input
-            label="Title"
-            placeholder="e.g. Hero Hawk 21-Speed Cycle"
-            disabled={isSubmitting}
-            error={errors.title?.message}
-            {...register('title')}
-          />
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+          <div>
+            <SectionLabel className="mb-3">Item Details</SectionLabel>
+            <div className="flex flex-col gap-4">
+              <Input
+                label="Title"
+                placeholder="e.g. Hero Hawk 21-Speed Cycle"
+                disabled={isSubmitting}
+                error={errors.title?.message}
+                {...register('title')}
+              />
 
-          <Select
-            label="Category"
-            disabled={isSubmitting}
-            options={CATEGORIES.map((c) => ({ value: c.id, label: `${c.icon} ${c.label}` }))}
-            error={errors.category?.message}
-            {...register('category')}
-          />
+              <Select
+                label="Category"
+                disabled={isSubmitting}
+                options={CATEGORIES.map((c) => ({ value: c.id, label: `${c.icon} ${c.label}` }))}
+                error={errors.category?.message}
+                {...register('category')}
+              />
 
-          <Input
-            label="Price (₹)"
-            type="number"
-            placeholder="0"
-            disabled={isSubmitting}
-            error={errors.price?.message}
-            {...register('price', { valueAsNumber: true })}
-          />
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="isNegotiable"
-              disabled={isSubmitting}
-              className="w-4 h-4 rounded text-brand-primary focus:ring-brand-light"
-              {...register('isNegotiable')}
-            />
-            <label htmlFor="isNegotiable" className="text-sm font-medium text-content-primary cursor-pointer">
-              Price is Negotiable
-            </label>
+              <Textarea
+                label="Description (Optional)"
+                placeholder="Mention specs, age, defects, or reason for selling..."
+                disabled={isSubmitting}
+                error={errors.description?.message}
+                {...register('description')}
+              />
+            </div>
           </div>
 
-          <Select
-            label="Condition"
-            disabled={isSubmitting}
-            options={CONDITIONS.map((c) => ({ value: c.id, label: c.label }))}
-            error={errors.condition?.message}
-            {...register('condition')}
-          />
+          <div>
+            <SectionLabel className="mb-3">Price & Condition</SectionLabel>
+            <div className="flex flex-col gap-4">
+              <Input
+                label="Price (₹)"
+                type="number"
+                placeholder="0"
+                disabled={isSubmitting}
+                error={errors.price?.message}
+                {...register('price', { valueAsNumber: true })}
+              />
 
-          <Textarea
-            label="Description (Optional)"
-            placeholder="Mention specs, age, defects, or reason for selling..."
-            disabled={isSubmitting}
-            error={errors.description?.message}
-            {...register('description')}
-          />
+              <div className="flex items-center gap-2 px-1">
+                <input
+                  type="checkbox"
+                  id="isNegotiable"
+                  disabled={isSubmitting}
+                  className="w-4 h-4 rounded border-line text-brand focus:ring-brand/20"
+                  {...register('isNegotiable')}
+                />
+                <label htmlFor="isNegotiable" className="text-sm font-medium text-ink cursor-pointer">
+                  Price is Negotiable
+                </label>
+              </div>
 
-          <Input
-            label="Hall of Residence"
-            value={`${profile?.hallOfResidence || 'Patel'} Hall`}
-            readOnly
-            disabled
-            helperText="Auto-filled from your verified profile"
-          />
+              <Select
+                label="Condition"
+                disabled={isSubmitting}
+                options={CONDITIONS.map((c) => ({ value: c.id, label: c.label }))}
+                error={errors.condition?.message}
+                {...register('condition')}
+              />
+            </div>
+          </div>
 
-          <PhotoUploader
-            userId={session?.user?.id || 'temp'}
-            listingId={generatedListingId}
-            photos={photos}
-            onChange={(updated) => {
-              setPhotos(updated);
-              setValue(
-                'photoPaths',
-                updated.map((p) => p.storagePath).filter((p): p is string => !!p)
-              );
-            }}
-          />
+          <div>
+            <SectionLabel className="mb-3">Photos</SectionLabel>
+            <PhotoUploader
+              userId={session?.user?.id || 'temp'}
+              listingId={generatedListingId}
+              photos={photos}
+              onChange={(updated) => {
+                setPhotos(updated);
+                setValue(
+                  'photoPaths',
+                  updated.map((p) => p.storagePath).filter((p): p is string => !!p)
+                );
+              }}
+            />
+          </div>
 
-          <div className="text-[11px] text-content-muted text-center my-1">
+          <div className="text-[11px] text-ink-3 text-center -mb-2 mt-2">
             By posting, you agree to the{' '}
-            <a href="/rules" target="_blank" rel="noopener noreferrer" className="text-brand-primary font-semibold hover:underline">
+            <a href="/rules" target="_blank" rel="noopener noreferrer" className="text-brand font-semibold hover:underline">
               Campus Trading Rules (§11)
             </a>.
           </div>
 
-          <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
-            Post Listing
-          </Button>
+          <div className="sticky bottom-0 -mx-6 -mb-6 px-6 py-4 bg-surface/95 backdrop-blur-md border-t border-line md:static md:mx-0 md:mb-0 md:p-0 md:bg-transparent md:border-0 md:backdrop-blur-none z-20 mt-4 rounded-b-2xl md:rounded-none">
+            <Button type="submit" variant="primary" className="w-full" isLoading={isSubmitting}>
+              Post Listing
+            </Button>
+          </div>
         </form>
       </div>
     </div>

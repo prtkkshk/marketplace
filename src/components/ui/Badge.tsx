@@ -1,31 +1,37 @@
 import React from 'react';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'muted';
+  variant?: 'cond' | 'neg' | 'fixed' | 'flag' | 'pin' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'muted';
   size?: 'sm' | 'md';
 }
 
 export const Badge: React.FC<BadgeProps> = ({
   children,
-  variant = 'primary',
+  variant = 'cond',
   size = 'md',
   className = '',
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center font-medium rounded-md tracking-tight';
+  const baseStyles = 'inline-flex items-center uppercase font-bold tracking-[0.07em] rounded-full';
 
   const variantStyles = {
-    primary: 'bg-brand-wash text-brand-primary',
-    secondary: 'bg-sky-100 text-sky-800',
-    success: 'bg-emerald-50 text-status-success border border-emerald-200',
-    warning: 'bg-amber-50 text-status-warning border border-amber-200',
-    danger: 'bg-rose-50 text-status-danger border border-rose-200',
-    muted: 'bg-slate-100 text-content-muted',
+    cond: 'bg-surface-alt text-ink-2 border border-line',
+    neg: 'bg-accent-wash text-accent border border-accent-line',
+    fixed: 'border border-line text-ink-3',
+    flag: 'bg-ink text-paper',
+    pin: 'bg-accent text-paper',
+    // Fallbacks to keep old code compiling if any
+    primary: 'bg-brand-wash text-brand',
+    secondary: 'bg-surface-alt text-ink-2 border border-line',
+    success: 'bg-surface-alt text-ink-2 border border-line',
+    warning: 'bg-accent-wash text-accent border border-accent-line',
+    danger: 'bg-danger-wash text-danger border border-brand-line',
+    muted: 'border border-line text-ink-3',
   };
 
   const sizeStyles = {
-    sm: 'text-[10px] px-1.5 py-0.5',
-    md: 'text-xs px-2 py-0.5',
+    sm: 'text-[10px] px-2 py-0.5',
+    md: 'text-[10px] px-2 py-0.5', // spec says uppercase 10px tracking-[0.07em]
   };
 
   return (

@@ -14,6 +14,7 @@ export const AdminListingsScreen: React.FC = () => {
   const { session } = useAuth();
   const { showToast } = useToast();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -29,6 +30,7 @@ export const AdminListingsScreen: React.FC = () => {
 
   useEffect(() => {
     loadListings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
   const handleAdminAction = async (
@@ -53,14 +55,14 @@ export const AdminListingsScreen: React.FC = () => {
     <div className="flex flex-col gap-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Content Management</h1>
-          <p className="text-xs text-content-muted">Manage all campus listings (active, hidden, deleted, pinned)</p>
+          <h1 className="text-xl font-bold text-ink">Content Management</h1>
+          <p className="text-xs text-ink-3">Manage all campus listings (active, hidden, deleted, pinned)</p>
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-1.5 bg-white border border-surface-border rounded-xl text-xs font-semibold text-content-primary shrink-0"
+          className="px-3 py-1.5 bg-white border border-line rounded-xl text-xs font-semibold text-ink shrink-0"
         >
           <option value="all">All Content</option>
           <option value="active">Active Only</option>
@@ -76,7 +78,7 @@ export const AdminListingsScreen: React.FC = () => {
         </div>
       ) : items.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-sm font-medium text-content-primary">No listings match the selected status filter.</p>
+          <p className="text-sm font-medium text-ink">No listings match the selected status filter.</p>
         </Card>
       ) : (
         <div className="flex flex-col gap-3">
@@ -84,8 +86,8 @@ export const AdminListingsScreen: React.FC = () => {
             <Card key={item.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm font-bold text-content-primary">{item.title}</span>
-                  <span className="text-sm font-black text-brand-primary">{formatINR(item.price)}</span>
+                  <span className="text-sm font-bold text-ink">{item.title}</span>
+                  <span className="text-sm font-black text-brand">{formatINR(item.price)}</span>
                   {item.is_pinned && <Badge variant="secondary">PINNED</Badge>}
                   {item.deleted_at ? (
                     <Badge variant="danger">DELETED</Badge>
@@ -96,7 +98,7 @@ export const AdminListingsScreen: React.FC = () => {
                   )}
                 </div>
 
-                <div className="text-xs text-content-muted">
+                <div className="text-xs text-ink-3">
                   Seller: <strong>{item.profiles?.full_name || 'Student'}</strong> • {item.hall_of_residence} Hall • Listed {timeAgo(item.created_at)}
                 </div>
               </div>
@@ -114,13 +116,13 @@ export const AdminListingsScreen: React.FC = () => {
                 )}
 
                 {item.status === 'active' && (
-                  <Button variant="outline" size="sm" onClick={() => handleAdminAction(item.id, 'force_sold')} disabled={actionLoading} leftIcon={<CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}>
+                  <Button variant="outline" size="sm" onClick={() => handleAdminAction(item.id, 'force_sold')} disabled={actionLoading} leftIcon={<CheckCircle2 className="w-3.5 h-3.5 text-whats" />}>
                     Force Sold
                   </Button>
                 )}
 
                 {item.status === 'hidden' && !item.deleted_at && (
-                  <Button variant="outline" size="sm" onClick={() => handleAdminAction(item.id, 'restore')} disabled={actionLoading} leftIcon={<RotateCcw className="w-3.5 h-3.5 text-emerald-600" />}>
+                  <Button variant="outline" size="sm" onClick={() => handleAdminAction(item.id, 'restore')} disabled={actionLoading} leftIcon={<RotateCcw className="w-3.5 h-3.5 text-whats" />}>
                     Restore
                   </Button>
                 )}

@@ -4,7 +4,7 @@ test.describe('Golden Path 1: Student Registration, Post Listing & Contact', () 
   test('allows student to register, complete profile, post a cycle, and contact seller', async ({ page }) => {
     // 1. Visit sign in and navigate to sign up
     await page.goto('/auth/signin');
-    await page.click('text=Sign Up');
+    await page.click('a:has-text("Sign Up")');
 
     // 2. Fill registration with valid KGP email
     await page.fill('input[type="email"]', 'teststudent1@kgpian.iitkgp.ac.in');

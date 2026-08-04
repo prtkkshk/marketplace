@@ -29,6 +29,7 @@ export async function fetchSavedListings(userId: string): Promise<ListingItem[]>
     throw new Error(`Failed to fetch saved listings: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data || []).map((row: any) => mapListingRow(row.listings));
 }
 

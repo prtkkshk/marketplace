@@ -10,6 +10,7 @@ import { completeProfile } from '../../lib/data/profiles';
 import { KGP_HALLS } from '../../lib/constants';
 import { useAuth } from './AuthProvider';
 import { AlertCircle } from 'lucide-react';
+import { AuthLayout } from '../../components/layout/AuthLayout';
 
 export const CompleteProfileScreen: React.FC = () => {
   const { session, refreshProfile } = useAuth();
@@ -52,7 +53,8 @@ export const CompleteProfileScreen: React.FC = () => {
 
       await refreshProfile();
       navigate('/');
-    } catch (err: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       const msg = err instanceof Error ? err.message : 'Profile completion failed';
       setFormError(msg);
     } finally {
@@ -61,26 +63,19 @@ export const CompleteProfileScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-brand-wash rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="text-2xl">🎓</span>
-          </div>
-          <h1 className="text-xl font-bold text-content-primary">Complete Your Profile</h1>
-          <p className="text-xs text-content-muted mt-1">
-            Required before buying or selling on campus
-          </p>
-        </div>
+    <AuthLayout
+      title="Complete Your Profile"
+      subtitle="Required before buying or selling on campus"
+    >
 
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit as any)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input
             label="Full Name"
             placeholder="e.g. Prateek Sharma"
@@ -116,7 +111,6 @@ export const CompleteProfileScreen: React.FC = () => {
             Save Profile & Continue
           </Button>
         </form>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };

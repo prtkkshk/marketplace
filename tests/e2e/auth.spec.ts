@@ -14,12 +14,12 @@ test.describe('Authentication & Profile Flows', () => {
 
   test('navigates from sign in to sign up and forgot password screens', async ({ page }) => {
     await page.goto('/auth/signin');
-    await expect(page.locator('h1')).toContainText('Sign in to KGP Marketplace');
+    await expect(page.locator('h2')).toContainText('Sign In');
 
-    await page.click('text=Sign Up');
+    await page.click('a:has-text("Sign Up")');
     await expect(page.url()).toContain('/auth/signup');
 
-    await page.click('text=Sign In');
+    await page.click('a:has-text("Sign In")');
     await expect(page.url()).toContain('/auth/signin');
 
     await page.click('text=Forgot Password?');

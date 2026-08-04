@@ -8,6 +8,7 @@ import { GoogleButton } from './GoogleButton';
 import { signUpSchema, type SignUpInput } from '../../lib/validation/auth';
 import { supabase } from '../../lib/supabase';
 import { AlertCircle, MailCheck, ArrowLeft } from 'lucide-react';
+import { AuthLayout } from '../../components/layout/AuthLayout';
 
 export const SignUpScreen: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
@@ -56,44 +57,37 @@ export const SignUpScreen: React.FC = () => {
 
   if (registeredEmail) {
     return (
-      <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-        <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm text-center">
-          <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
+      <AuthLayout 
+        title="Check Your Email"
+        subtitle={`We sent a verification link to ${registeredEmail}. Please click the link in your email to confirm your account and get started.`}
+      >
+        <div className="flex flex-col items-center text-center">
+          <div className="w-14 h-14 bg-whats/20 rounded-full flex items-center justify-center mb-6 text-whats">
             <MailCheck className="w-8 h-8" />
           </div>
 
-          <h1 className="text-xl font-bold text-content-primary mb-2">Check Your Email</h1>
-          <p className="text-xs text-content-muted leading-relaxed mb-6">
-            We sent a verification link to{' '}
-            <span className="font-semibold text-content-primary">{registeredEmail}</span>. Please click the link in your email to confirm your account and get started.
-          </p>
-
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-content-muted text-left mb-6">
-            💡 <strong className="text-content-primary">Tip:</strong> If you don't see it in a few minutes, check your spam or junk folder.
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-ink-3 text-left mb-6">
+            💡 <strong className="text-ink">Tip:</strong> If you don't see it in a few minutes, check your spam or junk folder.
           </div>
 
-          <Link to="/auth/signin">
+          <Link to="/auth/signin" className="w-full">
             <Button variant="outline" className="w-full" leftIcon={<ArrowLeft className="w-4 h-4" />}>
               Return to Sign In
             </Button>
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
-        <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-content-primary">Create Your Account</h1>
-          <p className="text-xs text-content-muted mt-1">
-            Join KGP Marketplace with your institute email
-          </p>
-        </div>
+    <AuthLayout 
+      title="Create Your Account"
+      subtitle="Join KGP Marketplace with your institute email"
+    >
 
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
@@ -135,20 +129,19 @@ export const SignUpScreen: React.FC = () => {
 
         <div className="relative my-6 text-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-surface-border" />
+            <div className="w-full border-t border-line" />
           </div>
-          <span className="relative bg-surface-card px-3 text-xs text-content-muted">OR</span>
+          <span className="relative bg-surface px-3 text-xs text-ink-3">OR</span>
         </div>
 
         <GoogleButton />
 
-        <p className="text-center text-xs text-content-muted mt-6">
+        <p className="text-center text-sm text-ink-3 mt-6">
           Already have an account?{' '}
-          <Link to="/auth/signin" className="text-brand-primary font-semibold hover:underline">
+          <Link to="/auth/signin" className="text-brand font-semibold hover:underline">
             Sign In
           </Link>
         </p>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };

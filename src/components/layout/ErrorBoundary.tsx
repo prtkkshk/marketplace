@@ -33,13 +33,13 @@ export class ErrorBoundary extends Component<Props, State> {
   public override render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center p-4">
-          <div className="max-w-md w-full bg-surface-card border border-rose-200 rounded-2xl p-6 shadow-sm text-center">
-            <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 text-status-danger">
+        <div className="min-h-screen bg-paper flex flex-col justify-center items-center p-4">
+          <div className="max-w-md w-full bg-surface border border-rose-200 rounded-2xl p-6 shadow-sm text-center">
+            <div className="w-14 h-14 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4 text-danger">
               <AlertCircle className="w-8 h-8" />
             </div>
-            <h1 className="text-lg font-bold text-content-primary mb-2">Something went wrong</h1>
-            <p className="text-xs text-content-muted mb-6">
+            <h1 className="text-lg font-bold text-ink mb-2">Something went wrong</h1>
+            <p className="text-xs text-ink-3 mb-6">
               An unexpected error occurred in the application shell. No database or raw error detail is exposed.
             </p>
             <Button variant="primary" onClick={this.handleReset} leftIcon={<RefreshCw className="w-4 h-4" />}>

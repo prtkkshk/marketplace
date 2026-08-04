@@ -13,6 +13,7 @@ export function useDeleteWantedRequestMutation() {
       await queryClient.cancelQueries({ queryKey: ['wantedRequests'] });
       await queryClient.cancelQueries({ queryKey: ['myWantedRequests'] });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const optimisticFilterFn = (oldData: any) => {
         if (!oldData) return oldData;
         if (Array.isArray(oldData)) {
@@ -27,7 +28,9 @@ export function useDeleteWantedRequestMutation() {
         return oldData;
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['wantedRequests'] }, optimisticFilterFn);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['myWantedRequests'] }, optimisticFilterFn);
 
       return { optimisticUpdated: true };

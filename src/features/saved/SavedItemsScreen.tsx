@@ -6,8 +6,9 @@ import { ListingCard } from '../listings/ListingCard';
 import { ListingSkeleton } from '../listings/ListingSkeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
-import { ArrowLeft, Bookmark } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { PageContainer } from '../../components/layout/PageContainer';
 
 export const SavedItemsScreen: React.FC = () => {
   const { session } = useAuth();
@@ -26,18 +27,12 @@ export const SavedItemsScreen: React.FC = () => {
   const error = queryError instanceof Error ? queryError.message : null;
 
   return (
-    <div className="p-4 max-w-4xl mx-auto text-left py-6 pb-24">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-xs font-semibold text-content-muted hover:text-content-primary mb-4"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back</span>
-      </button>
+    <PageContainer className="py-6 pb-24 text-left">
+
 
       <div className="flex items-center gap-2 mb-6">
-        <Bookmark className="w-6 h-6 text-brand-primary" />
-        <h1 className="text-xl font-bold text-content-primary">Saved Items</h1>
+        <Bookmark className="w-6 h-6 text-brand" />
+        <h1 className="text-xl font-bold text-ink">Saved Items</h1>
       </div>
 
       {loading ? (
@@ -46,7 +41,7 @@ export const SavedItemsScreen: React.FC = () => {
         <ErrorState message={error} onRetry={() => navigate('/')} />
       ) : savedItems.length === 0 ? (
         <EmptyState
-          icon={<Bookmark className="w-12 h-12 text-content-muted" />}
+          icon={<Bookmark className="w-12 h-12 text-ink-3" />}
           title="No saved items yet"
           description="Heart items while browsing the feed to save them here for quick access."
           actionLabel="Browse For Sale Feed"
@@ -59,6 +54,6 @@ export const SavedItemsScreen: React.FC = () => {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 };

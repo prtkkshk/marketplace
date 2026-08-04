@@ -22,6 +22,7 @@ export function useToggleFulfilledMutation() {
       await queryClient.cancelQueries({ queryKey: ['wantedRequests'] });
       await queryClient.cancelQueries({ queryKey: ['myWantedRequests'] });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const optimisticUpdateFn = (oldData: any) => {
         if (!oldData) return oldData;
         if (Array.isArray(oldData)) {
@@ -44,7 +45,9 @@ export function useToggleFulfilledMutation() {
         return oldData;
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['wantedRequests'] }, optimisticUpdateFn);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['myWantedRequests'] }, optimisticUpdateFn);
 
       return { optimisticUpdated: true };

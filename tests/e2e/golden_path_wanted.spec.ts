@@ -2,9 +2,16 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Golden Path 2: Wanted Request Posting & Response', () => {
   test('allows student to post wanted request and another student to respond via WhatsApp', async ({ page }) => {
+    // 0. Sign in as student
+    await page.goto('/auth/signin');
+    await page.fill('input[type="email"]', 'teststudent1@kgpian.iitkgp.ac.in');
+    await page.fill('input[type="password"]', 'KgpPass2026!');
+    await page.click('button[type="submit"]');
+    await page.waitForURL('**/');
+
     // 1. Visit Wanted Board
     await page.goto('/wanted');
-    await page.click('text=+ Post Wanted Request');
+    await page.click('button:has-text("Post a Request")');
 
     // 2. Fill wanted request form
     await page.fill('input[name="title"]', 'Casio FX-991EX Scientific Calculator');

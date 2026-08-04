@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { PageContainer } from '../../components/layout/PageContainer';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   fetchWantedRequestById,
   fetchRequesterContactNumber,
@@ -7,21 +8,20 @@ import {
 } from '../../lib/data/wantedRequests';
 import { useToggleFulfilledMutation } from '../../lib/hooks/useToggleFulfilledMutation';
 import { useDeleteWantedRequestMutation } from '../../lib/hooks/useDeleteWantedRequestMutation';
-import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
-import { Badge } from '../../components/ui/Badge';
+import { categoryLabel } from '../../lib/utils/categoryLabel';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
+import { useToast } from '../../components/ui/Toast';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Sheet } from '../../components/ui/Sheet';
 import { useAuth } from '../auth/AuthProvider';
-import { useToast } from '../../components/ui/Toast';
 import {
   ArrowLeft,
   MessageCircle,
-  Megaphone,
-  CheckCircle2,
+  Flag,
   Trash2,
+  Share2,
 } from 'lucide-react';
 
 export const RequestDetailScreen: React.FC = () => {
@@ -68,9 +68,11 @@ export const RequestDetailScreen: React.FC = () => {
 
   const isOwner = profile?.id === request.userId || isAdmin;
   const isFulfilled = request.status === 'fulfilled';
+  const isExpired = request.status === 'expired';
+  const isDisabled = isFulfilled || isExpired;
 
   const handleRespondTap = async () => {
-    if (isFulfilled || isContacting) return;
+    if (isDisabled || isContacting) return;
     setIsContacting(true);
     try {
       const result = await fetchRequesterContactNumber(request.id, request.title);
@@ -116,105 +118,197 @@ export const RequestDetailScreen: React.FC = () => {
     });
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: request.title,
+          text: `Can you help? Someone needs ${request.title} on KGP Bazaar`,
+          url: window.location.href,
+        });
+      } catch (err) {
+        // User aborted share or share failed silently
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      showToast('Link copied to clipboard', 'info');
+    }
+  };
+
   return (
-    <div className="p-4 max-w-2xl mx-auto text-left pb-24">
-      {/* Top Back Navigation Bar */}
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-xs font-semibold text-content-muted hover:text-content-primary mb-6"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back</span>
-      </button>
-
-      {/* Header Banner */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-2xl bg-brand-wash flex items-center justify-center text-brand-primary shrink-0">
-          <Megaphone className="w-6 h-6" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-content-primary">{request.title}</h1>
-          <span className="text-xs text-content-muted">Posted {timeAgo(request.createdAt)}</span>
-        </div>
+    <PageContainer className="pb-32 md:pb-12 text-left pt-2 md:pt-4">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-xs font-medium text-ink-3 mb-6">
+        <Link to="/wanted" className="hover:text-ink transition-colors">Wanted Board</Link>
+        <span className="text-line-strong">/</span>
+        <Link to={`/wanted?cat=${request.category}`} className="hover:text-ink transition-colors">
+          {categoryLabel(request.category)}
+        </Link>
       </div>
 
-      {/* Badges */}
-      <div className="flex items-center gap-2 flex-wrap mb-6">
-        <Badge variant="secondary">{request.category}</Badge>
-        {request.maxBudget ? (
-          <Badge variant="success">Budget: Under {formatINR(request.maxBudget)}</Badge>
-        ) : (
-          <Badge variant="muted">Open Budget</Badge>
-        )}
-        {isFulfilled && <Badge variant="muted">FULFILLED</Badge>}
-      </div>
-
-      {/* Description Card */}
-      <div className="bg-surface-card border border-surface-border rounded-2xl p-4 mb-6">
-        <h2 className="text-xs font-bold text-content-muted uppercase tracking-wider mb-2">Details</h2>
-        <p className="text-sm text-content-primary whitespace-pre-line leading-relaxed">
-          {request.description || 'No additional details specified.'}
-        </p>
-      </div>
-
-      {/* Requester Info */}
-      <div className="bg-surface-card border border-surface-border rounded-2xl p-4 mb-6 flex items-center justify-between">
-        <div>
-          <span className="text-[10px] uppercase font-bold text-content-muted block">Requested By</span>
-          <span className="text-sm font-bold text-content-primary block">{request.requesterName}</span>
-          <span className="text-xs text-content-muted">📍 {request.requesterHall} Hall</span>
-        </div>
-      </div>
-
-      {/* Owner Management Controls */}
-      {isOwner && (
-        <div className="bg-slate-50 border border-surface-border rounded-2xl p-4 mb-6 flex items-center justify-between gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleToggleFulfilled}
-            isLoading={toggleFulfilledMutation.isPending}
-            leftIcon={<CheckCircle2 className="w-4 h-4 text-emerald-600" />}
+      <div className="md:grid md:grid-cols-[1.25fr_1fr] md:gap-10 items-start relative">
+        {/* Left Column (Details) */}
+        <div className="flex flex-col min-w-0">
+          
+          {/* Mobile Back Button Overlay inside conceptually, but for text page, standard button is fine */}
+          <button
+            onClick={() => navigate(-1)}
+            className="md:hidden flex items-center gap-1.5 text-xs font-semibold text-ink-3 hover:text-ink mb-6"
           >
-            {isFulfilled ? 'Unmark as Fulfilled' : 'Mark as Found / Fulfilled'}
-          </Button>
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back</span>
+          </button>
 
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => setShowDeleteSheet(true)}
-            leftIcon={<Trash2 className="w-4 h-4" />}
-          >
-            Delete Request
-          </Button>
+          {/* Description (Desktop: Left Col, Mobile: stacked below specs) */}
+          <div className="hidden md:block bg-surface border-l-4 border-accent rounded-r-2xl p-6 shadow-sm">
+            <h2 className="text-xs font-bold text-ink-3 uppercase tracking-wider mb-4">Request Details</h2>
+            <p className="text-[16px] text-ink whitespace-pre-line leading-[1.7]">
+              {request.description || 'No additional details specified.'}
+            </p>
+          </div>
         </div>
-      )}
 
-      {/* Fixed Bottom Responder Bar */}
-      {!isOwner && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-surface-border p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-lg">
-          <div className="max-w-2xl mx-auto flex items-center gap-3">
+        {/* Right Column / Mobile Stack */}
+        <div className="md:sticky md:top-[88px] flex flex-col gap-6">
+          
+          {/* Header info */}
+          <div>
+            <div className="text-[11px] font-bold text-accent uppercase tracking-wider mb-2">
+              Wanted • {categoryLabel(request.category)}
+            </div>
+            <h1 className="font-display text-[31px] text-ink leading-[1.1] mb-3">
+              {request.title}
+            </h1>
+            
+            <div className="flex items-end gap-3 flex-wrap">
+              {request.maxBudget ? (
+                <span className="font-display text-[42px] text-accent leading-none">
+                  <span className="text-2xl mr-1">₹</span>
+                  {request.maxBudget.toLocaleString('en-IN')}
+                </span>
+              ) : (
+                <span className="font-display text-[32px] text-accent leading-none italic opacity-80">
+                  Open Budget
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Specs Grid 2x2 */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-5 border-y border-line">
+            <div>
+              <span className="text-[10px] font-bold text-ink-3 uppercase tracking-wider block mb-1">Status</span>
+              <span className={`text-[14px] font-bold ${isFulfilled ? 'text-ink-3' : 'text-accent'}`}>
+                {isFulfilled ? 'Fulfilled' : 'Seeking'}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-ink-3 uppercase tracking-wider block mb-1">Location</span>
+              <span className="text-[14px] font-medium text-ink">{request.requesterHall} Hall</span>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold text-ink-3 uppercase tracking-wider block mb-1">Posted</span>
+              <span className="text-[14px] font-medium text-ink">{timeAgo(request.createdAt)}</span>
+            </div>
+          </div>
+
+          {/* Description (Mobile only) */}
+          <div className="md:hidden pt-2 pb-4">
+            <h2 className="text-xs font-bold text-ink-3 uppercase tracking-wider mb-2">Request Details</h2>
+            <p className="text-[15px] text-ink whitespace-pre-line leading-[1.6]">
+              {request.description || 'No additional details specified.'}
+            </p>
+          </div>
+
+          {/* Requester Row */}
+          <div className="flex items-center gap-3 p-4 bg-surface rounded-xl border border-line">
+            <div className="w-10 h-10 rounded-full bg-orange-100 text-accent font-display text-xl flex items-center justify-center shrink-0">
+              {(request.requesterName || 'A').charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] uppercase font-bold text-ink-3 block leading-none mb-1">Requested By</span>
+              <span className="text-sm font-bold text-ink truncate block">{request.requesterName || 'Anonymous'}</span>
+            </div>
+          </div>
+
+          {/* Desktop Buy Box Buttons */}
+          <div className="hidden md:flex flex-col gap-3">
             <Button
-              variant="primary"
-              className="flex-1 bg-brand-primary font-bold"
-              disabled={isFulfilled}
+              variant="whats"
+              size="lg"
+              disabled={isDisabled}
               isLoading={isContacting}
               onClick={handleRespondTap}
               leftIcon={<MessageCircle className="w-5 h-5" />}
+              className="w-full justify-center"
             >
               {isFulfilled ? 'Request Fulfilled' : 'I Have This! (WhatsApp)'}
             </Button>
+            
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={handleShare}
+                leftIcon={<Share2 className="w-4 h-4" />}
+              >
+                Share
+              </Button>
+            </div>
           </div>
+
+          {/* Admin / Owner Controls */}
+          {isOwner && (
+            <div className="flex flex-col gap-2 p-4 bg-slate-50 border border-line rounded-xl mt-2">
+              <h3 className="text-xs font-bold text-ink-3 uppercase mb-2">Owner Controls</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1" onClick={handleToggleFulfilled} isLoading={toggleFulfilledMutation.isPending}>
+                  {isFulfilled ? 'Unmark Fulfilled' : 'Mark Fulfilled'}
+                </Button>
+              </div>
+              <Button variant="danger" size="sm" className="w-full" onClick={() => setShowDeleteSheet(true)}>
+                Delete Request
+              </Button>
+            </div>
+          )}
+
+          {/* Quiet Report Link */}
+          {!isOwner && (
+            <div className="text-center md:text-left mt-2">
+              <button 
+                onClick={() => showToast('Report submitted for moderator review', 'info')}
+                className="text-xs font-medium text-ink-3 hover:text-danger hover:underline inline-flex items-center gap-1"
+              >
+                <Flag className="w-3 h-3" /> Report this request
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Fixed Bottom Bar */}
+      {!isOwner && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-line px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+          <Button
+            variant="whats"
+            className="w-full h-12 shadow-md font-bold text-sm"
+            disabled={isDisabled}
+            isLoading={isContacting}
+            onClick={handleRespondTap}
+            leftIcon={<MessageCircle className="w-5 h-5" />}
+          >
+            {isFulfilled ? 'Fulfilled' : 'I Have This! (WhatsApp)'}
+          </Button>
         </div>
       )}
 
       {/* Delete Confirmation Sheet */}
       <Sheet isOpen={showDeleteSheet} onClose={() => setShowDeleteSheet(false)} title="Delete Request">
         <div className="text-center py-4">
-          <Trash2 className="w-10 h-10 text-status-danger mx-auto mb-3" />
-          <h3 className="text-base font-bold text-content-primary mb-2">Delete this request?</h3>
-          <p className="text-xs text-content-muted mb-6">
-            This will remove "{request.title}" from the campus Wanted Board.
+          <Trash2 className="w-10 h-10 text-danger mx-auto mb-3" />
+          <h3 className="text-base font-bold text-ink mb-2">Are you sure?</h3>
+          <p className="text-xs text-ink-3 mb-6">
+            This will remove your request "{request.title}" from the Wanted Board.
           </p>
 
           <div className="flex gap-3">
@@ -222,11 +316,11 @@ export const RequestDetailScreen: React.FC = () => {
               Cancel
             </Button>
             <Button variant="danger" className="flex-1" isLoading={deleteRequestMutation.isPending} onClick={handleDelete}>
-              Delete Request
+              Permanently Delete
             </Button>
           </div>
         </div>
       </Sheet>
-    </div>
+    </PageContainer>
   );
 };

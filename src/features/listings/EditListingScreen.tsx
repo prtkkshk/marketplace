@@ -6,6 +6,7 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Textarea } from '../../components/ui/Textarea';
 import { Button } from '../../components/ui/Button';
+import { SectionLabel } from '../../components/ui/SectionLabel';
 import { Spinner } from '../../components/ui/Spinner';
 import { fetchListingById, updateListing, type ListingItem } from '../../lib/data/listings';
 import { listingSchema, type ListingFormInput } from '../../lib/validation/listing';
@@ -58,10 +59,13 @@ export const EditListingScreen: React.FC = () => {
           reset({
             title: item.title,
             description: item.description || '',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             category: item.category as any,
             price: item.price,
             isNegotiable: item.isNegotiable,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             condition: item.condition as any,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             hallOfResidence: item.hallOfResidence as any,
             photoPaths: item.photoPaths,
           });
@@ -84,9 +88,11 @@ export const EditListingScreen: React.FC = () => {
       await updateListing(id, {
         title: data.title,
         description: data.description || undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         category: data.category as any,
         price: data.price,
         isNegotiable: data.isNegotiable,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         condition: data.condition as any,
         photoPaths: uploadedPaths,
       });
@@ -96,7 +102,8 @@ export const EditListingScreen: React.FC = () => {
 
       showToast('Listing updated successfully', 'success');
       navigate(`/listing/${id}`);
-    } catch (err: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
       const msg = err instanceof Error ? err.message : 'Update failed';
       setFormError(msg);
     } finally {
@@ -113,89 +120,104 @@ export const EditListingScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8 pb-24">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm text-left">
+    <div className="min-h-screen bg-paper flex flex-col items-center px-4 py-8 pb-32">
+      <div className="w-full max-w-[390px] bg-surface border border-line rounded-2xl p-6 shadow-sm text-left relative">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-xs font-semibold text-content-muted hover:text-content-primary mb-4"
+          className="flex items-center gap-1 text-xs font-semibold text-ink-3 hover:text-ink mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
 
-        <h1 className="text-xl font-bold text-content-primary mb-1">Edit Listing</h1>
-        <p className="text-xs text-content-muted mb-6">Update details for "{listing?.title}"</p>
+        <h1 className="text-xl font-bold text-ink mb-1">Edit Listing</h1>
+        <p className="text-xs text-ink-3 mb-6">Update details for "{listing?.title}"</p>
 
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <Input label="Title" disabled={isSubmitting} error={errors.title?.message} {...register('title')} />
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+          <div>
+            <SectionLabel className="mb-3">Item Details</SectionLabel>
+            <div className="flex flex-col gap-4">
+              <Input label="Title" disabled={isSubmitting} error={errors.title?.message} {...register('title')} />
 
-          <Select
-            label="Category"
-            disabled={isSubmitting}
-            options={CATEGORIES.map((c) => ({ value: c.id, label: `${c.icon} ${c.label}` }))}
-            error={errors.category?.message}
-            {...register('category')}
-          />
+              <Select
+                label="Category"
+                disabled={isSubmitting}
+                options={CATEGORIES.map((c) => ({ value: c.id, label: `${c.icon} ${c.label}` }))}
+                error={errors.category?.message}
+                {...register('category')}
+              />
 
-          <Input
-            label="Price (₹)"
-            type="number"
-            disabled={isSubmitting}
-            error={errors.price?.message}
-            {...register('price', { valueAsNumber: true })}
-          />
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="editIsNegotiable"
-              disabled={isSubmitting}
-              className="w-4 h-4 rounded text-brand-primary focus:ring-brand-light"
-              {...register('isNegotiable')}
-            />
-            <label htmlFor="editIsNegotiable" className="text-sm font-medium text-content-primary cursor-pointer">
-              Price is Negotiable
-            </label>
+              <Textarea
+                label="Description"
+                disabled={isSubmitting}
+                error={errors.description?.message}
+                {...register('description')}
+              />
+            </div>
           </div>
 
-          <Select
-            label="Condition"
-            disabled={isSubmitting}
-            options={CONDITIONS.map((c) => ({ value: c.id, label: c.label }))}
-            error={errors.condition?.message}
-            {...register('condition')}
-          />
+          <div>
+            <SectionLabel className="mb-3">Price & Condition</SectionLabel>
+            <div className="flex flex-col gap-4">
+              <Input
+                label="Price (₹)"
+                type="number"
+                disabled={isSubmitting}
+                error={errors.price?.message}
+                {...register('price', { valueAsNumber: true })}
+              />
 
-          <Textarea
-            label="Description"
-            disabled={isSubmitting}
-            error={errors.description?.message}
-            {...register('description')}
-          />
+              <div className="flex items-center gap-2 px-1">
+                <input
+                  type="checkbox"
+                  id="editIsNegotiable"
+                  disabled={isSubmitting}
+                  className="w-4 h-4 rounded border-line text-brand focus:ring-brand/20"
+                  {...register('isNegotiable')}
+                />
+                <label htmlFor="editIsNegotiable" className="text-sm font-medium text-ink cursor-pointer">
+                  Price is Negotiable
+                </label>
+              </div>
 
-          <PhotoUploader
-            userId={session?.user?.id || listing?.userId || 'temp'}
-            listingId={id || 'edit'}
-            photos={photos}
-            onChange={(updated) => {
-              setPhotos(updated);
-              setValue(
-                'photoPaths',
-                updated.map((p) => p.storagePath).filter((p): p is string => !!p)
-              );
-            }}
-          />
+              <Select
+                label="Condition"
+                disabled={isSubmitting}
+                options={CONDITIONS.map((c) => ({ value: c.id, label: c.label }))}
+                error={errors.condition?.message}
+                {...register('condition')}
+              />
+            </div>
+          </div>
 
-          <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
-            Save Changes
-          </Button>
+          <div>
+            <SectionLabel className="mb-3">Photos</SectionLabel>
+            <PhotoUploader
+              userId={session?.user?.id || listing?.userId || 'temp'}
+              listingId={id || 'edit'}
+              photos={photos}
+              onChange={(updated) => {
+                setPhotos(updated);
+                setValue(
+                  'photoPaths',
+                  updated.map((p) => p.storagePath).filter((p): p is string => !!p)
+                );
+              }}
+            />
+          </div>
+
+          <div className="sticky bottom-0 -mx-6 -mb-6 px-6 py-4 bg-surface/95 backdrop-blur-md border-t border-line md:static md:mx-0 md:mb-0 md:p-0 md:bg-transparent md:border-0 md:backdrop-blur-none z-20 mt-4 rounded-b-2xl md:rounded-none">
+            <Button type="submit" variant="primary" className="w-full" isLoading={isSubmitting}>
+              Save Changes
+            </Button>
+          </div>
         </form>
       </div>
     </div>

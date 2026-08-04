@@ -2,7 +2,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'whats';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -21,14 +21,15 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-light disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] min-h-[44px] px-4';
+    'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.975] rounded-full min-h-[44px] px-4';
 
   const variantStyles = {
-    primary: 'bg-brand-primary text-white hover:bg-sky-700 shadow-sm',
-    secondary: 'bg-brand-wash text-brand-primary hover:bg-sky-100',
-    outline: 'border border-surface-border bg-white text-content-primary hover:bg-slate-50',
-    danger: 'bg-status-danger text-white hover:bg-rose-600 shadow-sm',
-    ghost: 'text-content-muted hover:bg-slate-100 hover:text-content-primary',
+    primary: 'bg-brand text-white hover:bg-brand-hover shadow-1',
+    whats: 'bg-whats text-white hover:bg-whats-hover shadow-1',
+    ghost: 'bg-surface border border-line text-ink hover:bg-surface-alt',
+    danger: 'bg-danger text-white hover:bg-danger/90 shadow-1',
+    secondary: 'bg-surface border border-line text-ink hover:bg-surface-alt',
+    outline: 'bg-surface border border-line text-ink hover:bg-surface-alt',
   };
 
   const sizeStyles = {

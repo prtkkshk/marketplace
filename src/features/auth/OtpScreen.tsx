@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { supabase } from '../../lib/supabase';
 import { AlertCircle, CheckCircle2, MailCheck, ArrowLeft } from 'lucide-react';
+import { AuthLayout } from '../../components/layout/AuthLayout';
 
 export const OtpScreen: React.FC = () => {
   const location = useLocation();
@@ -46,20 +47,17 @@ export const OtpScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm text-center">
-        <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
-          <MailCheck className="w-8 h-8" />
+    <AuthLayout 
+      title="Check Your Email"
+      subtitle={`We sent a magic confirmation link to ${email || 'your institute email'}. Please click the link to confirm your account and log in.`}
+    >
+      <div className="flex flex-col items-center text-center">
+        <div className="w-14 h-14 bg-whats/20 rounded-full flex items-center justify-center mb-6 text-whats">
+          <MailCheck className="w-7 h-7" />
         </div>
 
-        <h1 className="text-xl font-bold text-content-primary mb-2">Check Your Email</h1>
-        <p className="text-xs text-content-muted mt-1 leading-relaxed mb-6">
-          We sent a magic confirmation link to{' '}
-          <span className="font-semibold text-content-primary">{email || 'your institute email'}</span>. Please click the link to confirm your account and log in.
-        </p>
-
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2 text-left">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2 text-left">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
@@ -84,12 +82,12 @@ export const OtpScreen: React.FC = () => {
           </Button>
         )}
 
-        <Link to="/auth/signin">
+        <Link to="/auth/signin" className="w-full">
           <Button variant="ghost" className="w-full" leftIcon={<ArrowLeft className="w-4 h-4" />}>
             Return to Sign In
           </Button>
         </Link>
       </div>
-    </div>
+    </AuthLayout>
   );
 };

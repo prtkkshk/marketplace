@@ -2,33 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer utilities {
-  /* Hide scrollbar utility */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+@layer base {
+  :root {
+    --paper: 251 249 246;        /* #FBF9F6 */
+    --paper-sunk: 243 239 233;   /* #F3EFE9 */
+    --surface: 255 255 255;      /* #FFFFFF */
+    --surface-alt: 247 243 238;  /* #F7F3EE */
+    --line: 231 224 214;         /* #E7E0D6 */
+    --line-strong: 214 204 190;  /* #D6CCBE */
+
+    --ink: 26 22 20;             /* #1A1614 */
+    --ink-2: 88 80 74;           /* #58504A */
+    --ink-3: 115 107 100;        /* #736B64 (darkened for contrast) */
+
+    --brand: 140 47 57;          /* #8C2F39 oxblood */
+    --brand-hover: 116 36 45;    /* #74242D */
+    --brand-wash: 247 235 236;   /* #F7EBEC */
+    --brand-line: 232 210 212;   /* #E8D2D4 */
+
+    --accent: 201 130 31;        /* #C9821F text-safe amber */
+    --accent-bright: 232 163 61; /* #E8A33D fills */
+    --accent-wash: 253 243 227;  /* #FDF3E3 */
+    --accent-line: 240 223 192;  /* #F0DFC0 */
+
+    --whats: 31 122 90;          /* #1F7A5A */
+    --whats-hover: 25 101 73;    /* #196549 */
+    --danger: 179 38 30;         /* #B3261E */
+    --danger-wash: 251 235 234;  /* #FBEBEA */
   }
 
-  /* Small thin sleek scrollbar for category pills */
-  .thin-scrollbar::-webkit-scrollbar {
-    height: 4px;
+  [data-theme='dark'] {
+    --paper: 20 17 15;
+    --paper-sunk: 14 12 11;
+    --surface: 29 25 23;
+    --surface-alt: 38 33 32;
+    --line: 48 42 39;
+    --line-strong: 66 58 54;
+
+    --ink: 245 240 234;
+    --ink-2: 181 171 162;
+    --ink-3: 153 143 134;        /* #998F86 (lightened for contrast) */
+
+    --brand: 224 131 140;
+    --brand-hover: 238 154 162;
+    --brand-wash: 44 27 29;
+    --brand-line: 69 41 45;
+
+    --accent: 240 182 92;
+    --accent-bright: 240 182 92;
+    --accent-wash: 43 33 20;
+    --accent-line: 69 53 32;
+
+    --whats: 63 163 125;
+    --whats-hover: 79 182 142;
+    --danger: 242 147 140;
+    --danger-wash: 45 25 23;
   }
-  .thin-scrollbar::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 9999px;
+
+  html { color-scheme: light; }
+  [data-theme='dark'] { color-scheme: dark; }
+
+  body {
+    @apply bg-paper text-ink antialiased transition-colors duration-300 ease-out motion-reduce:transition-none;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   }
-  .thin-scrollbar::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
+
+  .preload, .preload * {
+    transition: none !important;
   }
-  .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-  .thin-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 #f1f5f9;
-  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* gradient edge-fade that signals horizontal overflow without a scrollbar */
+  .rail-fade { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+
+  .font-display { font-family: 'Instrument Serif', Georgia, serif; letter-spacing: -0.01em; }
 }

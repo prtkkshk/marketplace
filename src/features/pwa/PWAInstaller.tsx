@@ -30,7 +30,9 @@ export const PWAInstaller: React.FC = () => {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // iOS Safari Detection
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
 
     if (isIos && !isStandalone) {
@@ -68,14 +70,14 @@ export const PWAInstaller: React.FC = () => {
     <>
       {/* Android / Chrome Install Banner */}
       {showAndroidBanner && (
-        <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:max-w-sm z-50 p-3.5 bg-slate-900 text-white rounded-2xl shadow-xl flex items-center justify-between gap-3 text-xs animate-in slide-in-from-bottom-3 border border-slate-700">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-brand-primary flex items-center justify-center font-bold text-white shrink-0">
+        <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:max-w-sm z-50 p-3.5 bg-ink text-paper rounded-[28px] shadow-xl flex items-center justify-between gap-3 text-xs animate-in slide-in-from-bottom-3 border border-ink-2">
+          <div className="flex items-center gap-3 pl-1">
+            <div className="w-9 h-9 rounded-full bg-brand flex items-center justify-center font-bold text-white shrink-0">
               📲
             </div>
-            <div>
-              <p className="font-bold text-white leading-snug">Install KGP Bazaar App</p>
-              <p className="text-[11px] text-slate-300">Add to home screen for instant campus trade</p>
+            <div className="flex flex-col">
+              <span className="font-bold text-paper leading-snug">Install KGP Bazaar</span>
+              <span className="text-[11px] text-ink-3">Add to home screen</span>
             </div>
           </div>
 
@@ -85,7 +87,7 @@ export const PWAInstaller: React.FC = () => {
             </Button>
             <button
               onClick={handleDismiss}
-              className="p-1 text-slate-400 hover:text-white rounded-md"
+              className="p-2 text-ink-3 hover:text-paper rounded-full"
               aria-label="Dismiss banner"
             >
               <X className="w-4 h-4" />
@@ -97,21 +99,21 @@ export const PWAInstaller: React.FC = () => {
       {/* iOS Safari Instruction Sheet */}
       <Sheet isOpen={showIosSheet} onClose={handleDismiss} title="Install KGP Bazaar on iPhone">
         <div className="flex flex-col gap-4 text-left py-2">
-          <p className="text-xs text-content-muted">
+          <p className="text-xs text-ink-3">
             Install KGP Bazaar as a phone app for full screen browsing and fast offline access.
           </p>
 
-          <div className="flex flex-col gap-3 text-xs bg-slate-50 p-3.5 border border-surface-border rounded-xl">
+          <div className="flex flex-col gap-3 text-xs bg-slate-50 p-3.5 border border-line rounded-xl">
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-white border border-surface-border flex items-center justify-center shrink-0">
-                <Share className="w-4 h-4 text-brand-primary" />
+              <div className="w-7 h-7 rounded-lg bg-white border border-line flex items-center justify-center shrink-0">
+                <Share className="w-4 h-4 text-brand" />
               </div>
               <span>1. Tap the <strong>Share</strong> button in Safari toolbar.</span>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="w-7 h-7 rounded-lg bg-white border border-surface-border flex items-center justify-center shrink-0">
-                <PlusSquare className="w-4 h-4 text-brand-primary" />
+              <div className="w-7 h-7 rounded-lg bg-white border border-line flex items-center justify-center shrink-0">
+                <PlusSquare className="w-4 h-4 text-brand" />
               </div>
               <span>2. Scroll down and tap <strong>"Add to Home Screen"</strong>.</span>
             </div>

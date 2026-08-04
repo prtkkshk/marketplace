@@ -14,6 +14,7 @@ export function useDeleteListingMutation() {
       await queryClient.cancelQueries({ queryKey: ['myListings'] });
       await queryClient.cancelQueries({ queryKey: ['savedItems'] });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['listings'] }, (oldData: any) => {
         if (!oldData) return oldData;
         if (Array.isArray(oldData)) {
@@ -28,6 +29,7 @@ export function useDeleteListingMutation() {
         return oldData;
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['myListings'] }, (oldData: any) => {
         if (!oldData) return oldData;
         if (Array.isArray(oldData)) {

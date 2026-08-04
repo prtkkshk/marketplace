@@ -143,6 +143,7 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
     throw new Error(`Failed to fetch listings: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const listings = (data || []).map((row) => mapListingRow(row as any));
   const hasMore = listings.length === limit;
 
@@ -170,6 +171,7 @@ export async function fetchMyListings(userId: string, status?: 'active' | 'sold'
     throw new Error(`Failed to fetch my listings: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data || []).map((row) => mapListingRow(row as any));
 }
 
@@ -191,6 +193,7 @@ export async function fetchListingById(id: string): Promise<ListingItem | null> 
     throw new Error(`Failed to fetch listing: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapListingRow(data as any);
 }
 
@@ -219,6 +222,7 @@ export async function createListing(userId: string, input: CreateListingData): P
     throw new Error(`Failed to create listing: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapListingRow(data as any);
 }
 
@@ -246,6 +250,7 @@ export async function updateListing(id: string, updates: Partial<CreateListingDa
     throw new Error(`Failed to update listing: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapListingRow(data as any);
 }
 
@@ -264,6 +269,7 @@ export async function markListingSold(id: string): Promise<ListingItem> {
     throw new Error(`Failed to mark listing as sold: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapListingRow(data as any);
 }
 
@@ -282,6 +288,7 @@ export async function unmarkListingSold(id: string): Promise<ListingItem> {
     throw new Error(`Failed to unmark listing: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapListingRow(data as any);
 }
 

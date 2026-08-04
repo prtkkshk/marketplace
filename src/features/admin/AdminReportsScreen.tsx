@@ -41,6 +41,7 @@ export const AdminReportsScreen: React.FC = () => {
 
   useEffect(() => {
     loadReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter, reasonFilter]);
 
   const openActionModal = (report: AdminReportItem, type: 'hide' | 'delete' | 'dismiss' | 'ban') => {
@@ -80,8 +81,8 @@ export const AdminReportsScreen: React.FC = () => {
     <div className="flex flex-col gap-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">Moderation Queue</h1>
-          <p className="text-xs text-content-muted">Review reported listings and campus requests</p>
+          <h1 className="text-xl font-bold text-ink">Moderation Queue</h1>
+          <p className="text-xs text-ink-3">Review reported listings and campus requests</p>
         </div>
 
         {/* Filter controls */}
@@ -89,7 +90,7 @@ export const AdminReportsScreen: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 bg-white border border-surface-border rounded-xl text-xs font-semibold text-content-primary"
+            className="px-3 py-1.5 bg-white border border-line rounded-xl text-xs font-semibold text-ink"
           >
             <option value="pending">Pending Reports</option>
             <option value="resolved">Resolved</option>
@@ -100,7 +101,7 @@ export const AdminReportsScreen: React.FC = () => {
           <select
             value={reasonFilter}
             onChange={(e) => setReasonFilter(e.target.value)}
-            className="px-3 py-1.5 bg-white border border-surface-border rounded-xl text-xs font-semibold text-content-primary"
+            className="px-3 py-1.5 bg-white border border-line rounded-xl text-xs font-semibold text-ink"
           >
             <option value="all">All Reasons</option>
             <option value="prohibited_item">Prohibited Item</option>
@@ -120,9 +121,9 @@ export const AdminReportsScreen: React.FC = () => {
         </div>
       ) : reports.length === 0 ? (
         <Card className="p-8 text-center">
-          <Flag className="w-10 h-10 text-content-muted mx-auto mb-2 opacity-50" />
-          <h3 className="text-base font-bold text-content-primary">No reports found</h3>
-          <p className="text-xs text-content-muted mt-1">The moderation queue is clean for this filter.</p>
+          <Flag className="w-10 h-10 text-ink-3 mx-auto mb-2 opacity-50" />
+          <h3 className="text-base font-bold text-ink">No reports found</h3>
+          <p className="text-xs text-ink-3 mt-1">The moderation queue is clean for this filter.</p>
         </Card>
       ) : (
         <div className="flex flex-col gap-3">
@@ -133,30 +134,30 @@ export const AdminReportsScreen: React.FC = () => {
                   type="checkbox"
                   checked={selectedReports.includes(report.id)}
                   onChange={() => toggleSelect(report.id)}
-                  className="mt-1 rounded text-brand-primary focus:ring-brand-light"
+                  className="mt-1 rounded text-brand focus:ring-brand-light"
                 />
 
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-bold text-content-primary">{report.targetTitle}</span>
+                    <span className="text-sm font-bold text-ink">{report.targetTitle}</span>
                     <Badge variant={report.status === 'pending' ? 'danger' : 'muted'}>
                       {report.status.toUpperCase()}
                     </Badge>
                     <Badge variant="secondary">{report.reason.replace('_', ' ')}</Badge>
                   </div>
 
-                  <p className="text-xs text-content-muted">
+                  <p className="text-xs text-ink-3">
                     Reported by <strong>{report.reporterName}</strong> • {timeAgo(report.createdAt)}
                   </p>
 
                   {report.details && (
-                    <div className="mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-content-primary italic">
+                    <div className="mt-1 p-2 bg-surface-alt border border-line rounded-lg text-xs text-ink italic">
                       "{report.details}"
                     </div>
                   )}
 
                   {report.resolutionNote && (
-                    <div className="mt-1 text-[11px] text-content-muted font-medium">
+                    <div className="mt-1 text-[11px] text-ink-3 font-medium">
                       Note: {report.resolutionNote}
                     </div>
                   )}
@@ -192,7 +193,7 @@ export const AdminReportsScreen: React.FC = () => {
                   <Button
                     variant="danger"
                     size="sm"
-                    className="bg-slate-900 hover:bg-black"
+                    className="bg-ink hover:bg-ink/80 text-white"
                     onClick={() => openActionModal(report, 'ban')}
                     leftIcon={<UserX className="w-3.5 h-3.5" />}
                   >
@@ -222,7 +223,7 @@ export const AdminReportsScreen: React.FC = () => {
             rows={3}
           />
 
-          <div className="flex gap-2 justify-end mt-2 pt-3 border-t border-surface-border">
+          <div className="flex gap-2 justify-end mt-2 pt-3 border-t border-line">
             <Button variant="outline" onClick={() => setActiveReport(null)} disabled={actionLoading}>
               Cancel
             </Button>

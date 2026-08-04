@@ -30,58 +30,67 @@ export const AdminLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-left antialiased pb-20">
-      {/* Top Admin Header */}
-      <header className="bg-slate-900 text-white sticky top-0 z-40 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-brand-light" />
-            <span className="font-bold text-base tracking-wide">KGP Marketplace Admin</span>
+    <div className="min-h-screen bg-paper text-left antialiased flex flex-col md:flex-row">
+      {/* Left Sidebar (Desktop) / Top Nav (Mobile) */}
+      <aside className="w-full md:w-64 bg-surface-alt border-r border-line md:min-h-screen flex flex-col shrink-0">
+        <div className="p-4 border-b border-line flex items-center justify-between md:justify-start gap-3 sticky top-0 z-40 bg-surface-alt">
+          <div className="flex items-center gap-2">
+            <Shield className="w-5 h-5 text-brand" />
+            <span className="font-bold text-sm text-ink tracking-wide">KGP Admin</span>
           </div>
-
           <Link
             to="/"
-            className="flex items-center gap-1 text-xs text-slate-300 hover:text-white transition-colors bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700"
+            className="md:hidden flex items-center gap-1 text-xs text-ink-3 hover:text-ink transition-colors bg-surface px-2 py-1 rounded-lg border border-line"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Return to Student Feed</span>
+            <span>Feed</span>
           </Link>
         </div>
 
-        {/* Horizontal Navigation Tabs */}
-        <div className="bg-slate-800 border-t border-slate-700/60 overflow-x-auto no-scrollbar px-4">
-          <div className="max-w-6xl mx-auto flex items-center gap-1 py-1 text-xs font-semibold">
-            {adminNav.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.exact}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2 px-3 py-2 rounded-lg transition-colors whitespace-nowrap ${
-                      isActive
-                        ? 'bg-brand-primary text-white font-bold'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                    }`
-                  }
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                  {item.badge !== undefined && item.badge > 0 && (
-                    <span className="px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-extrabold animate-pulse">
-                      {item.badge}
-                    </span>
-                  )}
-                </NavLink>
-              );
-            })}
-          </div>
-        </div>
-      </header>
+        <nav className="flex-1 overflow-y-auto overflow-x-auto no-scrollbar p-2 flex md:flex-col gap-1 border-b border-line md:border-b-0">
+          {adminNav.map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.exact}
+                className={({ isActive }) =>
+                  `flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors whitespace-nowrap text-xs font-semibold ${
+                    isActive
+                      ? 'bg-surface text-brand shadow-1 border border-line'
+                      : 'text-ink-3 hover:text-ink hover:bg-surface-alt border border-transparent'
+                  }`
+                }
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span>{item.label}</span>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className="ml-auto px-1.5 py-0.5 rounded-full bg-danger text-white text-[10px] font-extrabold">
+                    {item.badge}
+                  </span>
+                )}
+              </NavLink>
+            );
+          })}
+        </nav>
 
-      <main className="max-w-6xl mx-auto p-4 md:p-6">
-        <Outlet />
+        <div className="hidden md:block p-4 border-t border-line mt-auto">
+          <Link
+            to="/"
+            className="flex items-center gap-1.5 text-xs text-ink-3 hover:text-ink transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Return to Student Feed</span>
+          </Link>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto max-w-[100vw] md:max-w-[calc(100vw-16rem)]">
+        <div className="max-w-4xl mx-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

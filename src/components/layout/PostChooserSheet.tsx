@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sheet } from '../ui/Sheet';
 import { Card } from '../ui/Card';
-import { ShoppingBag, Megaphone } from 'lucide-react';
+import { ShoppingBag, Megaphone, ChevronRight } from 'lucide-react';
 
 export interface PostChooserSheetProps {
   isOpen: boolean;
@@ -23,29 +23,31 @@ export const PostChooserSheet: React.FC<PostChooserSheetProps> = ({ isOpen, onCl
         <Card
           interactive
           onClick={() => handleChoice('/new')}
-          className="flex items-center gap-4 hover:border-brand-primary"
+          className="flex items-center gap-4 hover:border-brand p-4"
         >
-          <div className="w-12 h-12 rounded-2xl bg-brand-wash text-brand-primary flex items-center justify-center text-xl shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-brand-wash text-brand flex items-center justify-center shrink-0">
             <ShoppingBag className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-content-primary">Sell an Item</h3>
-            <p className="text-xs text-content-muted">Post a cycle, book, electronics, or lab gear for sale.</p>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-ink">Sell something</h3>
+            <p className="text-xs text-ink-3">Post a cycle, book, electronics, or lab gear for sale.</p>
           </div>
+          <ChevronRight className="w-5 h-5 text-ink-3" />
         </Card>
 
         <Card
           interactive
           onClick={() => handleChoice('/new-request')}
-          className="flex items-center gap-4 hover:border-brand-primary"
+          className="flex items-center gap-4 hover:border-accent p-4"
         >
-          <div className="w-12 h-12 rounded-2xl bg-sky-100 text-sky-800 flex items-center justify-center text-xl shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-accent-wash text-accent flex items-center justify-center shrink-0">
             <Megaphone className="w-6 h-6" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-content-primary">Post a Wanted Request</h3>
-            <p className="text-xs text-content-muted">Let campus know what second-hand item you need.</p>
+          <div className="flex-1">
+            <h3 className="text-sm font-bold text-ink">Ask for something</h3>
+            <p className="text-xs text-ink-3">Let campus know what second-hand item you need.</p>
           </div>
+          <ChevronRight className="w-5 h-5 text-ink-3" />
         </Card>
       </div>
     </Sheet>

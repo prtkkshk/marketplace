@@ -100,6 +100,7 @@ export async function fetchWantedRequests(
     throw new Error(`Failed to fetch wanted requests: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const requests = (data || []).map((row) => mapWantedRequestRow(row as any));
   const hasMore = requests.length === limit;
 
@@ -124,6 +125,7 @@ export async function fetchWantedRequestById(id: string): Promise<WantedRequestI
     throw new Error(`Failed to fetch request: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapWantedRequestRow(data as any);
 }
 
@@ -193,6 +195,7 @@ export async function createWantedRequest(
     throw new Error(`Failed to post wanted request: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapWantedRequestRow(data as any);
 }
 
@@ -213,6 +216,7 @@ export async function markWantedRequestFulfilled(id: string): Promise<WantedRequ
     throw new Error(`Failed to mark request fulfilled: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapWantedRequestRow(data as any);
 }
 
@@ -233,6 +237,7 @@ export async function unmarkWantedRequestFulfilled(id: string): Promise<WantedRe
     throw new Error(`Failed to unmark request: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mapWantedRequestRow(data as any);
 }
 
@@ -276,5 +281,6 @@ export async function fetchMyWantedRequests(
     throw new Error(`Failed to fetch my requests: ${error.message}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (data || []).map((row) => mapWantedRequestRow(row as any));
 }

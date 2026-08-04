@@ -38,23 +38,17 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto p-3.5 rounded-xl border shadow-lg flex items-center justify-between gap-3 text-xs font-medium transition-all transform animate-in slide-in-from-bottom-2 ${
-              toast.type === 'success'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                : toast.type === 'error'
-                ? 'bg-rose-50 border-rose-200 text-rose-900'
-                : 'bg-white border-surface-border text-content-primary'
-            }`}
+            className={`pointer-events-auto p-3.5 rounded-full border shadow-2 flex items-center justify-between gap-3 text-xs font-medium transition-all transform animate-in slide-in-from-bottom-2 bg-ink text-paper border-ink`}
           >
             <div className="flex items-center gap-2">
-              {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-status-success shrink-0" />}
-              {toast.type === 'error' && <AlertCircle className="w-4 h-4 text-status-danger shrink-0" />}
-              {toast.type === 'info' && <Info className="w-4 h-4 text-brand-primary shrink-0" />}
+              {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-brand shrink-0" />}
+              {toast.type === 'error' && <AlertCircle className="w-4 h-4 text-danger shrink-0" />}
+              {toast.type === 'info' && <Info className="w-4 h-4 text-paper shrink-0" />}
               <span>{toast.message}</span>
             </div>
             <button
               onClick={() => removeToast(toast.id)}
-              className="p-1 rounded-md text-content-muted hover:text-content-primary transition-colors"
+              className="p-1 rounded-md text-ink-3 hover:text-paper transition-colors"
               aria-label="Dismiss toast"
             >
               <X className="w-3.5 h-3.5" />

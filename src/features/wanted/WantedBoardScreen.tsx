@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { SegmentedControl } from '../listings/SegmentedControl';
+import { PageContainer } from '../../components/layout/PageContainer';
 import { SearchBar } from '../listings/SearchBar';
 import { CategoryPills } from '../listings/CategoryPills';
 import { RequestCard } from './RequestCard';
@@ -10,7 +10,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
-import { Megaphone } from 'lucide-react';
+import { Megaphone, ArrowDownUp } from 'lucide-react';
 import type { WantedRequestItem } from '../../lib/data/wantedRequests';
 
 export const WantedBoardScreen: React.FC = () => {
@@ -20,7 +20,6 @@ export const WantedBoardScreen: React.FC = () => {
 
   const [page, setPage] = useState<number>(1);
 
-  const activeTab = (searchParams.get('tab') as 'sale' | 'wanted') || 'wanted';
   const searchQuery = searchParams.get('q') || '';
   const selectedCategory = searchParams.get('cat') || '';
   const sort = (searchParams.get('sort') as 'newest' | 'budget_desc' | 'budget_asc') || 'newest';
@@ -38,7 +37,7 @@ export const WantedBoardScreen: React.FC = () => {
     setPage(1);
   };
 
-  const { data, isLoading, isError, error, refetch } = useWantedRequests({
+  const { data, isLoading, isError, error, refetch, isFetching } = useWantedRequests({
     category: selectedCategory,
     search: searchQuery,
     sort,
@@ -46,22 +45,25 @@ export const WantedBoardScreen: React.FC = () => {
     limit: 20,
   });
 
-  const handleTabChange = (tab: 'sale' | 'wanted') => {
-    if (tab === 'sale') {
-      navigate('/?tab=sale');
-    } else {
-      updateUrlParams({ tab: 'wanted' });
-    }
-  };
-
   const handleReportClick = (request: WantedRequestItem) => {
     showToast(`Report submitted for request "${request.title}".`, 'info');
   };
 
   return (
-    <div className="p-4 max-w-5xl mx-auto text-left py-4">
-      {/* Top Segmented Control */}
-      <SegmentedControl activeSegment={activeTab} onChange={handleTabChange} />
+    <PageContainer className="py-0 md:py-4 text-left flex flex-col h-full">
+      
+      {/* Amber Masthead */}
+      <div className="flex flex-col gap-6 mb-8 mt-2 pb-8 border-b border-line">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-4xl text-accent">Wanted Board</h1>
+            <p className="text-sm text-ink-3 mt-1">Can't find it in the feed? Ask the campus.</p>
+          </div>
+          <Button variant="primary" className="w-full md:w-auto font-bold bg-accent hover:bg-amber-600" onClick={() => navigate('/new-request')}>
+            Post a Request
+          </Button>
+        </div>
+      </div>
 
       {/* Header controls */}
       <div className="flex flex-col gap-3 mb-6">
@@ -71,33 +73,33 @@ export const WantedBoardScreen: React.FC = () => {
           placeholder="Search wanted books, cycles, lab gear..."
         />
 
-        <CategoryPills
-          selectedCategory={selectedCategory}
-          onSelectCategory={(cat) => updateUrlParams({ cat: cat || undefined })}
-        />
+        <div className="flex flex-col md:flex-row md:items-center gap-3">
+          <CategoryPills
+            selectedCategory={selectedCategory}
+            onSelectCategory={(cat) => updateUrlParams({ cat: cat || undefined })}
+            className="flex-1"
+          />
 
-        <div className="flex items-center justify-between gap-2 pt-1 border-t border-surface-border">
-          <div className="relative inline-flex items-center">
-            <select
-              value={sort}
-              onChange={(e) => updateUrlParams({ sort: e.target.value })}
-              className="px-3 py-1.5 min-h-[36px] bg-white border border-surface-border rounded-xl text-xs font-medium text-content-primary appearance-none cursor-pointer"
-              aria-label="Sort wanted requests"
-            >
-              <option value="newest">Newest First</option>
-              <option value="budget_desc">Budget: High → Low</option>
-              <option value="budget_asc">Budget: Low → High</option>
-            </select>
+          <div className="flex items-center justify-between md:justify-end gap-2 pt-2 md:pt-0 border-t border-line md:border-none">
+            <div className="relative inline-flex items-center">
+              <ArrowDownUp className="absolute left-3 w-3 h-3 text-ink-3 pointer-events-none" />
+              <select
+                value={sort}
+                onChange={(e) => updateUrlParams({ sort: e.target.value })}
+                className="pl-7 pr-8 py-1.5 bg-surface border border-line rounded-full text-[12.5px] font-medium text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 appearance-none cursor-pointer hover:border-line-strong hover:bg-surface-alt transition-colors"
+                aria-label="Sort wanted requests"
+              >
+                <option value="newest">Newest First</option>
+                <option value="budget_desc">Budget: High → Low</option>
+                <option value="budget_asc">Budget: Low → High</option>
+              </select>
+            </div>
           </div>
-
-          <Button variant="primary" size="sm" onClick={() => navigate('/new-request')}>
-            + Post Wanted Request
-          </Button>
         </div>
       </div>
 
       {/* Main Feed */}
-      {isLoading ? (
+      {isLoading && page === 1 ? (
         <ListingSkeleton count={4} />
       ) : isError ? (
         <ErrorState
@@ -106,29 +108,29 @@ export const WantedBoardScreen: React.FC = () => {
         />
       ) : !data?.requests || data.requests.length === 0 ? (
         <EmptyState
-          icon={<Megaphone className="w-12 h-12 text-content-muted" />}
+          icon={<Megaphone className="w-12 h-12 text-ink-3" />}
           title="No wanted requests found"
           description="Be the first to post what item or textbook you are looking for on campus."
-          actionLabel="Post a Wanted Request"
+          actionLabel="Post a Request"
           onAction={() => navigate('/new-request')}
         />
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
             {data.requests.map((request) => (
               <RequestCard key={request.id} request={request} onReportClick={handleReportClick} />
             ))}
           </div>
 
           {data.hasMore && (
-            <div className="mt-8 text-center">
-              <Button variant="outline" onClick={() => setPage((prev) => prev + 1)}>
-                Load More Requests
+            <div className="mt-8 mb-4 h-10 w-full flex items-center justify-center">
+              <Button variant="ghost" onClick={() => setPage((prev) => prev + 1)} disabled={isFetching}>
+                {isFetching ? 'Loading...' : 'Load More Requests'}
               </Button>
             </div>
           )}
         </>
       )}
-    </div>
+    </PageContainer>
   );
 };

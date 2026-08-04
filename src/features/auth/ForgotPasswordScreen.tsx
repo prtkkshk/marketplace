@@ -7,6 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '../../lib/validation/auth';
 import { supabase } from '../../lib/supabase';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AuthLayout } from '../../components/layout/AuthLayout';
 
 export const ForgotPasswordScreen: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
@@ -47,17 +48,13 @@ export const ForgotPasswordScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
-        <div className="text-center mb-6">
-          <h1 className="text-xl font-bold text-content-primary">Reset Password</h1>
-          <p className="text-xs text-content-muted mt-1">
-            Enter your @kgpian.iitkgp.ac.in email address
-          </p>
-        </div>
+    <AuthLayout
+      title="Reset Password"
+      subtitle="Enter your @kgpian.iitkgp.ac.in email address"
+    >
 
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{formError}</span>
           </div>
@@ -84,13 +81,12 @@ export const ForgotPasswordScreen: React.FC = () => {
           </Button>
         </form>
 
-        <p className="text-center text-xs text-content-muted mt-6">
+        <p className="text-center text-sm text-ink-3 mt-6">
           Remember your password?{' '}
-          <Link to="/auth/signin" className="text-brand-primary font-semibold hover:underline">
+          <Link to="/auth/signin" className="text-brand font-semibold hover:underline">
             Sign In
           </Link>
         </p>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };

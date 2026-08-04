@@ -85,6 +85,7 @@ export async function updateProfile(
 
   const { data, error } = await supabase
     .from('profiles')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .upsert(payload as any, { onConflict: 'id' })
     .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, created_at, updated_at')
     .maybeSingle();

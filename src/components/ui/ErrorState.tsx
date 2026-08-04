@@ -9,16 +9,17 @@ export interface ErrorStateProps {
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  message = 'Something went wrong while loading data. Please try again.',
+  message = "⚡ Couldn't load the feed",
   onRetry,
   className = '',
 }) => {
   return (
-    <div className={`p-6 text-center bg-rose-50/50 border border-rose-200 rounded-2xl flex flex-col items-center justify-center ${className}`}>
-      <AlertCircle className="w-8 h-8 text-status-danger mb-2" />
-      <p className="text-xs text-status-danger font-medium max-w-xs mb-4">{message}</p>
+    <div className={`p-8 text-center bg-danger-wash border border-brand-line rounded-xl flex flex-col items-center justify-center ${className}`}>
+      <AlertCircle className="w-8 h-8 text-danger mb-3" />
+      <h3 className="font-display text-xl text-ink mb-1">Error</h3>
+      <p className="text-sm text-danger font-medium max-w-xs mb-6">{message}</p>
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry} leftIcon={<RefreshCw className="w-3.5 h-3.5" />}>
+        <Button variant="ghost" size="md" onClick={onRetry} leftIcon={<RefreshCw className="w-4 h-4" />}>
           Retry
         </Button>
       )}

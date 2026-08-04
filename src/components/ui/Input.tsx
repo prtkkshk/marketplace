@@ -18,7 +18,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full flex flex-col gap-1.5 text-left">
         {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-content-primary">
+          <label htmlFor={inputId} className="text-sm font-medium text-ink">
             {label}
           </label>
         )}
@@ -26,15 +26,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           ref={ref}
           onFocus={handleFocus}
-          className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-xl border bg-white text-content-primary text-base md:text-sm transition-colors placeholder:text-content-muted/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-light ${
-            error ? 'border-status-danger text-status-danger' : 'border-surface-border hover:border-slate-300'
+          className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-md border bg-surface text-ink text-base md:text-[16px] transition-colors placeholder:text-ink-3/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/15 focus-visible:border-brand ${
+            error ? 'border-danger text-danger' : 'border-line hover:border-line-strong'
           } ${className}`}
           {...props}
         />
         {error ? (
-          <span className="text-xs font-medium text-status-danger">{error}</span>
+          <span className="text-xs font-medium text-danger">{error}</span>
         ) : helperText ? (
-          <span className="text-xs text-content-muted">{helperText}</span>
+          <span className="text-xs text-ink-3">{helperText}</span>
         ) : null}
       </div>
     );

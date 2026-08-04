@@ -8,27 +8,39 @@ export interface EmptyStateProps {
   description?: string;
   actionLabel?: string;
   onAction?: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
   className?: string;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = <PackageOpen className="w-10 h-10 text-content-muted stroke-[1.5]" />,
+  icon = <PackageOpen className="w-10 h-10 text-ink-3 stroke-[1.5]" />,
   title,
   description,
   actionLabel,
   onAction,
+  secondaryActionLabel,
+  onSecondaryAction,
   className = '',
 }) => {
   return (
-    <div className={`p-8 text-center bg-surface-card border border-surface-border rounded-2xl flex flex-col items-center justify-center ${className}`}>
+    <div className={`p-8 text-center bg-surface border border-dashed border-line-strong rounded-xl flex flex-col items-center justify-center ${className}`}>
       <div className="mb-3">{icon}</div>
-      <h3 className="text-base font-semibold text-content-primary mb-1">{title}</h3>
-      {description && <p className="text-xs text-content-muted max-w-xs mb-4">{description}</p>}
-      {actionLabel && onAction && (
-        <Button variant="primary" size="sm" onClick={onAction}>
-          {actionLabel}
-        </Button>
-      )}
+      <h3 className="font-display text-xl text-ink mb-1">{title}</h3>
+      {description && <p className="text-sm text-ink-3 max-w-xs mb-6">{description}</p>}
+      
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-sm">
+        {actionLabel && onAction && (
+          <Button variant="ghost" size="md" onClick={onAction} className="w-full sm:w-auto">
+            {actionLabel}
+          </Button>
+        )}
+        {secondaryActionLabel && onSecondaryAction && (
+          <Button variant="primary" size="md" onClick={onSecondaryAction} className="w-full sm:w-auto">
+            {secondaryActionLabel}
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

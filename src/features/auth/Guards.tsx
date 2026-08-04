@@ -9,8 +9,8 @@ export const ProtectedRoute: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
   }
@@ -39,8 +39,8 @@ export const AdminRoute: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-bg flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-brand" />
       </div>
     );
   }

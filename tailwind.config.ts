@@ -1,33 +1,39 @@
 import type { Config } from 'tailwindcss';
 
+const rgb = (v: string) => `rgb(var(${v}) / <alpha-value>)`;
+
 export default {
+  darkMode: ['class', '[data-theme="dark"]'],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
+        paper: { DEFAULT: rgb('--paper'), sunk: rgb('--paper-sunk') },
+        surface: { DEFAULT: rgb('--surface'), alt: rgb('--surface-alt') },
+        line: { DEFAULT: rgb('--line'), strong: rgb('--line-strong') },
+        ink: { DEFAULT: rgb('--ink'), 2: rgb('--ink-2'), 3: rgb('--ink-3') },
         brand: {
-          primary: '#0284C7', // sky-600
-          light: '#38BDF8',   // sky-400
-          wash: '#F0F9FF',    // sky-50
+          DEFAULT: rgb('--brand'), hover: rgb('--brand-hover'),
+          wash: rgb('--brand-wash'), line: rgb('--brand-line'),
         },
-        surface: {
-          bg: '#F8FAFC',      // slate-50
-          card: '#FFFFFF',    // white
-          border: 'rgba(226, 232, 240, 0.8)', // slate-200/80
+        accent: {
+          DEFAULT: rgb('--accent'), bright: rgb('--accent-bright'),
+          wash: rgb('--accent-wash'), line: rgb('--accent-line'),
         },
-        content: {
-          primary: '#1E293B', // slate-800
-          muted: '#64748B',   // slate-500
-        },
-        status: {
-          success: '#10B981', // emerald-500
-          warning: '#F59E0B', // amber-500
-          danger: '#F43F5E',  // rose-500
-        },
+        whats: { DEFAULT: rgb('--whats'), hover: rgb('--whats-hover') },
+        danger: { DEFAULT: rgb('--danger'), wash: rgb('--danger-wash') },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Instrument Serif', 'Georgia', 'serif'],
       },
+      borderRadius: { md: '12px', lg: '18px', xl: '26px' },
+      boxShadow: {
+        1: '0 1px 2px rgb(26 22 20 / 0.05)',
+        2: '0 4px 16px -6px rgb(26 22 20 / 0.14)',
+        3: '0 18px 48px -18px rgb(26 22 20 / 0.30)',
+      },
+      transitionTimingFunction: { out: 'cubic-bezier(.22,.61,.36,1)' },
     },
   },
   plugins: [],

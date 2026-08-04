@@ -310,6 +310,7 @@ export async function updateUserAdminStatus(
     payload.is_admin = updates.isAdmin;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await supabase.from('profiles').update(payload as any).eq('id', targetUser.id);
 
   if (error) throw new Error(error.message);
@@ -347,6 +348,7 @@ export async function updateListingAdminAction(
       payload.sold_at = new Date().toISOString();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await supabase.from('listings').update(payload as any).eq('id', listingId);
     if (error) throw new Error(error.message);
   }

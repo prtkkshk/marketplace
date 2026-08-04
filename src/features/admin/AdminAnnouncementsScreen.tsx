@@ -39,6 +39,7 @@ export const AdminAnnouncementsScreen: React.FC = () => {
 
   useEffect(() => {
     loadAnnouncements();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -83,14 +84,14 @@ export const AdminAnnouncementsScreen: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 text-left">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Campus Announcements</h1>
-        <p className="text-xs text-content-muted">Publish broadcast banners displayed above student feeds</p>
+        <h1 className="text-xl font-bold text-ink">Campus Announcements</h1>
+        <p className="text-xs text-ink-3">Publish broadcast banners displayed above student feeds</p>
       </div>
 
       {/* Creation Card */}
       <Card className="p-5">
-        <h3 className="text-sm font-bold text-content-primary mb-3 flex items-center gap-2">
-          <Plus className="w-4 h-4 text-brand-primary" />
+        <h3 className="text-sm font-bold text-ink mb-3 flex items-center gap-2">
+          <Plus className="w-4 h-4 text-brand" />
           <span>Publish New Announcement</span>
         </h3>
 
@@ -126,7 +127,7 @@ export const AdminAnnouncementsScreen: React.FC = () => {
       </Card>
 
       {/* Existing Announcements */}
-      <h3 className="text-sm font-bold text-content-primary">Announcement History</h3>
+      <h3 className="text-sm font-bold text-ink">Announcement History</h3>
 
       {loading ? (
         <div className="p-8 flex justify-center">
@@ -134,8 +135,8 @@ export const AdminAnnouncementsScreen: React.FC = () => {
         </div>
       ) : announcements.length === 0 ? (
         <Card className="p-8 text-center">
-          <Megaphone className="w-8 h-8 text-content-muted mx-auto mb-2 opacity-50" />
-          <p className="text-sm font-medium text-content-primary">No announcements published yet.</p>
+          <Megaphone className="w-8 h-8 text-ink-3 mx-auto mb-2 opacity-50" />
+          <p className="text-sm font-medium text-ink">No announcements published yet.</p>
         </Card>
       ) : (
         <div className="flex flex-col gap-3">
@@ -147,9 +148,9 @@ export const AdminAnnouncementsScreen: React.FC = () => {
                     {item.type.toUpperCase()}
                   </Badge>
                   {item.isActive ? <Badge variant="success">ACTIVE</Badge> : <Badge variant="muted">INACTIVE</Badge>}
-                  <span className="text-[11px] text-content-muted">{timeAgo(item.createdAt)}</span>
+                  <span className="text-[11px] text-ink-3">{timeAgo(item.createdAt)}</span>
                 </div>
-                <p className="text-xs font-semibold text-content-primary mt-1">{item.message}</p>
+                <p className="text-xs font-semibold text-ink mt-1">{item.message}</p>
               </div>
 
               <Button

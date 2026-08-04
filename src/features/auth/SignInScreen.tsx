@@ -9,6 +9,7 @@ import { signInSchema, type SignInInput } from '../../lib/validation/auth';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from './AuthProvider';
 import { AlertCircle } from 'lucide-react';
+import { AuthLayout } from '../../components/layout/AuthLayout';
 
 export const SignInScreen: React.FC = () => {
   const navigate = useNavigate();
@@ -54,20 +55,13 @@ export const SignInScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-surface-bg flex flex-col justify-center items-center px-4 py-8">
-      <div className="w-full max-w-[390px] bg-surface-card border border-surface-border rounded-2xl p-6 shadow-sm">
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-brand-wash rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="text-2xl">🚲</span>
-          </div>
-          <h1 className="text-xl font-bold text-content-primary">Sign in to KGP Marketplace</h1>
-          <p className="text-xs text-content-muted mt-1">
-            Exclusively for IIT Kharagpur students (@kgpian.iitkgp.ac.in)
-          </p>
-        </div>
+    <AuthLayout 
+      title="Sign In" 
+      subtitle="Exclusively for IIT Kharagpur students (@kgpian.iitkgp.ac.in)"
+    >
 
         {(domainError || formError) && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-status-danger text-xs flex items-start gap-2">
+          <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-danger text-xs flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{domainError || formError}</span>
           </div>
@@ -95,7 +89,7 @@ export const SignInScreen: React.FC = () => {
             <div className="text-right mt-1">
               <Link
                 to="/auth/forgot-password"
-                className="text-xs text-brand-primary font-medium hover:underline"
+                className="text-xs text-brand font-medium hover:underline"
               >
                 Forgot Password?
               </Link>
@@ -109,20 +103,19 @@ export const SignInScreen: React.FC = () => {
 
         <div className="relative my-6 text-center">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-surface-border" />
+            <div className="w-full border-t border-line" />
           </div>
-          <span className="relative bg-surface-card px-3 text-xs text-content-muted">OR</span>
+          <span className="relative bg-surface px-3 text-xs text-ink-3">OR</span>
         </div>
 
         <GoogleButton />
 
-        <p className="text-center text-xs text-content-muted mt-6">
+        <p className="text-center text-sm text-ink-3 mt-6">
           Don't have an account?{' '}
-          <Link to="/auth/signup" className="text-brand-primary font-semibold hover:underline">
+          <Link to="/auth/signup" className="text-brand font-semibold hover:underline">
             Sign Up
           </Link>
         </p>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };

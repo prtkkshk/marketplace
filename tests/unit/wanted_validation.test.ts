@@ -9,7 +9,7 @@ describe('Wanted Request Validation & WhatsApp Message Builder', () => {
       description: 'Need it for MA20101 exam before Friday',
       category: 'electronics',
       maxBudget: 800,
-      hallOfResidence: 'LBS',
+      hallOfResidence: 'LLR',
     };
 
     const result = wantedRequestSchema.safeParse(validData);

@@ -40,6 +40,7 @@ export const AdminUsersScreen: React.FC = () => {
       loadUsers();
     }, 250);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, hallFilter]);
 
   const openUserActionModal = (user: AdminUserItem, type: 'ban' | 'unban' | 'promote') => {
@@ -85,15 +86,15 @@ export const AdminUsersScreen: React.FC = () => {
     <div className="flex flex-col gap-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-slate-900">User Management</h1>
-          <p className="text-xs text-content-muted">Search, ban, unban, or promote student profiles</p>
+          <h1 className="text-xl font-bold text-ink">User Management</h1>
+          <p className="text-xs text-ink-3">Search, ban, unban, or promote student profiles</p>
         </div>
       </div>
 
       {/* Filter controls */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-content-muted pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-3 pointer-events-none" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -105,7 +106,7 @@ export const AdminUsersScreen: React.FC = () => {
         <select
           value={hallFilter}
           onChange={(e) => setHallFilter(e.target.value)}
-          className="px-3.5 py-2.5 bg-white border border-surface-border rounded-xl text-sm font-medium text-content-primary shrink-0"
+          className="px-3.5 py-2.5 bg-white border border-line rounded-xl text-sm font-medium text-ink shrink-0"
         >
           <option value="all">All Halls</option>
           {KGP_HALLS.map((h) => (
@@ -122,12 +123,12 @@ export const AdminUsersScreen: React.FC = () => {
         </div>
       ) : users.length === 0 ? (
         <Card className="p-8 text-center">
-          <p className="text-sm font-medium text-content-primary">No student profiles match your search.</p>
+          <p className="text-sm font-medium text-ink">No student profiles match your search.</p>
         </Card>
       ) : (
-        <div className="bg-white border border-surface-border rounded-2xl overflow-x-auto shadow-xs">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-surface-border text-content-muted font-bold uppercase tracking-wider">
+        <div className="bg-surface border border-line rounded-2xl overflow-x-auto shadow-sm">
+          <table className="w-full text-left text-[13px]">
+            <thead className="bg-surface-alt border-b border-line text-ink-3 font-bold uppercase tracking-wider text-xs">
               <tr>
                 <th className="p-3">Student Name</th>
                 <th className="p-3">Roll Number</th>
@@ -136,12 +137,12 @@ export const AdminUsersScreen: React.FC = () => {
                 <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-border">
+            <tbody className="divide-y divide-line">
               {users.map((u) => (
-                <tr key={u.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="p-3 font-semibold text-content-primary">
+                <tr key={u.id} className="hover:bg-surface-alt transition-colors">
+                  <td className="p-3 font-semibold text-ink">
                     {u.fullName}
-                    <span className="block text-[10px] text-content-muted font-normal">{u.email}</span>
+                    <span className="block text-[10px] text-ink-3 font-normal">{u.email}</span>
                   </td>
                   <td className="p-3 font-mono font-medium">{u.rollNumber}</td>
                   <td className="p-3">{u.hallOfResidence} Hall</td>
@@ -158,7 +159,7 @@ export const AdminUsersScreen: React.FC = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => openUserActionModal(u, 'ban')}
-                          leftIcon={<UserX className="w-3.5 h-3.5 text-status-danger" />}
+                          leftIcon={<UserX className="w-3.5 h-3.5 text-danger" />}
                         >
                           Ban
                         </Button>
@@ -187,7 +188,7 @@ export const AdminUsersScreen: React.FC = () => {
                       )}
 
                       {u.isAdmin && (
-                        <span className="text-[10px] text-content-muted font-medium px-2 py-1 bg-slate-100 rounded-md">
+                        <span className="text-[10px] text-ink-3 font-medium px-2 py-1 bg-surface-alt border border-line rounded-md">
                           Protected Admin
                         </span>
                       )}
@@ -203,8 +204,8 @@ export const AdminUsersScreen: React.FC = () => {
       {/* User Action Confirmation Sheet */}
       <Sheet isOpen={!!activeUser} onClose={() => setActiveUser(null)} title={`User Action: ${actionType.toUpperCase()}`}>
         <div className="flex flex-col gap-4 text-left py-2">
-          <div className="p-3 bg-slate-100 rounded-xl text-xs font-semibold text-content-primary flex items-center gap-2">
-            <ShieldAlert className="w-4 h-4 text-brand-primary" />
+          <div className="p-3 bg-surface-alt border border-line rounded-xl text-xs font-semibold text-ink flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-brand" />
             <span>Target Student: {activeUser?.fullName} ({activeUser?.rollNumber})</span>
           </div>
 
@@ -219,12 +220,12 @@ export const AdminUsersScreen: React.FC = () => {
           )}
 
           {actionType === 'promote' && (
-            <p className="text-xs text-content-muted">
+            <p className="text-xs text-ink-3">
               Are you sure you want to grant full admin moderation rights to {activeUser?.fullName}?
             </p>
           )}
 
-          <div className="flex gap-2 justify-end mt-2 pt-3 border-t border-surface-border">
+          <div className="flex gap-2 justify-end mt-2 pt-3 border-t border-line">
             <Button variant="outline" onClick={() => setActiveUser(null)} disabled={actionLoading}>
               Cancel
             </Button>

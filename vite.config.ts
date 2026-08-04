@@ -23,8 +23,8 @@ export default defineConfig({
         id: '/',
         start_url: '/',
         scope: '/',
-        theme_color: '#0284c7',
-        background_color: '#f8fafc',
+        theme_color: '#FBF9F6',
+        background_color: '#FBF9F6',
         display: 'standalone',
         orientation: 'portrait',
         categories: ['shopping', 'social'],
@@ -58,10 +58,21 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'supabase-vendor': ['@supabase/supabase-js'],
+          'ui-vendor': ['framer-motion', 'lucide-react', 'react-hook-form', '@hookform/resolvers', 'zod'],
+        },
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/**/*.{test,spec}.{ts,tsx}'],
+    include: ['tests/unit/**/*.{test,spec}.{ts,tsx}'],
   },
 });

@@ -20,8 +20,8 @@ export const OfflineBanner: React.FC = () => {
   if (!isOffline) return null;
 
   return (
-    <div className="bg-amber-600 text-white text-xs font-semibold px-4 py-2 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-xs">
-      <WifiOff className="w-4 h-4 shrink-0" />
+    <div className="bg-ink text-paper text-xs font-semibold px-4 py-2 mx-auto my-2 max-w-sm rounded-full text-center flex items-center justify-center gap-2 sticky top-2 z-50 shadow-1 border border-ink-2">
+      <WifiOff className="w-4 h-4 shrink-0 text-paper" />
       <span>You're offline. Viewing cached app shell.</span>
     </div>
   );

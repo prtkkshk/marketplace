@@ -26,6 +26,7 @@ export function useToggleSoldMutation() {
 
       // We can't easily snapshot all variations of ['listings', { ... }] because it's a paginated/filtered query.
       // Instead, we can use setQueriesData to update any cache entry that contains this listing.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['listings'] }, (oldData: any) => {
         if (!oldData) return oldData;
         
@@ -53,6 +54,7 @@ export function useToggleSoldMutation() {
         return oldData;
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       queryClient.setQueriesData<any>({ queryKey: ['myListings'] }, (oldData: any) => {
         if (!oldData) return oldData;
         if (Array.isArray(oldData)) {

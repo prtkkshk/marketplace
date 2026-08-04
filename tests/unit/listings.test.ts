@@ -39,8 +39,11 @@ describe('Listings Data Layer & Privacy Audit', () => {
     expect(mapped.sellerHall).toBe('Patel');
 
     // Confirm whatsapp_number is not a property on ListingItem
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((mapped as any).whatsapp_number).toBeUndefined();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((mapped as any).whatsappNumber).toBeUndefined();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((mapped as any).phone).toBeUndefined();
   });
 });
