@@ -19,6 +19,7 @@ describe('Listings Data Layer & Privacy Audit', () => {
       hall_of_residence: 'Patel',
       status: 'active',
       is_pinned: false,
+      view_count: 0,
       sold_at: null,
       deleted_at: null,
       expires_at: '2026-09-01T00:00:00Z',

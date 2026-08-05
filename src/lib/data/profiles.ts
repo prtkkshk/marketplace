@@ -14,6 +14,7 @@ export interface StudentProfile {
   isAdmin: boolean;
   isBanned: boolean;
   bannedReason: string | null;
+  lastActiveAt: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -30,6 +31,7 @@ export function mapProfileRow(row: ProfileRow): StudentProfile {
     isAdmin: row.is_admin,
     isBanned: row.is_banned,
     bannedReason: row.banned_reason,
+    lastActiveAt: row.last_active_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -39,7 +41,7 @@ export function mapProfileRow(row: ProfileRow): StudentProfile {
 export async function fetchProfile(userId: string): Promise<StudentProfile | null> {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, created_at, updated_at')
+    .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, last_active_at, created_at, updated_at')
     .eq('id', userId)
     .maybeSingle();
 
@@ -87,7 +89,7 @@ export async function updateProfile(
     .from('profiles')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .upsert(payload as any, { onConflict: 'id' })
-    .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, created_at, updated_at')
+    .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, last_active_at, created_at, updated_at')
     .maybeSingle();
 
   if (error) {
@@ -114,6 +116,7 @@ export async function updateProfile(
     isAdmin: false,
     isBanned: false,
     bannedReason: null,
+    lastActiveAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
