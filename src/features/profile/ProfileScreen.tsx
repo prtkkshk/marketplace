@@ -87,8 +87,8 @@ export const ProfileScreen: React.FC = () => {
   return (
     <PageContainer className="pt-4 pb-20">
       {/* Hero */}
-      <div className="bg-gradient-to-b from-brand-wash to-transparent rounded-[22px] p-6 mb-6 text-center border border-line shadow-sm relative overflow-hidden">
-        <div className="mx-auto w-16 h-16 bg-brand rounded-[22px] flex items-center justify-center text-paper font-display text-3xl mb-3 shadow-1">
+      <div className="bg-surface rounded-2xl p-6 mb-6 text-center border border-line shadow-sm relative overflow-hidden">
+        <div className="mx-auto w-16 h-16 bg-paper border-2 border-brand rounded-2xl flex items-center justify-center text-ink font-display text-3xl mb-3 shadow-sm">
           {profile?.fullName ? profile.fullName[0]?.toUpperCase() : 'U'}
         </div>
         <h1 className="font-display text-[26px] text-ink leading-tight mb-1">{profile?.fullName || 'Student Profile'}</h1>
@@ -257,6 +257,8 @@ export const ProfileScreen: React.FC = () => {
 
           <Input
             label="WhatsApp Contact Number"
+            type="tel"
+            inputMode="numeric"
             value={whatsapp}
             onChange={(e) => setWhatsapp(e.target.value)}
             placeholder="+919876543210"

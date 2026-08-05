@@ -9,10 +9,8 @@ import { useToast } from '../../components/ui/Toast';
 import { timeAgo } from '../../lib/utils/timeAgo';
 import { getPhotoPublicUrl, getCategoryFallback } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
-import { Heart, Pin } from 'lucide-react';
-// import { SiWhatsapp } from '@icons-pack/react-simple-icons'; // Assuming no new deps, using a simple SVG or standard icon if possible, but lucide doesn't have WhatsApp.
-// Wait, the prompt said "circular bg-whats WhatsApp icon button". I will just use a generic message icon or if there's a WhatsApp one.
-import { MessageCircle } from 'lucide-react'; 
+import { Heart, Pin, MessageCircle } from 'lucide-react';
+import { analytics } from '../../lib/analytics';
 
 export interface ListingCardProps {
   listing: ListingItem;
@@ -55,6 +53,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     e.stopPropagation();
     if (isDisabled || isContacting) return;
     setIsContacting(true);
+    
+    analytics.track('contact_click', {
+      category: listing.category,
+      price: listing.price,
+    });
 
     try {
       const result = await fetchContactNumber(listing.id, listing.title, listing.price);
@@ -79,6 +82,11 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     const previousState = isSaved;
     setIsSaved(!previousState); 
 
+    analytics.track('save_toggled', {
+      category: listing.category,
+      isSaved: !previousState,
+    });
+
     toggleSaveMutation.mutate(
       {
         userId: session.user.id,
@@ -102,12 +110,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const isNewToday = new Date(listing.createdAt).toDateString() === new Date().toDateString();
 
   return (
-    <Link
-      to={`/listing/${listing.id}`}
-      className={`group relative rounded-lg border border-line bg-surface overflow-hidden flex flex-col transition-all ${
-        isSold ? 'opacity-75 bg-slate-50' : 'hover:-translate-y-[3px] hover:border-line-strong hover:shadow-2'
+    <article
+      className={`group relative rounded-2xl border-2 border-line bg-surface overflow-hidden flex flex-col transition-all ${
+        isSold ? 'opacity-75 bg-slate-50' : 'hover:-translate-y-[3px] hover:border-ink hover:shadow-2'
       }`}
     >
+      <Link to={`/listing/${listing.id}`} className="absolute inset-0 z-10" aria-label={`View details for ${listing.title}`} />
+
       {/* Flags */}
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5 items-start">
         {listing.isPinned && (
@@ -123,14 +132,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
       {/* Action Cluster (Top Right) */}
       {!isSold && !isOwner && (
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
           <button
             onClick={handleContactTap}
             disabled={isContacting}
-            className="group/wa card-wa h-[31px] w-[31px] md:hover:w-auto rounded-full bg-whats text-white flex items-center justify-center shadow transition-all overflow-hidden"
+            className="group/wa card-wa h-[36px] w-[36px] md:hover:w-auto rounded-full bg-whats text-white flex items-center justify-center shadow transition-all overflow-hidden"
             aria-label={`Contact seller on WhatsApp about ${listing.title}`}
           >
-            <MessageCircle className="w-[15px] h-[15px] shrink-0 md:group-hover/wa:ml-2.5" />
+            <MessageCircle className="w-[16px] h-[16px] shrink-0 md:group-hover/wa:ml-3" />
             <span className="text-[11px] font-bold max-w-0 md:group-hover/wa:max-w-[100px] md:group-hover/wa:px-2 md:group-hover/wa:opacity-100 opacity-0 whitespace-nowrap overflow-hidden transition-all duration-250">
               WhatsApp
             </span>
@@ -138,17 +147,17 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           
           <button
             onClick={handleToggleSave}
-            className="card-save w-[31px] h-[31px] rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-ink-3 hover:text-brand transition-colors shadow"
+            className="card-save w-[36px] h-[36px] rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-ink-3 hover:text-brand transition-colors shadow"
             aria-label={isSaved ? 'Unsave item' : 'Save item'}
           >
-            <Heart className={`w-[15px] h-[15px] ${isSaved ? 'fill-brand text-brand' : ''}`} />
+            <Heart className={`w-[16px] h-[16px] ${isSaved ? 'fill-brand text-brand' : ''}`} />
           </button>
         </div>
       )}
 
       {/* Owner Action Cluster */}
       {isOwner && !isSold && (
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit?.(e); }}
             className="px-3 h-[31px] rounded-full bg-surface-alt/95 backdrop-blur-sm flex items-center justify-center text-[12px] font-bold text-ink hover:text-brand transition-colors shadow-1 border border-line"
@@ -164,8 +173,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         </div>
       )}
 
-      {/* Image Container with Fixed Aspect Ratio 4/5 */}
-      <div className="relative aspect-[4/5] w-full bg-paper-sunk overflow-hidden block border-b border-line">
+      {/* Image Container with Fixed Aspect Ratio square */}
+      <div className="relative aspect-square w-full bg-paper-sunk overflow-hidden block border-b-2 border-line">
         <img
           src={photoUrl}
           alt={listing.title}
@@ -201,7 +210,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           </h3>
 
           {/* Price */}
-          <div className="mt-0.5 mb-2 font-display text-[25px] text-ink leading-none">
+          <div className="mt-0.5 mb-2 font-display text-[25px] font-bold text-brand leading-none">
             <span className="text-lg text-ink-3 mr-0.5">₹</span>
             {listing.price.toLocaleString('en-IN')}
           </div>
@@ -209,7 +218,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           {/* Badges Row */}
           <div className="flex items-center gap-1.5 flex-wrap mb-3">
             <Badge variant="cond">{conditionLabels[listing.condition] || listing.condition}</Badge>
-            <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'}>
+            <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className={listing.isNegotiable ? '-rotate-2' : ''}>
               {listing.isNegotiable ? 'Negotiable' : 'Fixed'}
             </Badge>
           </div>
@@ -221,6 +230,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           <span>{timeAgo(listing.createdAt)}</span>
         </div>
       </div>
-    </Link>
+    </article>
   );
 };

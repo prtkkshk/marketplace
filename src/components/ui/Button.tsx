@@ -21,15 +21,15 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.975] rounded-full min-h-[44px] px-4';
+    'inline-flex items-center justify-center font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 rounded-full min-h-[44px] px-4';
 
   const variantStyles = {
     primary: 'bg-brand text-white hover:bg-brand-hover shadow-1',
     whats: 'bg-whats text-white hover:bg-whats-hover shadow-1',
-    ghost: 'bg-surface border border-line text-ink hover:bg-surface-alt',
+    ghost: 'bg-transparent text-ink hover:bg-surface-alt',
     danger: 'bg-danger text-white hover:bg-danger/90 shadow-1',
-    secondary: 'bg-surface border border-line text-ink hover:bg-surface-alt',
-    outline: 'bg-surface border border-line text-ink hover:bg-surface-alt',
+    secondary: 'bg-transparent border-2 border-ink text-ink hover:bg-ink hover:text-paper',
+    outline: 'bg-transparent border-2 border-ink text-ink hover:bg-ink hover:text-paper',
   };
 
   const sizeStyles = {

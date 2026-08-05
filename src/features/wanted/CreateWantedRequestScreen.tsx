@@ -15,6 +15,7 @@ import { CATEGORIES } from '../../lib/constants';
 import { useToast } from '../../components/ui/Toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { analytics } from '../../lib/analytics';
 
 export const CreateWantedRequestScreen: React.FC = () => {
   const { session, profile } = useAuth();
@@ -63,6 +64,12 @@ export const CreateWantedRequestScreen: React.FC = () => {
 
       confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } });
       await queryClient.invalidateQueries({ queryKey: ['wantedRequests'] });
+      
+      analytics.track('wanted_request_created', {
+        category: data.category,
+        hasBudget: !!data.maxBudget,
+      });
+
       showToast('Wanted request posted successfully!', 'success');
       navigate('/wanted');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

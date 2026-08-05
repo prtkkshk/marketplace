@@ -5,8 +5,8 @@ export const ListingSkeleton: React.FC<{ count?: number }> = ({ count = 6 }) => 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 lg:gap-5">
       {Array.from({ length: count }).map((_, idx) => (
-        <div key={idx} className="rounded-lg border border-line bg-surface overflow-hidden flex flex-col">
-          <Skeleton className="aspect-[4/5] w-full rounded-none border-b border-line" />
+        <div key={idx} className="rounded-2xl border-2 border-line bg-surface overflow-hidden flex flex-col">
+          <Skeleton className="aspect-square w-full rounded-none border-b-2 border-line" />
           <div className="p-3 flex-1 flex flex-col gap-3">
             <Skeleton className="h-[11px] w-3/4 rounded-sm" />
             <Skeleton className="h-[21px] w-1/3 rounded-sm" />

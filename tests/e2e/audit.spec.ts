@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as fs from 'fs';
 
 const routes = [
@@ -28,7 +28,7 @@ test.describe('Audit Pass - Authenticated', () => {
   });
 
   for (const route of routes) {
-    test(`Audit route: ${route}`, async ({ page, browserName, isMobile }) => {
+    test(`Audit route: ${route}`, async ({ page, browserName }) => {
       const logs: string[] = [];
       page.on('console', msg => {
         if (msg.type() === 'error') {
@@ -80,7 +80,7 @@ test.describe('Audit Pass - Authenticated', () => {
 
 test.describe('Audit Pass - Public', () => {
   for (const route of publicRoutes) {
-    test(`Audit route: ${route}`, async ({ page, browserName, isMobile }) => {
+    test(`Audit route: ${route}`, async ({ page, browserName }) => {
       const logs: string[] = [];
       page.on('console', msg => {
         if (msg.type() === 'error') {

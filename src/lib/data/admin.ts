@@ -28,6 +28,13 @@ export interface DashboardStats extends AdminStats {
   categoryDistribution: Array<{ category: string; count: number }>;
   hallDistribution: Array<{ hall: string; count: number }>;
   recentActivity: Array<{ action: string; time: string }>;
+  kpis: {
+    dau: number;
+    wau: number;
+    viewToContactRate: number;
+    listingsPerDay: Array<{ date: string; count: number }>;
+    wantedFulfillmentRate: number;
+  };
 }
 
 export interface AdminReportItem {
@@ -139,7 +146,11 @@ export async function fetchAdminStats(): Promise<AdminStats> {
 }
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
-  const stats = await fetchAdminStats();
+  const [stats, kpiRes] = await Promise.all([
+    fetchAdminStats(),
+    supabase.rpc('get_admin_kpis'),
+  ]);
+  
   const categoryDistribution = Object.entries(stats.categoryBreakdown).map(([category, count]) => ({
     category,
     count,
@@ -153,11 +164,21 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
     time: l.createdAt,
   }));
 
+  // Fallback for missing or error KPIs
+  const kpis = kpiRes.data || {
+    dau: 0,
+    wau: 0,
+    viewToContactRate: 0,
+    listingsPerDay: [],
+    wantedFulfillmentRate: 0,
+  };
+
   return {
     ...stats,
     categoryDistribution,
     hallDistribution,
     recentActivity,
+    kpis,
   };
 }
 

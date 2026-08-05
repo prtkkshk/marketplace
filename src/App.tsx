@@ -17,17 +17,17 @@ import { CompleteProfileScreen } from './features/auth/CompleteProfileScreen';
 import { BannedScreen } from './features/auth/BannedScreen';
 import { ProtectedRoute, AdminRoute } from './features/auth/Guards';
 
-import { FeedScreen } from './features/listings/FeedScreen';
-import { ListingDetailScreen } from './features/listings/ListingDetailScreen';
-import { CreateListingScreen } from './features/listings/CreateListingScreen';
-import { EditListingScreen } from './features/listings/EditListingScreen';
-import { WantedBoardScreen } from './features/wanted/WantedBoardScreen';
-import { CreateWantedRequestScreen } from './features/wanted/CreateWantedRequestScreen';
-import { RequestDetailScreen } from './features/wanted/RequestDetailScreen';
-import { ProfileScreen } from './features/profile/ProfileScreen';
-import { SavedItemsScreen } from './features/saved/SavedItemsScreen';
-import { RulesScreen } from './routes/RulesScreen';
-import { NotFoundScreen } from './routes/NotFoundScreen';
+const FeedScreen = lazy(() => import('./features/listings/FeedScreen').then(m => ({ default: m.FeedScreen })));
+const ListingDetailScreen = lazy(() => import('./features/listings/ListingDetailScreen').then(m => ({ default: m.ListingDetailScreen })));
+const CreateListingScreen = lazy(() => import('./features/listings/CreateListingScreen').then(m => ({ default: m.CreateListingScreen })));
+const EditListingScreen = lazy(() => import('./features/listings/EditListingScreen').then(m => ({ default: m.EditListingScreen })));
+const WantedBoardScreen = lazy(() => import('./features/wanted/WantedBoardScreen').then(m => ({ default: m.WantedBoardScreen })));
+const CreateWantedRequestScreen = lazy(() => import('./features/wanted/CreateWantedRequestScreen').then(m => ({ default: m.CreateWantedRequestScreen })));
+const RequestDetailScreen = lazy(() => import('./features/wanted/RequestDetailScreen').then(m => ({ default: m.RequestDetailScreen })));
+const ProfileScreen = lazy(() => import('./features/profile/ProfileScreen').then(m => ({ default: m.ProfileScreen })));
+const SavedItemsScreen = lazy(() => import('./features/saved/SavedItemsScreen').then(m => ({ default: m.SavedItemsScreen })));
+const RulesScreen = lazy(() => import('./routes/RulesScreen').then(m => ({ default: m.RulesScreen })));
+const NotFoundScreen = lazy(() => import('./routes/NotFoundScreen').then(m => ({ default: m.NotFoundScreen })));
 import { Spinner } from './components/ui/Spinner';
 
 // Lazy-load admin route bundle so students do not download admin code
@@ -53,8 +53,15 @@ export default function App(): React.ReactElement {
           <UpdateToast />
           <BrowserRouter>
             <AuthProvider>
-              <Routes>
-                {/* Public Auth Routes */}
+              <Suspense
+                fallback={
+                  <div className="p-8 flex items-center justify-center min-h-screen">
+                    <Spinner size={32} />
+                  </div>
+                }
+              >
+                <Routes>
+                  {/* Public Auth Routes */}
                 <Route path="/auth/signin" element={<SignInScreen />} />
                 <Route path="/auth/signup" element={<SignUpScreen />} />
                 <Route path="/auth/otp" element={<OtpScreen />} />
@@ -81,15 +88,7 @@ export default function App(): React.ReactElement {
                       <Route
                         path="/admin/*"
                         element={
-                          <Suspense
-                            fallback={
-                              <div className="p-8 flex items-center justify-center">
-                                <Spinner size={32} />
-                              </div>
-                            }
-                          >
-                            <AdminRoutes />
-                          </Suspense>
+                          <AdminRoutes />
                         }
                       />
                     </Route>
@@ -98,7 +97,8 @@ export default function App(): React.ReactElement {
                     <Route path="*" element={<NotFoundScreen />} />
                   </Route>
                 </Route>
-              </Routes>
+                </Routes>
+              </Suspense>
             </AuthProvider>
           </BrowserRouter>
         </ToastProvider>

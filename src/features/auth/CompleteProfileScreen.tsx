@@ -11,6 +11,7 @@ import { KGP_HALLS } from '../../lib/constants';
 import { useAuth } from './AuthProvider';
 import { AlertCircle } from 'lucide-react';
 import { AuthLayout } from '../../components/layout/AuthLayout';
+import { analytics } from '../../lib/analytics';
 
 export const CompleteProfileScreen: React.FC = () => {
   const { session, refreshProfile } = useAuth();
@@ -52,6 +53,12 @@ export const CompleteProfileScreen: React.FC = () => {
       });
 
       await refreshProfile();
+      
+      analytics.identify(session.user.id);
+      analytics.track('signup_completed', {
+        hall: data.hallOfResidence,
+      });
+
       navigate('/');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -101,6 +108,8 @@ export const CompleteProfileScreen: React.FC = () => {
 
           <Input
             label="WhatsApp Number"
+            type="tel"
+            inputMode="numeric"
             placeholder="10-digit phone number"
             helperText="Used ONLY when contacting or being contacted on WhatsApp"
             error={errors.whatsappNumber?.message}

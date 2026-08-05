@@ -21,6 +21,8 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { Sheet } from '../../components/ui/Sheet';
 import { ReportSheet } from '../../components/ui/ReportSheet';
 import { useAuth } from '../auth/AuthProvider';
+import { analytics } from '../../lib/analytics';
+import { supabase } from '../../lib/supabase';
 import {
   ArrowLeft,
   Heart,
@@ -57,7 +59,14 @@ export const ListingDetailScreen: React.FC = () => {
     setError(null);
 
     fetchListingById(id)
-      .then((res) => setListing(res))
+      .then((res) => {
+        setListing(res);
+        analytics.track('listing_viewed', {
+          category: res.category,
+          price: res.price,
+        });
+        supabase.rpc('increment_listing_view', { p_listing_id: id }).then();
+      })
       .catch((err) => setError(err instanceof Error ? err.message : 'Listing not found'))
       .finally(() => setLoading(false));
   }, [id]);
@@ -149,6 +158,10 @@ export const ListingDetailScreen: React.FC = () => {
   const handleContactTap = async () => {
     if (isDisabled || isContacting) return;
     setIsContacting(true);
+    analytics.track('contact_click', {
+      category: listing.category,
+      price: listing.price,
+    });
     try {
       const result = await fetchContactNumber(listing.id, listing.title, listing.price);
       window.open(result.whatsappDeepLink, '_blank', 'noopener,noreferrer');
@@ -191,6 +204,25 @@ export const ListingDetailScreen: React.FC = () => {
       </div>
 
       <div className="md:grid md:grid-cols-[1.25fr_1fr] md:gap-10 items-start relative">
+        {/* Mobile-only Header Info */}
+        <div className="md:hidden mb-4 mt-2">
+          <div className="text-[11px] font-bold text-brand uppercase tracking-wider mb-1">
+            {categoryLabel(listing.category)}
+          </div>
+          <h1 className="font-display text-[28px] font-bold text-ink leading-[1.15] mb-2">
+            {listing.title}
+          </h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="font-display text-[32px] font-bold text-brand leading-none">
+              <span className="text-xl text-ink-3 mr-1">₹</span>
+              {listing.price.toLocaleString('en-IN')}
+            </span>
+            <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className={listing.isNegotiable ? '-rotate-2' : ''}>
+              {listing.isNegotiable ? 'Negotiable' : 'Fixed Price'}
+            </Badge>
+          </div>
+        </div>
+
         {/* Left Column (Gallery & Details) */}
         <div className="flex flex-col min-w-0">
           
@@ -288,20 +320,20 @@ export const ListingDetailScreen: React.FC = () => {
         <div className="md:sticky md:top-[88px] flex flex-col gap-6">
           
           {/* Header info */}
-          <div>
+          <div className="hidden md:block">
             <div className="text-[11px] font-bold text-brand uppercase tracking-wider mb-2">
               {categoryLabel(listing.category)}
             </div>
-            <h1 className="font-display text-[31px] text-ink leading-[1.1] mb-3">
+            <h1 className="font-display text-[31px] font-bold text-ink leading-[1.1] mb-3">
               {listing.title}
             </h1>
             
             <div className="flex items-end gap-3 flex-wrap">
-              <span className="font-display text-[42px] text-ink leading-none">
+              <span className="font-display text-[42px] font-bold text-brand leading-none">
                 <span className="text-2xl text-ink-3 mr-1">₹</span>
                 {listing.price.toLocaleString('en-IN')}
               </span>
-              <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className="mb-2">
+              <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className={`mb-2 ${listing.isNegotiable ? '-rotate-2' : ''}`}>
                 {listing.isNegotiable ? 'Negotiable' : 'Fixed Price'}
               </Badge>
             </div>
@@ -413,11 +445,11 @@ export const ListingDetailScreen: React.FC = () => {
       </div>
 
       {/* Mobile Fixed Bottom Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-line px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-line px-5 py-4 pb-[calc(1rem+env(safe-area-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
         <div className="flex items-center gap-4 max-w-md mx-auto">
           <div className="flex flex-col shrink-0">
             <span className="text-[10px] font-bold text-ink-3 uppercase tracking-wider leading-none mb-1">Price</span>
-            <span className="font-display text-2xl text-ink leading-none">
+            <span className="font-display text-2xl font-bold text-brand leading-none">
               ₹{listing.price.toLocaleString('en-IN')}
             </span>
           </div>

@@ -77,8 +77,8 @@ export const CategoryPills: React.FC<CategoryPillsProps> = ({ selectedCategory, 
             onClick={() => onSelectCategory(cat.id === 'all' ? '' : cat.id)}
             className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] whitespace-nowrap transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper snap-start ${
               isSelected
-                ? 'bg-ink text-paper border-ink font-semibold'
-                : 'bg-surface border border-line text-ink-2 font-medium hover:text-ink hover:bg-surface-alt hover:border-line-strong'
+                ? 'bg-ink text-white font-semibold'
+                : 'bg-transparent border-2 border-line text-ink-2 font-medium hover:border-ink'
             }`}
           >
             <span className="text-[13px]">{cat.icon}</span>

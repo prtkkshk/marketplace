@@ -24,7 +24,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`p-8 text-center bg-surface border border-dashed border-line-strong rounded-xl flex flex-col items-center justify-center ${className}`}>
+    <div className={`p-8 text-center flex flex-col items-center justify-center flex-1 ${className}`}>
       <div className="mb-3">{icon}</div>
       <h3 className="font-display text-xl text-ink mb-1">{title}</h3>
       {description && <p className="text-sm text-ink-3 max-w-xs mb-6">{description}</p>}

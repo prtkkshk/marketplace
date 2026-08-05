@@ -46,7 +46,9 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             );
           })}
         </select>
-        {error && <span className="text-xs font-medium text-danger">{error}</span>}
+        <div className="min-h-[1.25rem] mt-0.5">
+          {error && <span className="text-xs font-medium text-danger">{error}</span>}
+        </div>
       </div>
     );
   }

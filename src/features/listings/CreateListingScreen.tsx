@@ -16,6 +16,7 @@ import { CATEGORIES, CONDITIONS } from '../../lib/constants';
 import { useToast } from '../../components/ui/Toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { analytics } from '../../lib/analytics';
 
 export const CreateListingScreen: React.FC = () => {
   const { session, profile } = useAuth();
@@ -99,6 +100,14 @@ export const CreateListingScreen: React.FC = () => {
 
       await queryClient.invalidateQueries({ queryKey: ['listings'] });
       await queryClient.invalidateQueries({ queryKey: ['myListings'] });
+
+      analytics.track('listing_created', {
+        category: data.category,
+        price: data.price,
+        isNegotiable: data.isNegotiable,
+        condition: data.condition,
+        photoCount: uploadedPaths.length,
+      });
 
       showToast('Listing posted successfully!', 'success');
       navigate(`/listing/${newListing.id}`);

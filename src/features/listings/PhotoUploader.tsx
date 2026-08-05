@@ -19,13 +19,18 @@ export interface PhotoUploaderProps {
   onChange: (photos: PhotoItem[]) => void;
 }
 
-function fileToDataUrl(file: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (err) => reject(err);
-    reader.readAsDataURL(file);
+async function uploadToSupabase(file: Blob, userId: string, listingId: string, photoId: string): Promise<string> {
+  const path = `${userId}/${listingId}/${photoId}.webp`;
+  const { data, error } = await supabase.storage.from('listing-photos').upload(path, file, {
+    contentType: 'image/webp',
+    upsert: true,
   });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data.path;
 }
 
 export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
@@ -57,10 +62,10 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
         currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 50, error: undefined } : p))
       );
 
-      // 2. Generate self-contained WebP Data URL for guaranteed 100% rendering across all devices & storage configs
-      const finalPath = await fileToDataUrl(compressedFile);
+      // 2. Upload to Supabase Storage
+      const finalPath = await uploadToSupabase(compressedFile, userId, listingId, photoId);
 
-      // 4. Success - update state with finalPath
+      // 3. Success - update state with finalPath
       onChange(
         currentPhotos.map((p) =>
           p.id === photoId ? { ...p, storagePath: finalPath, progress: 100, error: undefined } : p

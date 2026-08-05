@@ -15,9 +15,9 @@ export const Badge: React.FC<BadgeProps> = ({
   const baseStyles = 'inline-flex items-center uppercase font-bold tracking-[0.07em] rounded-full';
 
   const variantStyles = {
-    cond: 'bg-surface-alt text-ink-2 border border-line',
+    cond: 'bg-accent-wash text-accent border border-accent-line',
     neg: 'bg-accent-wash text-accent border border-accent-line',
-    fixed: 'border border-line text-ink-3',
+    fixed: 'bg-accent-wash text-accent border border-accent-line',
     flag: 'bg-ink text-paper',
     pin: 'bg-accent text-paper',
     // Fallbacks to keep old code compiling if any

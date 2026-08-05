@@ -25,9 +25,9 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Instrument Serif', 'Georgia', 'serif'],
+        display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
       },
-      borderRadius: { md: '12px', lg: '18px', xl: '26px' },
+      borderRadius: { md: '12px', lg: '18px', xl: '24px' },
       boxShadow: {
         1: '0 1px 2px rgb(26 22 20 / 0.05)',
         2: '0 4px 16px -6px rgb(26 22 20 / 0.14)',

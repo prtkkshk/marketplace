@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { fetchListings, fetchActiveAnnouncement, type FetchListingsParams } from '../../lib/data/listings';
 
-export function useListings(params: FetchListingsParams) {
-  return useQuery({
+export function useListings(params: Omit<FetchListingsParams, 'cursor'>) {
+  return useInfiniteQuery({
     queryKey: [
       'listings',
       {
@@ -13,10 +13,11 @@ export function useListings(params: FetchListingsParams) {
         isNegotiable: !!params.isNegotiable,
         hall: params.hall || 'all',
         maxPrice: params.maxPrice || 0,
-        page: params.page || 1,
       },
     ],
-    queryFn: () => fetchListings(params),
+    queryFn: ({ pageParam }) => fetchListings({ ...params, cursor: pageParam as string | undefined }),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 }
 

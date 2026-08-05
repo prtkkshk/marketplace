@@ -26,11 +26,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           } ${className}`}
           {...props}
         />
-        {error ? (
-          <span className="text-xs font-medium text-danger">{error}</span>
-        ) : helperText ? (
-          <span className="text-xs text-ink-3">{helperText}</span>
-        ) : null}
+        <div className="min-h-[1.25rem] mt-0.5">
+          {error ? (
+            <span className="text-xs font-medium text-danger">{error}</span>
+          ) : helperText ? (
+            <span className="text-xs text-ink-3">{helperText}</span>
+          ) : null}
+        </div>
       </div>
     );
   }

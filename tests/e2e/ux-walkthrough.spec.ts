@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import * as fs from 'fs';
 
 test.describe('Live UX Walkthrough', () => {
-  test('Primary Flow - Browse, Search, View, Edit Profile', async ({ page, browserName }) => {
+  test('Primary Flow - Browse, Search, View, Edit Profile', async ({ page }) => {
     // 1. Visit Home (unauth -> redirects to signin)
     await page.goto('/');
     
