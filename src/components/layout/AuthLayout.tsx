@@ -10,7 +10,7 @@ interface AuthLayoutProps {
 export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
   return (
     <div className="min-h-screen bg-paper flex flex-col justify-center items-center px-4 py-8 relative">
-      <div className="absolute top-6 left-6 md:top-8 md:left-8">
+      <div className="hidden md:block absolute top-6 left-6 md:top-8 md:left-8">
         <Link to="/" className="font-display font-bold text-2xl text-ink hover:opacity-80 transition-opacity">
           KGP <span className="text-brand italic">Bazaar</span>
         </Link>

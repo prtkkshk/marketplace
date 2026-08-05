@@ -1,7 +1,7 @@
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { fetchListings, fetchActiveAnnouncement, type FetchListingsParams } from '../../lib/data/listings';
 
-export function useListings(params: Omit<FetchListingsParams, 'cursor'>) {
+export function useListings(params: Omit<FetchListingsParams, 'page'>) {
   return useInfiniteQuery({
     queryKey: [
       'listings',
@@ -15,9 +15,9 @@ export function useListings(params: Omit<FetchListingsParams, 'cursor'>) {
         maxPrice: params.maxPrice || 0,
       },
     ],
-    queryFn: ({ pageParam }) => fetchListings({ ...params, cursor: pageParam as string | undefined }),
-    initialPageParam: undefined as string | undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    queryFn: ({ pageParam }) => fetchListings({ ...params, page: pageParam as number }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => lastPage.hasMore ? allPages.length + 1 : undefined,
   });
 }
 

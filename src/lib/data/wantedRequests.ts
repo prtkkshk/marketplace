@@ -84,6 +84,9 @@ export async function fetchWantedRequests(
     query = query.or(`title.ilike.${term},description.ilike.${term}`);
   }
 
+  // Primary order by status to put 'open' before 'fulfilled'
+  query = query.order('status', { ascending: false });
+
   if (params.sort === 'budget_desc') {
     query = query.order('max_budget', { ascending: false, nullsFirst: false });
   } else if (params.sort === 'budget_asc') {
