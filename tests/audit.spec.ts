@@ -32,22 +32,27 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 }
 
 test.describe('Audit', () => {
+  // Setup: login once
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto(`${BASE_URL}/auth/login`);
+    // Wait for the form to be ready
+    await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+    await page.fill('input[type="email"]', CREDENTIALS.email);
+    await page.fill('input[type="password"]', CREDENTIALS.password);
+    await page.click('button[type="submit"]');
+    await page.waitForURL(BASE_URL + '/', { timeout: 10000 });
+    await context.storageState({ path: 'auth.json' });
+    await context.close();
+  });
+
   for (const { width, height, name: viewportName } of VIEWPORTS) {
     test.describe(`Viewport: ${viewportName}`, () => {
-      
+      test.use({ viewport: { width, height }, storageState: 'auth.json' });
+
       for (const route of ROUTES) {
         test(`Audit Route: ${route.name}`, async ({ page }) => {
-          await page.setViewportSize({ width, height });
-          
-          // Login
-          await page.goto(`${BASE_URL}/auth/login`);
-          await page.waitForSelector('input[type="email"]', { timeout: 10000 });
-          await page.fill('input[type="email"]', CREDENTIALS.email);
-          await page.fill('input[type="password"]', CREDENTIALS.password);
-          await page.click('button[type="submit"]');
-          await page.waitForURL(BASE_URL + '/', { timeout: 10000 });
-
-          // Navigate to route
           await page.goto(`${BASE_URL}${route.path}`);
           await page.waitForLoadState('networkidle');
 

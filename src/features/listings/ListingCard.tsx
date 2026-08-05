@@ -111,8 +111,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
 
   return (
     <article
-      className={`group relative rounded-2xl border-2 border-line bg-surface overflow-hidden flex flex-col transition-all ${
-        isSold ? 'opacity-75 bg-slate-50' : 'hover:-translate-y-[3px] hover:border-ink hover:shadow-2'
+      className={`group relative rounded-2xl border border-line bg-surface shadow-sm overflow-hidden flex flex-col transition-all ${
+        isSold ? 'opacity-75 bg-slate-50' : 'motion-safe:hover:-translate-y-[3px] hover:border-line-strong hover:shadow-md'
       }`}
     >
       <Link to={`/listing/${listing.id}`} className="absolute inset-0 z-10" aria-label={`View details for ${listing.title}`} />
@@ -136,7 +136,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           <button
             onClick={handleContactTap}
             disabled={isContacting}
-            className="group/wa card-wa h-[36px] w-[36px] md:hover:w-auto rounded-full bg-whats text-white flex items-center justify-center shadow transition-all overflow-hidden"
+            className="group/wa card-wa h-[44px] w-[44px] md:h-[36px] md:w-[36px] md:hover:w-auto rounded-full bg-whats text-white flex items-center justify-center shadow transition-all overflow-hidden"
             aria-label={`Contact seller on WhatsApp about ${listing.title}`}
           >
             <MessageCircle className="w-[16px] h-[16px] shrink-0 md:group-hover/wa:ml-3" />
@@ -147,7 +147,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           
           <button
             onClick={handleToggleSave}
-            className="card-save w-[36px] h-[36px] rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-ink-3 hover:text-brand transition-colors shadow"
+            className="card-save w-[44px] h-[44px] md:w-[36px] md:h-[36px] rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-ink-3 hover:text-brand transition-colors shadow"
             aria-label={isSaved ? 'Unsave item' : 'Save item'}
           >
             <Heart className={`w-[16px] h-[16px] ${isSaved ? 'fill-brand text-brand' : ''}`} />
@@ -160,13 +160,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         <div className="absolute top-2 right-2 z-20 flex items-center gap-1.5">
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit?.(e); }}
-            className="px-3 h-[31px] rounded-full bg-surface-alt/95 backdrop-blur-sm flex items-center justify-center text-[12px] font-bold text-ink hover:text-brand transition-colors shadow-1 border border-line"
+            className="px-3 h-[44px] md:h-[31px] rounded-lg bg-surface flex items-center justify-center text-[12px] font-bold text-ink transition-colors shadow-sm border border-line-strong hover:bg-surface-alt"
           >
             Edit
           </button>
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onMarkSold?.(e); }}
-            className="px-3 h-[31px] rounded-full bg-surface-alt/95 backdrop-blur-sm flex items-center justify-center text-[12px] font-bold text-ink hover:text-brand transition-colors shadow-1 border border-line"
+            className="px-3 h-[44px] md:h-[31px] rounded-lg bg-surface flex items-center justify-center text-[12px] font-bold text-ink transition-colors shadow-sm border border-line-strong hover:bg-surface-alt"
           >
             Mark Sold
           </button>
@@ -205,20 +205,19 @@ export const ListingCard: React.FC<ListingCardProps> = ({
       <div className="p-3 flex-1 flex flex-col justify-between text-left">
         <div>
           {/* Title */}
-          <h3 className="text-[13.5px] font-semibold text-ink line-clamp-1 group-hover:text-brand transition-colors">
+          <h3 className="text-[13.5px] font-semibold text-ink line-clamp-2 leading-snug group-hover:text-brand transition-colors">
             {listing.title}
           </h3>
 
           {/* Price */}
-          <div className="mt-0.5 mb-2 font-display text-[25px] font-bold text-brand leading-none">
-            <span className="text-lg text-ink-3 mr-0.5">₹</span>
-            {listing.price.toLocaleString('en-IN')}
+          <div className="mt-1 mb-2 font-bold text-brand text-lg">
+            ₹{listing.price.toLocaleString('en-IN')}
           </div>
 
           {/* Badges Row */}
           <div className="flex items-center gap-1.5 flex-wrap mb-3">
-            <Badge variant="cond">{conditionLabels[listing.condition] || listing.condition}</Badge>
-            <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className={listing.isNegotiable ? '-rotate-2' : ''}>
+            <Badge variant="condition">{conditionLabels[listing.condition] || listing.condition}</Badge>
+            <Badge variant={listing.isNegotiable ? 'negotiable' : 'sold'} className={listing.isNegotiable ? '-rotate-2' : ''}>
               {listing.isNegotiable ? 'Negotiable' : 'Fixed'}
             </Badge>
           </div>

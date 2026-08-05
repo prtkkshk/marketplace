@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { PageContainer } from '../../components/layout/PageContainer';
+// removed PageContainer
 import { SearchBar } from '../listings/SearchBar';
 import { CategoryPills } from '../listings/CategoryPills';
 import { RequestCard } from './RequestCard';
@@ -12,6 +12,8 @@ import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
 import { Megaphone, ArrowDownUp } from 'lucide-react';
 import type { WantedRequestItem } from '../../lib/data/wantedRequests';
+import { CATEGORIES } from '../../lib/constants';
+import { DesktopFeedShell } from '../../components/layout/DesktopFeedShell';
 
 export const WantedBoardScreen: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,13 +52,40 @@ export const WantedBoardScreen: React.FC = () => {
   };
 
   return (
-    <PageContainer className="py-0 md:py-4 text-left flex flex-col h-full">
+    <DesktopFeedShell
+      sidebarContent={
+        <div className="flex flex-col">
+          <h3 className="font-bold text-ink text-sm mb-3">Categories</h3>
+          <ul className="space-y-1 text-sm mb-8">
+            <li 
+              onClick={() => updateUrlParams({ cat: undefined })}
+              className={`rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+                !selectedCategory ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
+              }`}
+            >
+              All Categories
+            </li>
+            {CATEGORIES.map(cat => (
+              <li 
+                key={cat.id}
+                onClick={() => updateUrlParams({ cat: cat.id })}
+                className={`rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+                  selectedCategory === cat.id ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
+                }`}
+              >
+                {cat.icon} {cat.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      }
+    >
       
-      {/* Amber Masthead */}
+      {/* Masthead */}
       <div className="flex flex-col gap-6 mb-8 mt-2 pb-8 border-b border-line">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="font-display text-4xl text-accent">Wanted Board</h1>
+            <h1 className="font-display text-3xl font-extrabold text-ink tracking-tight mb-2">Wanted Board</h1>
             <p className="text-sm text-ink-3 mt-1">Can't find it in the feed? Ask the campus.</p>
           </div>
           <Button variant="primary" className="w-full md:w-auto font-bold bg-accent hover:bg-amber-600" onClick={() => navigate('/new-request')}>
@@ -73,14 +102,14 @@ export const WantedBoardScreen: React.FC = () => {
           placeholder="Search wanted books, cycles, lab gear..."
         />
 
-        <div className="flex flex-col md:flex-row md:items-center gap-3">
+        <div className="flex flex-col lg:hidden lg:items-center gap-3">
           <CategoryPills
             selectedCategory={selectedCategory}
             onSelectCategory={(cat) => updateUrlParams({ cat: cat || undefined })}
             className="flex-1"
           />
 
-          <div className="flex items-center justify-between md:justify-end gap-2 pt-2 md:pt-0 border-t border-line md:border-none">
+          <div className="flex items-center justify-between lg:justify-end gap-2 pt-2 md:pt-0 border-t border-line md:border-none">
             <div className="relative inline-flex items-center">
               <ArrowDownUp className="absolute left-3 w-3 h-3 text-ink-3 pointer-events-none" />
               <select
@@ -131,6 +160,6 @@ export const WantedBoardScreen: React.FC = () => {
           )}
         </>
       )}
-    </PageContainer>
+    </DesktopFeedShell>
   );
 };

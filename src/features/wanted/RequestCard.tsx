@@ -41,8 +41,8 @@ export const RequestCard: React.FC<RequestCardProps> = ({ request, onReportClick
 
   return (
     <div
-      className={`relative rounded-2xl border border-line bg-surface p-5 shadow-1 flex flex-col text-left transition-all overflow-hidden ${
-        isFulfilled ? 'opacity-60 bg-slate-50' : 'hover:border-line-strong hover:shadow-2'
+      className={`relative rounded-2xl border border-line bg-surface p-5 shadow-sm flex flex-col text-left transition-all overflow-hidden ${
+        isFulfilled ? 'opacity-60 bg-slate-50' : 'hover:border-line-strong hover:shadow-md'
       }`}
     >
       {/* 3px Amber Left Rule */}
@@ -63,11 +63,11 @@ export const RequestCard: React.FC<RequestCardProps> = ({ request, onReportClick
         <div className="shrink-0 text-right">
           <span className="text-[10px] font-bold text-ink-3 uppercase tracking-wider block mb-0.5">Budget</span>
           {request.maxBudget ? (
-             <span className="font-display text-[27px] text-accent leading-none block">
-               <span className="text-lg mr-0.5">₹</span>{request.maxBudget.toLocaleString('en-IN')}
+             <span className="font-bold text-lg text-brand leading-none block">
+               ₹{request.maxBudget.toLocaleString('en-IN')}
              </span>
           ) : (
-             <span className="font-display text-[22px] text-accent leading-none block italic opacity-80">
+             <span className="font-bold text-lg text-brand leading-none block italic opacity-80">
                Open
              </span>
           )}
@@ -94,8 +94,8 @@ export const RequestCard: React.FC<RequestCardProps> = ({ request, onReportClick
         </Button>
       ) : (
         <Button
-          variant="whats"
-          className="w-full font-bold h-11 bg-whats hover:bg-emerald-700"
+          variant="brand-secondary"
+          className="w-full font-bold h-11"
           disabled={isDisabled || isResponding}
           isLoading={isResponding}
           onClick={handleRespondTap}
@@ -109,7 +109,7 @@ export const RequestCard: React.FC<RequestCardProps> = ({ request, onReportClick
       <div className="absolute top-3 right-2">
         <button
           onClick={(e) => { e.preventDefault(); setShowMenu(!showMenu); }}
-          className="p-1.5 rounded-md text-ink-3 hover:text-ink hover:bg-surface-alt transition-colors"
+          className="w-11 h-11 flex items-center justify-center rounded-md text-ink-3 hover:text-ink hover:bg-surface-alt transition-colors"
           aria-label="Options"
         >
           <MoreVertical className="w-4 h-4" />

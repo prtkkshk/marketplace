@@ -2,7 +2,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'whats';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'whats' | 'brand-secondary';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -21,7 +21,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 rounded-full min-h-[44px] px-4';
+    'inline-flex items-center justify-center font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed motion-safe:active:scale-95 rounded-full min-h-[44px] px-4';
 
   const variantStyles = {
     primary: 'bg-brand text-white hover:bg-brand-hover shadow-1',
@@ -30,6 +30,7 @@ export const Button: React.FC<ButtonProps> = ({
     danger: 'bg-danger text-white hover:bg-danger/90 shadow-1',
     secondary: 'bg-transparent border-2 border-ink text-ink hover:bg-ink hover:text-paper',
     outline: 'bg-transparent border-2 border-ink text-ink hover:bg-ink hover:text-paper',
+    'brand-secondary': 'bg-brand-wash text-brand border border-brand-line hover:bg-brand/10',
   };
 
   const sizeStyles = {

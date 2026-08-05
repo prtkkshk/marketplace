@@ -32,26 +32,28 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className={`relative w-full ${className}`}>
-      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-3 pointer-events-none" />
-      <input
-        type="text"
-        value={term}
-        onChange={(e) => setTerm(e.target.value)}
-        placeholder={placeholder}
-        className="w-full h-11 pl-10 pr-9 py-2 rounded-full border border-line bg-surface text-ink text-sm placeholder:text-ink-3/60 focus:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/15 transition-colors shadow-1"
-      />
-      {term && (
-        <button
-          onClick={() => {
-            setTerm('');
-            onChange('');
-          }}
-          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md text-ink-3 hover:text-ink"
-          aria-label="Clear search"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      )}
+      <div className="flex-grow flex items-center bg-surface border border-line rounded-full pl-4 pr-1.5 py-1.5 shadow-sm focus-within:ring-2 focus-within:ring-brand/30 focus-within:border-brand transition-all">
+        <Search className="w-4 h-4 text-ink-3 shrink-0" />
+        <input
+          type="text"
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+          placeholder={placeholder}
+          className="w-full bg-transparent px-3 py-1 text-sm focus:outline-none text-ink placeholder:text-ink-3"
+        />
+        {term && (
+          <button
+            onClick={() => {
+              setTerm('');
+              onChange('');
+            }}
+            className="p-1 rounded-md text-ink-3 hover:text-ink shrink-0 mr-1"
+            aria-label="Clear search"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 };

@@ -58,34 +58,37 @@ export const CategoryPills: React.FC<CategoryPillsProps> = ({ selectedCategory, 
   };
 
   return (
-    <div 
-      ref={scrollRef}
-      role="tablist"
-      aria-label="Categories"
-      className={`flex items-center gap-2 overflow-x-auto no-scrollbar rail-fade pb-2 select-none cursor-grab active:cursor-grabbing ${className}`}
-      style={{ scrollSnapType: 'x proximity' }}
-    >
-      {allCategories.map((cat, idx) => {
-        const isSelected = selectedCategory === cat.id || (!selectedCategory && cat.id === 'all');
-        return (
-          <button
-            key={cat.id}
-            role="tab"
-            aria-selected={isSelected}
-            tabIndex={isSelected ? 0 : -1}
-            onKeyDown={(e) => handleKeyDown(e, idx)}
-            onClick={() => onSelectCategory(cat.id === 'all' ? '' : cat.id)}
-            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] whitespace-nowrap transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper snap-start ${
-              isSelected
-                ? 'bg-ink text-white font-semibold'
-                : 'bg-transparent border-2 border-line text-ink-2 font-medium hover:border-ink'
-            }`}
-          >
-            <span className="text-[13px]">{cat.icon}</span>
-            <span>{cat.label}</span>
-          </button>
-        );
-      })}
+    <div className={`relative min-w-0 ${className}`}>
+      <div 
+        ref={scrollRef}
+        role="tablist"
+        aria-label="Categories"
+        className={`flex items-center gap-2 overflow-x-auto no-scrollbar pb-2 select-none cursor-grab active:cursor-grabbing`}
+        style={{ scrollSnapType: 'x proximity' }}
+      >
+        {allCategories.map((cat, idx) => {
+          const isSelected = selectedCategory === cat.id || (!selectedCategory && cat.id === 'all');
+          return (
+            <button
+              key={cat.id}
+              role="tab"
+              aria-selected={isSelected}
+              tabIndex={isSelected ? 0 : -1}
+              onKeyDown={(e) => handleKeyDown(e, idx)}
+              onClick={() => onSelectCategory(cat.id === 'all' ? '' : cat.id)}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[13px] whitespace-nowrap transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper snap-start ${
+                isSelected
+                  ? 'bg-ink text-white font-semibold'
+                  : 'bg-transparent border-2 border-line text-ink-2 font-medium hover:border-ink'
+              }`}
+            >
+              <span className="text-[13px]">{cat.icon}</span>
+              <span>{cat.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      <div className="absolute right-0 top-0 bottom-2 w-12 bg-gradient-to-l from-surface to-transparent pointer-events-none" />
     </div>
   );
 };

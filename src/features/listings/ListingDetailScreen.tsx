@@ -221,7 +221,7 @@ export const ListingDetailScreen: React.FC = () => {
               <span className="text-xl text-ink-3 mr-1">₹</span>
               {listing.price.toLocaleString('en-IN')}
             </span>
-            <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className={listing.isNegotiable ? '-rotate-2' : ''}>
+            <Badge variant={listing.isNegotiable ? 'negotiable' : 'fixed'} className={listing.isNegotiable ? '-rotate-2' : ''}>
               {listing.isNegotiable ? 'Negotiable' : 'Fixed Price'}
             </Badge>
           </div>
@@ -337,7 +337,7 @@ export const ListingDetailScreen: React.FC = () => {
                 <span className="text-2xl text-ink-3 mr-1">₹</span>
                 {listing.price.toLocaleString('en-IN')}
               </span>
-              <Badge variant={listing.isNegotiable ? 'neg' : 'fixed'} className={`mb-2 ${listing.isNegotiable ? '-rotate-2' : ''}`}>
+              <Badge variant={listing.isNegotiable ? 'negotiable' : 'fixed'} className={`mb-2 ${listing.isNegotiable ? '-rotate-2' : ''}`}>
                 {listing.isNegotiable ? 'Negotiable' : 'Fixed Price'}
               </Badge>
             </div>

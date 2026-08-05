@@ -15,6 +15,7 @@ export default {
         brand: {
           DEFAULT: rgb('--brand'), hover: rgb('--brand-hover'),
           wash: rgb('--brand-wash'), line: rgb('--brand-line'),
+          soft: rgb('--brand-soft'),
         },
         accent: {
           DEFAULT: rgb('--accent'), bright: rgb('--accent-bright'),
@@ -25,13 +26,15 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: { md: '12px', lg: '18px', xl: '24px' },
       boxShadow: {
-        1: '0 1px 2px rgb(26 22 20 / 0.05)',
-        2: '0 4px 16px -6px rgb(26 22 20 / 0.14)',
-        3: '0 18px 48px -18px rgb(26 22 20 / 0.30)',
+        xs: '0 1px 2px 0 rgb(var(--ink) / 0.04)',
+        sm: '0 1px 3px 0 rgb(var(--ink) / 0.06), 0 1px 2px -1px rgb(var(--ink) / 0.06)',
+        md: '0 8px 20px -6px rgb(var(--ink) / 0.10), 0 2px 6px -2px rgb(var(--ink) / 0.06)',
+        lg: '0 24px 48px -12px rgb(var(--ink) / 0.16), 0 4px 12px -4px rgb(var(--ink) / 0.08)',
+        glow: '0 10px 30px -8px rgb(var(--brand) / 0.35)',
+        'glow-lg': '0 20px 50px -12px rgb(var(--brand) / 0.40)',
       },
       transitionTimingFunction: { out: 'cubic-bezier(.22,.61,.36,1)' },
     },

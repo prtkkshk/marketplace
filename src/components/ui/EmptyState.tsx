@@ -24,20 +24,22 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`p-8 text-center flex flex-col items-center justify-center flex-1 ${className}`}>
-      <div className="mb-3">{icon}</div>
-      <h3 className="font-display text-xl text-ink mb-1">{title}</h3>
-      {description && <p className="text-sm text-ink-3 max-w-xs mb-6">{description}</p>}
+    <div className={`bg-surface rounded-2xl border border-line shadow-sm p-10 flex flex-col items-center text-center flex-grow justify-center ${className}`}>
+      <div className="w-16 h-16 rounded-2xl bg-brand-wash flex items-center justify-center mb-4">
+        {icon}
+      </div>
+      <h3 className="text-base font-semibold text-ink">{title}</h3>
+      {description && <p className="text-sm text-ink-2 mt-1.5 max-w-[220px]">{description}</p>}
       
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-sm">
-        {actionLabel && onAction && (
-          <Button variant="ghost" size="md" onClick={onAction} className="w-full sm:w-auto">
-            {actionLabel}
+      <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-sm">
+        {secondaryActionLabel && onSecondaryAction && (
+          <Button variant="ghost" size="md" onClick={onSecondaryAction} className="w-full sm:w-auto">
+            {secondaryActionLabel}
           </Button>
         )}
-        {secondaryActionLabel && onSecondaryAction && (
-          <Button variant="primary" size="md" onClick={onSecondaryAction} className="w-full sm:w-auto">
-            {secondaryActionLabel}
+        {actionLabel && onAction && (
+          <Button variant="primary" size="md" onClick={onAction} className="brand-gradient-btn w-full sm:w-auto text-white on-brand font-semibold border-0 motion-safe:hover:-translate-y-0.5 shadow-none">
+            {actionLabel}
           </Button>
         )}
       </div>

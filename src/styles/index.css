@@ -30,83 +30,64 @@
   font-display: swap;
   src: url('/fonts/inter-700.woff2') format('woff2');
 }
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/pjs-600.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/pjs-700.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Plus Jakarta Sans';
-  font-style: normal;
-  font-weight: 800;
-  font-display: swap;
-  src: url('/fonts/pjs-800.woff2') format('woff2');
-}
 
 @layer base {
   :root {
-    --paper: 255 255 255;        /* #FFFFFF */
-    --paper-sunk: 246 246 244;   /* #F6F6F4 */
-    --surface: 255 255 255;      /* #FFFFFF */
-    --surface-alt: 248 248 246;  /* #F8F8F6 */
-    --line: 228 228 224;         /* #E4E4E0 */
-    --line-strong: 24 24 27;     /* #18181B */
+    --paper: 248 250 252;        /* slate-50 - App background */
+    --paper-sunk: 241 245 249;   /* slate-100 */
+    --surface: 255 255 255;      /* white - Cards */
+    --surface-alt: 248 250 252;  /* slate-50 */
+    --line: 226 232 240;         /* slate-200 */
+    --line-strong: 148 163 184;  /* slate-400 */
 
-    --ink: 22 24 29;             /* #16181D */
-    --ink-2: 91 96 105;          /* #5B6069 */
-    --ink-3: 140 144 150;        /* #8C9096 */
+    --ink: 15 23 42;             /* slate-900 - Primary text */
+    --ink-2: 71 85 105;          /* slate-600 - Secondary text */
+    --ink-3: 100 116 139;        /* slate-500 - Tertiary text */
 
-    --brand: 255 79 94;          /* #FF4F5E coral */
-    --brand-hover: 230 54 70;    /* #E63646 */
-    --brand-wash: 255 235 236;   /* #FFEBEC */
-    --brand-line: 255 197 201;   /* #FFC5C9 */
+    --brand: 2 132 199;          /* sky-600 - Primary CTA */
+    --brand-hover: 3 105 161;    /* sky-700 */
+    --brand-wash: 224 242 254;   /* sky-100 */
+    --brand-line: 186 230 253;   /* sky-200 */
+    --brand-soft: 14 165 233;    /* sky-500 */
 
-    --accent: 74 92 0;           /* #4A5C00 */
-    --accent-bright: 180 244 42; /* #B4F42A */
-    --accent-wash: 245 253 224;  /* #F5FDE0 */
-    --accent-line: 217 240 158;  /* #D9F09E */
+    --accent: 2 132 199;         /* sky-600 - Semantic state */
+    --accent-bright: 56 189 248; /* sky-400 */
+    --accent-wash: 240 249 255;  /* sky-50 */
+    --accent-line: 186 230 253;  /* sky-200 */
 
-    --whats: 37 211 102;         /* #25D366 */
+    --whats: 37 211 102;         /* #25D366 - WhatsApp Green */
     --whats-hover: 30 176 85;    /* #1EB055 */
-    --danger: 217 45 32;         /* #D92D20 */
-    --danger-wash: 254 236 233;  /* #FEECE9 */
+    --danger: 220 38 38;         /* red-600 */
+    --danger-wash: 254 226 226;  /* red-100 */
   }
 
   [data-theme='dark'] {
-    --paper: 15 15 17;           /* #0F0F11 */
-    --paper-sunk: 10 10 11;      /* #0A0A0B */
-    --surface: 24 24 27;         /* #18181B */
-    --surface-alt: 32 32 36;     /* #202024 */
-    --line: 44 44 48;            /* #2C2C30 */
-    --line-strong: 245 245 244;  /* near-white */
+    --paper: 15 23 42;           /* slate-900 */
+    --paper-sunk: 2 6 23;        /* slate-950 */
+    --surface: 30 41 59;         /* slate-800 */
+    --surface-alt: 51 65 85;     /* slate-700 */
+    --line: 71 85 105;           /* slate-600 */
+    --line-strong: 148 163 184;  /* slate-400 */
 
-    --ink: 244 244 245;          /* #F4F4F5 */
-    --ink-2: 172 172 178;        /* #ACACB2 */
-    --ink-3: 122 122 130;        /* #7A7A82 */
+    --ink: 248 250 252;          /* slate-50 */
+    --ink-2: 203 213 225;        /* slate-300 */
+    --ink-3: 148 163 184;        /* slate-400 */
 
-    --brand: 255 111 123;        /* #FF6F7B */
-    --brand-hover: 255 138 148;  /* #FF8A94 */
-    --brand-wash: 46 21 24;      /* #2E1518 */
-    --brand-line: 92 34 40;      /* #5C2228 */
+    --brand: 56 189 248;         /* sky-400 */
+    --brand-hover: 14 165 233;   /* sky-500 */
+    --brand-wash: 12 74 110;     /* sky-900 */
+    --brand-line: 3 105 161;     /* sky-700 */
+    --brand-soft: 14 165 233;    /* sky-500 */
 
-    --accent: 200 244 74;        /* #C8F44A */
-    --accent-bright: 200 244 74;
-    --accent-wash: 34 41 12;     /* #22290C */
-    --accent-line: 61 74 20;     /* #3D4A14 */
+    --accent: 56 189 248;        /* sky-400 */
+    --accent-bright: 56 189 248;
+    --accent-wash: 12 74 110;    /* sky-900 */
+    --accent-line: 3 105 161;    /* sky-700 */
 
     --whats: 63 214 130;         /* #3FD682 */
     --whats-hover: 90 224 152;   /* #5AE098 */
-    --danger: 242 138 128;       /* #F28A80 */
-    --danger-wash: 43 21 19;     /* #2B1513 */
+    --danger: 248 113 113;       /* red-400 */
+    --danger-wash: 69 10 10;     /* red-950 */
   }
 
   html { color-scheme: light; }
@@ -115,6 +96,16 @@
   body {
     @apply bg-paper text-ink antialiased transition-colors duration-300 ease-out motion-reduce:transition-none;
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    background-image:
+      radial-gradient(60rem 30rem at 8% -10%, rgba(2,132,199,0.07), transparent 60%),
+      radial-gradient(50rem 26rem at 100% 0%, rgba(56,189,248,0.06), transparent 55%);
+    background-attachment: fixed;
+  }
+  
+  [data-theme='dark'] body {
+    background-image:
+      radial-gradient(60rem 30rem at 8% -10%, rgba(56,189,248,0.10), transparent 60%),
+      radial-gradient(50rem 26rem at 100% 0%, rgba(2,132,199,0.10), transparent 55%);
   }
 
   .preload, .preload * {
@@ -122,9 +113,62 @@
   }
 }
 
+@layer components {
+  .glass {
+    background-color: rgb(var(--surface) / 0.72);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+  
+  [data-theme='dark'] .glass {
+    border-color: rgb(var(--line));
+  }
+
+  .brand-gradient-btn {
+    background-image: linear-gradient(180deg, rgb(var(--brand-soft)), rgb(var(--brand)));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 8px 20px -8px rgba(var(--brand), 0.55);
+  }
+  
+  .brand-gradient-btn:hover {
+    background-image: linear-gradient(180deg, rgb(var(--brand)), rgb(var(--brand-hover)));
+  }
+  
+  [data-theme='dark'] .brand-gradient-btn {
+    background-image: linear-gradient(180deg, rgb(var(--brand)), rgb(var(--brand-soft)));
+  }
+
+  .img-placeholder {
+    background-image:
+      radial-gradient(120% 140% at 15% 10%, rgba(2,132,199,0.16), transparent 55%),
+      radial-gradient(120% 140% at 90% 90%, rgba(56,189,248,0.14), transparent 55%),
+      linear-gradient(135deg, rgb(var(--paper-sunk)), rgb(var(--line)));
+  }
+
+  [data-theme='dark'] .img-placeholder {
+    background-image:
+      radial-gradient(120% 140% at 15% 10%, rgba(56,189,248,0.14), transparent 55%),
+      radial-gradient(120% 140% at 90% 90%, rgba(2,132,199,0.18), transparent 55%),
+      linear-gradient(135deg, rgb(var(--surface-alt)), rgb(var(--surface)));
+  }
+  
+  .skeleton {
+    background: linear-gradient(90deg, rgb(var(--paper-sunk)) 25%, rgb(var(--paper)) 37%, rgb(var(--paper-sunk)) 63%);
+    background-size: 800px 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+  
+  [data-theme='dark'] .skeleton {
+    background: linear-gradient(90deg, rgb(var(--surface-alt)) 25%, rgb(var(--line)) 37%, rgb(var(--surface-alt)) 63%);
+    background-size: 800px 100%;
+  }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* gradient edge-fade that signals horizontal overflow without a scrollbar */
+  
+  @keyframes shimmer { 
+    0% { background-position: -400px 0; } 
+    100% { background-position: 400px 0; } 
+  }
 }

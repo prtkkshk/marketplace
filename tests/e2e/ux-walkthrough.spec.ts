@@ -35,8 +35,8 @@ test.describe('Live UX Walkthrough', () => {
     }
 
     // 5. Open a category
-    const electronicsCat = await page.getByText('Electronics', { exact: true });
-    if (electronicsCat) {
+    const electronicsCat = page.getByText('Electronics', { exact: true }).first();
+    if (await electronicsCat.isVisible()) {
       await electronicsCat.click();
       await page.waitForTimeout(2000);
     }

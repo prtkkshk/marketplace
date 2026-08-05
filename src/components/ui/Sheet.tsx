@@ -37,7 +37,7 @@ export const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, title, children }
         aria-modal="true"
         aria-label={title || 'Sheet dialog'}
       >
-        <div className="flex flex-col mb-4 pb-2 border-b border-line">
+        <div className="flex flex-col mb-4 pb-3 border-b border-line">
           <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4 md:hidden" />
           <div className="flex items-center justify-between">
             {title ? (
@@ -47,10 +47,10 @@ export const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, title, children }
             )}
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-surface-alt transition-colors ml-auto"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-surface-alt transition-colors font-medium text-sm ml-auto"
               aria-label="Close sheet"
             >
-              <X className="w-5 h-5" />
+              Close <X className="w-4 h-4" />
             </button>
           </div>
         </div>

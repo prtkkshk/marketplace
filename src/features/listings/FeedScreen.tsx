@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { PageContainer } from '../../components/layout/PageContainer';
+// removed PageContainer
 import { SearchBar } from './SearchBar';
 import { CategoryPills } from './CategoryPills';
 import { SortDropdown } from './SortDropdown';
 import { FilterSheet } from './FilterSheet';
+import { FilterRail } from './FilterRail';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { ListingCard } from './ListingCard';
 import { ListingSkeleton } from './ListingSkeleton';
@@ -17,6 +18,7 @@ import { SlidersHorizontal, PackageSearch, X } from 'lucide-react';
 // Removed unused ListingItem import
 import { FeedMasthead } from './FeedMasthead';
 import { analytics } from '../../lib/analytics';
+import { DesktopFeedShell } from '../../components/layout/DesktopFeedShell';
 
 export const FeedScreen: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -100,7 +102,22 @@ export const FeedScreen: React.FC = () => {
   };
 
   return (
-    <PageContainer className="py-0 md:py-4 text-left flex flex-col h-full">
+    <DesktopFeedShell
+      sidebarContent={
+        <FilterRail
+          selectedCategory={selectedCategory}
+          onSelectCategory={(cat) => updateUrlParams({ cat: cat || undefined })}
+          condition={condition}
+          onSelectCondition={(cond) => updateUrlParams({ cond: cond || undefined })}
+          isNegotiable={isNegotiable}
+          onToggleNegotiable={() => updateUrlParams({ neg: isNegotiable ? undefined : 'true' })}
+          hall={hall}
+          onSelectHall={(h) => updateUrlParams({ hall: h || undefined })}
+          maxPrice={maxPrice}
+          onChangeMaxPrice={(price) => updateUrlParams({ maxPrice: price ? String(price) : undefined })}
+        />
+      }
+    >
       <AnnouncementBanner announcement={announcement || null} />
       
       <FeedMasthead />
@@ -113,21 +130,21 @@ export const FeedScreen: React.FC = () => {
           className="md:hidden"
         />
 
-        <div className="flex flex-col md:flex-row md:items-center gap-3">
+        <div className="flex flex-col lg:hidden lg:items-center gap-3">
           <SearchBar
             value={searchQuery}
             onChange={(q) => updateUrlParams({ q: q || undefined })}
-            className="hidden md:flex w-64 shrink-0"
+            className="hidden lg:flex w-64 shrink-0"
           />
           <CategoryPills
             selectedCategory={selectedCategory}
             onSelectCategory={(cat) => updateUrlParams({ cat: cat || undefined })}
-            className="flex-1"
+            className="flex-1 lg:hidden"
           />
 
-          <div className="flex items-center justify-between md:justify-end gap-2 pt-2 md:pt-0 border-t border-line md:border-none">
+          <div className="flex items-center justify-between lg:justify-end gap-2 pt-2 md:pt-0 border-t border-line md:border-none">
             {/* Mobile Result Count (removed totalCount) */}
-            <div className="md:hidden text-xs font-semibold text-ink-3">
+            <div className="lg:hidden text-xs font-semibold text-ink-3">
               {allListings.length > 0 ? 'Results found' : ''}
             </div>
 
@@ -138,8 +155,9 @@ export const FeedScreen: React.FC = () => {
               />
               <Button
                 variant="secondary"
-                size="sm"
+                size="md"
                 onClick={() => setIsFilterOpen(true)}
+                className="lg:hidden"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 mr-1.5" />
                 <span>Filters</span>
@@ -151,9 +169,9 @@ export const FeedScreen: React.FC = () => {
           </div>
         </div>
 
-        {/* Active Filter Chips */}
+        {/* Active Filter Chips - Desktop Header already shows showing X results, but let's hide chips on desktop since sidebar shows them */}
         {activeFilterCount > 0 && (
-          <div className="flex items-center flex-wrap gap-2 mt-1">
+          <div className="flex items-center flex-wrap gap-2 mt-1 lg:hidden">
             {condition && (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-brand-wash text-brand text-xs font-medium border border-brand-line">
                 Condition: {condition}
@@ -241,6 +259,6 @@ export const FeedScreen: React.FC = () => {
           </div>
         </>
       )}
-    </PageContainer>
+    </DesktopFeedShell>
   );
 };
