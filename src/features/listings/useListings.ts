@@ -16,7 +16,7 @@ export function useListings(params: Omit<FetchListingsParams, 'cursor'>) {
       },
     ],
     queryFn: ({ pageParam }) => fetchListings({ ...params, cursor: pageParam as string | undefined }),
-    initialPageParam: undefined,
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
 }

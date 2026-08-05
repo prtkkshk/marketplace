@@ -34,6 +34,8 @@ async function uploadToSupabase(file: Blob, userId: string, listingId: string, p
 }
 
 export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
+  userId,
+  listingId,
   photos,
   onChange,
 }) => {

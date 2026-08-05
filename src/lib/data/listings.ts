@@ -173,7 +173,9 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
   if (listings.length > limit) {
     listings.pop(); // Remove the extra item
     const lastItem = listings[listings.length - 1];
-    nextCursor = lastItem.createdAt; // We'll use createdAt as the basic cursor
+    if (lastItem) {
+      nextCursor = lastItem.createdAt; // We'll use createdAt as the basic cursor
+    }
   }
 
   return { listings, nextCursor };

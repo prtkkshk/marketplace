@@ -164,8 +164,15 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
     time: l.createdAt,
   }));
 
-  // Fallback for missing or error KPIs
-  const kpis = kpiRes.data || {
+  // Map raw data or fallback
+  const rawKpis = kpiRes.data as { dau: number, wau: number, view_to_contact_rate: number, listings_per_day: { date: string; count: number }[], wanted_fulfillment_rate: number } | null | boolean;
+  const kpis = (rawKpis && typeof rawKpis !== 'boolean') ? {
+    dau: rawKpis.dau || 0,
+    wau: rawKpis.wau || 0,
+    viewToContactRate: rawKpis.view_to_contact_rate || 0,
+    listingsPerDay: rawKpis.listings_per_day || [],
+    wantedFulfillmentRate: rawKpis.wanted_fulfillment_rate || 0,
+  } : {
     dau: 0,
     wau: 0,
     viewToContactRate: 0,

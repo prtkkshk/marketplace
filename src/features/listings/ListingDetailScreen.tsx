@@ -61,11 +61,15 @@ export const ListingDetailScreen: React.FC = () => {
     fetchListingById(id)
       .then((res) => {
         setListing(res);
-        analytics.track('listing_viewed', {
-          category: res.category,
-          price: res.price,
-        });
-        supabase.rpc('increment_listing_view', { p_listing_id: id }).then();
+        if (res) {
+          analytics.track('listing_viewed', {
+            category: res.category,
+            price: res.price,
+          });
+          supabase.rpc('increment_listing_view', { p_listing_id: id }).then();
+        } else {
+          setError('Listing not found');
+        }
       })
       .catch((err) => setError(err instanceof Error ? err.message : 'Listing not found'))
       .finally(() => setLoading(false));

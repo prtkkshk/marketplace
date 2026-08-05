@@ -48,6 +48,7 @@ export interface Database {
           is_admin: boolean
           is_banned: boolean
           banned_reason: string | null
+          last_active_at: string
           created_at: string
           updated_at: string
         }
@@ -62,6 +63,7 @@ export interface Database {
           is_admin?: boolean
           is_banned?: boolean
           banned_reason?: string | null
+          last_active_at?: string
           created_at?: string
           updated_at?: string
         }
@@ -76,6 +78,7 @@ export interface Database {
           is_admin?: boolean
           is_banned?: boolean
           banned_reason?: string | null
+          last_active_at?: string
           created_at?: string
           updated_at?: string
         }
@@ -95,6 +98,7 @@ export interface Database {
           hall_of_residence: string
           status: ListingStatus
           is_pinned: boolean
+          view_count: number
           sold_at: string | null
           deleted_at: string | null
           expires_at: string
@@ -114,6 +118,7 @@ export interface Database {
           hall_of_residence: string
           status?: ListingStatus
           is_pinned?: boolean
+          view_count?: number
           sold_at?: string | null
           deleted_at?: string | null
           expires_at?: string
@@ -133,6 +138,7 @@ export interface Database {
           hall_of_residence?: string
           status?: ListingStatus
           is_pinned?: boolean
+          view_count?: number
           sold_at?: string | null
           deleted_at?: string | null
           expires_at?: string
@@ -362,6 +368,20 @@ export interface Database {
       get_requester_number: {
         Args: { p_request_id: string }
         Returns: string
+      }
+      increment_listing_view: {
+        Args: { p_listing_id: string }
+        Returns: void
+      }
+      get_admin_kpis: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          dau: number
+          wau: number
+          listings_per_day: { date: string; count: number }[]
+          view_to_contact_rate: number
+          wanted_fulfillment_rate: number
+        }
       }
     }
     Enums: {
