@@ -9,7 +9,7 @@ export const AppShell: React.FC = () => {
     <ThemeProvider>
       <div className="min-h-screen bg-paper flex flex-col antialiased">
         <DesktopHeader />
-        <main className="flex-1 w-full pb-[76px] md:pb-0">
+        <main className="flex-1 w-full pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0">
           <Outlet />
         </main>
         <BottomNav />

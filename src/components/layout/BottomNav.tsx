@@ -20,21 +20,21 @@ export const BottomNav: React.FC = () => {
   return (
     <>
       <nav
-        className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-full max-w-sm px-4"
+        className="md:hidden fixed bottom-0 left-0 w-full z-40 bg-surface/90 backdrop-blur-md border-t border-line pb-[env(safe-area-inset-bottom)]"
         aria-label="Mobile navigation"
       >
-        <div className="glass border border-line shadow-lg rounded-2xl p-2 flex justify-around items-center">
+        <div className="flex justify-around items-center px-2 py-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.path === '/profile' && location.pathname.startsWith('/profile') && location.pathname !== '/profile/saved');
             const Icon = item.icon;
 
             if (item.isFab) {
               return (
-                <div key={item.path} className="relative -top-6">
+                <div key={item.path} className="relative -top-5">
                   <button
                     type="button"
                     onClick={() => setIsChooserOpen(true)}
-                    className="brand-gradient-btn text-white w-14 h-14 rounded-full flex items-center justify-center hover:scale-105 transition-all border-4 border-paper focus:outline-none"
+                    className="brand-gradient-btn text-white w-14 h-14 rounded-full flex items-center justify-center hover:scale-105 transition-all border-4 border-surface shadow-md focus:outline-none"
                     aria-label={item.label}
                   >
                     <Icon className="w-7 h-7" />
