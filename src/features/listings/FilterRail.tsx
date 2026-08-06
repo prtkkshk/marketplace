@@ -30,23 +30,28 @@ export const FilterRail: React.FC<FilterRailProps> = ({
     <div className="flex flex-col">
       <h3 className="font-bold text-ink text-sm mb-3">Categories</h3>
       <ul className="space-y-1 text-sm mb-8">
-        <li 
-          onClick={() => onSelectCategory(undefined)}
-          className={`rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
-            !selectedCategory ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
-          }`}
-        >
-          All Categories
-        </li>
-        {CATEGORIES.map(cat => (
-          <li 
-            key={cat.id}
-            onClick={() => onSelectCategory(cat.id)}
-            className={`rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
-              selectedCategory === cat.id ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
+        <li>
+          <button
+            type="button"
+            onClick={() => onSelectCategory(undefined)}
+            className={`w-full text-left rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+              !selectedCategory ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
             }`}
           >
-            {cat.icon} {cat.label}
+            All Categories
+          </button>
+        </li>
+        {CATEGORIES.map(cat => (
+          <li key={cat.id}>
+            <button
+              type="button"
+              onClick={() => onSelectCategory(cat.id)}
+              className={`w-full text-left rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+                selectedCategory === cat.id ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
+              }`}
+            >
+              {cat.icon} {cat.label}
+            </button>
           </li>
         ))}
       </ul>
@@ -54,14 +59,16 @@ export const FilterRail: React.FC<FilterRailProps> = ({
       <h3 className="font-bold text-ink text-sm mb-3">Condition</h3>
       <ul className="space-y-2.5 text-sm text-ink-2 mb-8">
         {CONDITIONS.map(cond => (
-          <li key={cond.id} className="flex items-center gap-2.5">
-            <input 
-              type="checkbox" 
-              checked={condition === cond.id}
-              onChange={() => onSelectCondition(condition === cond.id ? undefined : cond.id)}
-              className="rounded border-line text-brand focus:ring-brand w-4 h-4 cursor-pointer" 
-            /> 
-            <span className="cursor-pointer" onClick={() => onSelectCondition(condition === cond.id ? undefined : cond.id)}>{cond.label}</span>
+          <li key={cond.id}>
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={condition === cond.id}
+                onChange={() => onSelectCondition(condition === cond.id ? undefined : cond.id)}
+                className="rounded border-line text-brand focus:ring-brand w-4 h-4 cursor-pointer" 
+              /> 
+              <span>{cond.label}</span>
+            </label>
           </li>
         ))}
       </ul>

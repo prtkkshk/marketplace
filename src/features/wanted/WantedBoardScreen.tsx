@@ -57,23 +57,28 @@ export const WantedBoardScreen: React.FC = () => {
         <div className="flex flex-col">
           <h3 className="font-bold text-ink text-sm mb-3">Categories</h3>
           <ul className="space-y-1 text-sm mb-8">
-            <li 
-              onClick={() => updateUrlParams({ cat: undefined })}
-              className={`rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
-                !selectedCategory ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
-              }`}
-            >
-              All Categories
-            </li>
-            {CATEGORIES.map(cat => (
-              <li 
-                key={cat.id}
-                onClick={() => updateUrlParams({ cat: cat.id })}
-                className={`rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
-                  selectedCategory === cat.id ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
+            <li>
+              <button
+                type="button"
+                onClick={() => updateUrlParams({ cat: undefined })}
+                className={`w-full text-left rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+                  !selectedCategory ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
                 }`}
               >
-                {cat.icon} {cat.label}
+                All Categories
+              </button>
+            </li>
+            {CATEGORIES.map(cat => (
+              <li key={cat.id}>
+                <button
+                  type="button"
+                  onClick={() => updateUrlParams({ cat: cat.id })}
+                  className={`w-full text-left rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+                    selectedCategory === cat.id ? 'font-semibold text-brand bg-brand-wash' : 'text-ink-2 hover:text-ink hover:bg-surface-alt'
+                  }`}
+                >
+                  {cat.icon} {cat.label}
+                </button>
               </li>
             ))}
           </ul>
