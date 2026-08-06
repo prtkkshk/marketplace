@@ -10,9 +10,11 @@ envContent.split('\n').forEach(line => {
   const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
   if (match) {
     const key = match[1];
-    let value = match[2] || '';
-    if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
-    process.env[key] = value;
+    if (key) {
+      let value = match[2] || '';
+      if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1);
+      process.env[key] = value;
+    }
   }
 });
 
@@ -33,14 +35,7 @@ let bannedClient: SupabaseClient;
 let adminClient: SupabaseClient;
 let serviceRoleClient: SupabaseClient; // For setup/teardown only
 
-let studentAUid: string;
-let studentBUid: string;
-let bannedUid: string;
-let adminUid: string;
-
 let listingAId: string;
-let listingBId: string;
-let listingBannedId: string;
 
 beforeAll(async () => {
   const opts = { auth: { persistSession: false } };
@@ -52,18 +47,14 @@ beforeAll(async () => {
   serviceRoleClient = createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY!, opts);
 
   // Sign in
-  const authA = await studentAClient.auth.signInWithPassword(STUDENT_A);
-  studentAUid = authA.data.user!.id;
-  const authB = await studentBClient.auth.signInWithPassword(STUDENT_B);
-  studentBUid = authB.data.user!.id;
-  const authBanned = await bannedClient.auth.signInWithPassword(STUDENT_BANNED);
-  bannedUid = authBanned.data.user!.id;
-  const authAdmin = await adminClient.auth.signInWithPassword(ADMIN);
-  adminUid = authAdmin.data.user!.id;
+  await studentAClient.auth.signInWithPassword(STUDENT_A);
+  await studentBClient.auth.signInWithPassword(STUDENT_B);
+  await bannedClient.auth.signInWithPassword(STUDENT_BANNED);
+  await adminClient.auth.signInWithPassword(ADMIN);
 
   // Use existing admin listings because of INSERT policy recursion bug
   const { data: listings } = await serviceRoleClient.from('listings').select('id').limit(1);
-  if (listings && listings.length > 0) {
+  if (listings && listings.length > 0 && listings[0]) {
     listingAId = listings[0].id;
   }
 });
