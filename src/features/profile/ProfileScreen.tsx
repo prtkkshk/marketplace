@@ -8,11 +8,10 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Dialog } from '../../components/ui/Dialog';
 import { KGP_HALLS } from '../../lib/constants';
-import { ShoppingBag, Megaphone, Shield, LogOut, Trash2, Edit3, FileText, Settings, Moon } from 'lucide-react';
+import { ShoppingBag, Megaphone, Shield, LogOut, Trash2, Edit3, FileText, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { PageContainer } from '../../components/layout/PageContainer';
 import { Stat } from '../../components/ui/Stat';
-import { ThemeToggle } from '../../components/ui/ThemeToggle';
 import { useQuery } from '@tanstack/react-query';
 import { fetchMyListings } from '../../lib/data/listings';
 import { fetchSavedListings } from '../../lib/data/saved_items';
@@ -166,18 +165,7 @@ export const ProfileScreen: React.FC = () => {
               </div>
             </Link>
 
-            <div className="flex items-center justify-between p-4 border-b border-line">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-100 text-ink flex items-center justify-center shrink-0">
-                  <Moon className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-ink">Appearance</div>
-                  <div className="text-xs text-ink-3">Theme preference</div>
-                </div>
-              </div>
-              <ThemeToggle />
-            </div>
+
 
             <button 
               onClick={() => {
