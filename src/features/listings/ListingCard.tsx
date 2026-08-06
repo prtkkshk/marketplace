@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import type { ListingItem } from '../../lib/data/listings';
 import { fetchContactNumber } from '../../lib/data/contact';
 import { useToggleSaveMutation } from '../../lib/hooks/useToggleSaveMutation';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSavedListings } from '../../lib/data/saved_items';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
 // removed formatINR
@@ -14,7 +16,6 @@ import { analytics } from '../../lib/analytics';
 
 export interface ListingCardProps {
   listing: ListingItem;
-  initialIsSaved?: boolean;
   onReportClick?: (listing: ListingItem) => void;
   isOwner?: boolean;
   onEdit?: (e: React.MouseEvent) => void;
@@ -23,7 +24,6 @@ export interface ListingCardProps {
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   listing,
-  initialIsSaved = false,
   isOwner = false,
   onEdit,
   onMarkSold,
@@ -32,7 +32,13 @@ export const ListingCard: React.FC<ListingCardProps> = ({
   const { showToast } = useToast();
   const toggleSaveMutation = useToggleSaveMutation();
 
-  const [isSaved, setIsSaved] = useState<boolean>(initialIsSaved);
+  const { data: savedItems = [] } = useQuery({
+    queryKey: ['savedItems'],
+    queryFn: () => session?.user?.id ? fetchSavedListings(session.user.id) : Promise.resolve([]),
+    enabled: !!session?.user?.id,
+  });
+
+  const isSaved = savedItems.some(item => item.id === listing.id);
   const [isContacting, setIsContacting] = useState<boolean>(false);
 
   const isSold = listing.status === 'sold';
@@ -80,7 +86,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
     }
 
     const previousState = isSaved;
-    setIsSaved(!previousState); 
 
     analytics.track('save_toggled', {
       category: listing.category,
@@ -99,7 +104,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
           showToast(!previousState ? 'Saved to bookmarks' : 'Removed from bookmarks', 'info');
         },
         onError: (err) => {
-          setIsSaved(previousState); 
           const msg = err instanceof Error ? err.message : 'Save toggle failed';
           showToast(msg, 'error');
         },

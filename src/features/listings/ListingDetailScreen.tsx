@@ -8,6 +8,8 @@ import {
 import { useToggleSoldMutation } from '../../lib/hooks/useToggleSoldMutation';
 import { useDeleteListingMutation } from '../../lib/hooks/useDeleteListingMutation';
 import { useToggleSaveMutation } from '../../lib/hooks/useToggleSaveMutation';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSavedListings } from '../../lib/data/saved_items';
 import { fetchContactNumber } from '../../lib/data/contact';
 // formatINR removed
 import { timeAgo } from '../../lib/utils/timeAgo';
@@ -48,10 +50,16 @@ export const ListingDetailScreen: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activePhotoIdx, setActivePhotoIdx] = useState<number>(0);
-  const [isSaved, setIsSaved] = useState<boolean>(false);
   const [showDeleteSheet, setShowDeleteSheet] = useState<boolean>(false);
   const [isContacting, setIsContacting] = useState<boolean>(false);
   const [isReportSheetOpen, setIsReportSheetOpen] = useState<boolean>(false);
+
+  const { data: savedItems = [] } = useQuery({
+    queryKey: ['savedItems'],
+    queryFn: () => session?.user?.id ? fetchSavedListings(session.user.id) : Promise.resolve([]),
+    enabled: !!session?.user?.id,
+  });
+  const isSaved = listing ? savedItems.some(item => item.id === listing.id) : false;
 
   useEffect(() => {
     if (!id) return;
@@ -144,14 +152,12 @@ export const ListingDetailScreen: React.FC = () => {
       return;
     }
     const previousState = isSaved;
-    setIsSaved(!previousState);
 
     toggleSaveMutation.mutate(
       { userId: session.user.id, listingId: listing.id, previousState, listing },
       {
         onSuccess: () => showToast(!previousState ? 'Saved to bookmarks' : 'Removed from bookmarks', 'info'),
         onError: (err) => {
-          setIsSaved(previousState);
           const msg = err instanceof Error ? err.message : 'Save toggle failed';
           showToast(msg, 'error');
         },
@@ -449,7 +455,7 @@ export const ListingDetailScreen: React.FC = () => {
       </div>
 
       {/* Mobile Fixed Bottom Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-line px-5 py-4 pb-[calc(1rem+env(safe-area-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[60] bg-surface border-t border-line px-5 py-4 pb-[calc(1rem+env(safe-area-bottom))] shadow-[0_-4px_24px_rgba(0,0,0,0.04)]">
         <div className="flex items-center gap-4 max-w-md mx-auto">
           <div className="flex flex-col shrink-0">
             <span className="text-[10px] font-bold text-ink-3 uppercase tracking-wider leading-none mb-1">Price</span>

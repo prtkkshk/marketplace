@@ -50,7 +50,7 @@ export const SavedItemsScreen: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {savedItems.map((item) => (
-            <ListingCard key={item.id} listing={item} initialIsSaved={true} />
+            <ListingCard key={item.id} listing={item} />
           ))}
         </div>
       )}

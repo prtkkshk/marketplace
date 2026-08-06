@@ -7,13 +7,19 @@ dist/
 # Environment variables
 .env*
 !.env.example
+!.env.test.example
 
 # Test outputs
 playwright-report/
 test-results/
 coverage/
 audit-artifacts/
+audit-artifacts-v4/
+qa-artifacts/
 AUDIT_REPORT.md
+
+# Reports are TRACKED on purpose — they are the record of what shipped.
+# TEST_REPORT.md, FIX_PLAN.md, FIX_REPORT.md are intentionally not ignored.
 
 # Deployment & IDE
 .vercel/

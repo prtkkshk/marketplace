@@ -12,6 +12,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "qa:bootstrap": "node scripts/qa-bootstrap.mjs",
+    "qa:teardown": "node scripts/qa-bootstrap.mjs --teardown",
+    "qa:status": "node scripts/qa-bootstrap.mjs --status",
+    "qa:verify": "npm run lint && npm run typecheck && npm run test && npm run build",
     "db:types": "supabase gen types typescript --local > src/lib/database.types.ts"
   },
   "dependencies": {
