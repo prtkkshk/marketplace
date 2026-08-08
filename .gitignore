@@ -24,3 +24,7 @@ AUDIT_REPORT.md
 # Deployment & IDE
 .vercel/
 .DS_Store
+
+# git-filter-repo rules files contain raw secrets by design — never commit
+replace-rules.txt
+*replace-rules*
