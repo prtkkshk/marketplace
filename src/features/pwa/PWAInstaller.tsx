@@ -36,10 +36,8 @@ export const PWAInstaller: React.FC = () => {
  window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
  // iOS Safari Detection
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone;
+ const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as unknown as { MSStream: unknown }).MSStream;
+ const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (navigator as unknown as { standalone: boolean }).standalone;
 
  if (isIos && !isStandalone) {
  // Delay showing iOS instructions sheet slightly for good UX

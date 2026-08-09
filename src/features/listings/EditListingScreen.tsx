@@ -59,14 +59,11 @@ export const EditListingScreen: React.FC = () => {
  reset({
  title: item.title,
  description: item.description || '',
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- category: item.category as any,
+ category: item.category as import('../../lib/database.types').ListingCategory,
  price: item.price,
  isNegotiable: item.isNegotiable,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- condition: item.condition as any,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- hallOfResidence: item.hallOfResidence as any,
+ condition: item.condition as import('../../lib/database.types').ItemCondition,
+ hallOfResidence: (item.hallOfResidence as ListingFormInput['hallOfResidence']) || 'Patel',
  photoPaths: item.photoPaths,
  });
  }
@@ -88,12 +85,10 @@ export const EditListingScreen: React.FC = () => {
  await updateListing(id, {
  title: data.title,
  description: data.description || undefined,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- category: data.category as any,
+ category: data.category as import('../../lib/database.types').ListingCategory,
  price: data.price,
  isNegotiable: data.isNegotiable,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- condition: data.condition as any,
+ condition: data.condition as import('../../lib/database.types').ItemCondition,
  photoPaths: uploadedPaths,
  });
 
@@ -102,8 +97,7 @@ export const EditListingScreen: React.FC = () => {
 
  showToast('Listing updated successfully', 'success');
  navigate(`/listing/${id}`);
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- } catch (err: any) {
+ } catch (err: unknown) {
  const msg = err instanceof Error ? err.message : 'Update failed';
  setFormError(msg);
  } finally {

@@ -3,6 +3,7 @@ import type { Database, ListingCategory, RequestStatus } from '../database.types
 import { whatsappLink } from '../utils/whatsappLink';
 
 type WantedRequestRow = Database['public']['Tables']['wanted_requests']['Row'];
+type SelectedWantedRequestRow = Pick<WantedRequestRow, 'id' | 'user_id' | 'title' | 'description' | 'category' | 'max_budget' | 'hall_of_residence' | 'status' | 'deleted_at' | 'created_at' | 'updated_at'>;
 
 export interface WantedRequestItem {
  id: string;
@@ -37,7 +38,7 @@ export interface CreateWantedRequestData {
 }
 
 export function mapWantedRequestRow(
- row: WantedRequestRow & { profiles?: { full_name: string | null; hall_of_residence: string | null } | null }
+  row: SelectedWantedRequestRow & { profiles?: { full_name: string | null; hall_of_residence: string | null } | null }
 ): WantedRequestItem {
  return {
  id: row.id,
@@ -71,7 +72,7 @@ export async function fetchWantedRequests(
  let query = supabase
  .from('wanted_requests')
  .select(
- 'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles!wanted_requests_user_id_fkey(full_name, hall_of_residence)'
+ 'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles(full_name, hall_of_residence)'
  )
  .is('deleted_at', null);
 
@@ -103,8 +104,7 @@ export async function fetchWantedRequests(
  throw new Error(`Failed to fetch wanted requests: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const requests = (data || []).map((row) => mapWantedRequestRow(row as any));
+ const requests = (data || []).map((row) => mapWantedRequestRow(row as unknown as Parameters<typeof mapWantedRequestRow>[0]));
  const hasMore = requests.length === limit;
 
  return { requests, hasMore };
@@ -117,7 +117,7 @@ export async function fetchWantedRequestById(id: string): Promise<WantedRequestI
  const { data, error } = await supabase
  .from('wanted_requests')
  .select(
- 'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles!wanted_requests_user_id_fkey(full_name, hall_of_residence)'
+ 'id, user_id, title, description, category, max_budget, hall_of_residence, status, deleted_at, created_at, updated_at, profiles(full_name, hall_of_residence)'
  )
  .eq('id', id)
  .is('deleted_at', null)
@@ -128,8 +128,7 @@ export async function fetchWantedRequestById(id: string): Promise<WantedRequestI
  throw new Error(`Failed to fetch request: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapWantedRequestRow(data as any);
+ return mapWantedRequestRow(data as unknown as SelectedWantedRequestRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -198,8 +197,7 @@ export async function createWantedRequest(
  throw new Error(`Failed to post wanted request: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapWantedRequestRow(data as any);
+ return mapWantedRequestRow(data as unknown as SelectedWantedRequestRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -219,8 +217,7 @@ export async function markWantedRequestFulfilled(id: string): Promise<WantedRequ
  throw new Error(`Failed to mark request fulfilled: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapWantedRequestRow(data as any);
+ return mapWantedRequestRow(data as unknown as SelectedWantedRequestRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -240,8 +237,7 @@ export async function unmarkWantedRequestFulfilled(id: string): Promise<WantedRe
  throw new Error(`Failed to unmark request: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapWantedRequestRow(data as any);
+ return mapWantedRequestRow(data as unknown as SelectedWantedRequestRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -284,6 +280,5 @@ export async function fetchMyWantedRequests(
  throw new Error(`Failed to fetch my requests: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return (data || []).map((row) => mapWantedRequestRow(row as any));
+ return (data || []).map((row) => mapWantedRequestRow(row as unknown as Parameters<typeof mapWantedRequestRow>[0]));
 }

@@ -14,23 +14,22 @@ export function useDeleteListingMutation() {
  await queryClient.cancelQueries({ queryKey: ['myListings'] });
  await queryClient.cancelQueries({ queryKey: ['savedItems'] });
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['listings'] }, (oldData: any) => {
+ queryClient.setQueriesData({ queryKey: ['listings'] }, (oldData: unknown) => {
  if (!oldData) return oldData;
  if (Array.isArray(oldData)) {
  return oldData.filter((item: ListingItem) => item.id !== listingId);
  }
- if (oldData.data && Array.isArray(oldData.data)) {
- return {
- ...oldData,
- data: oldData.data.filter((item: ListingItem) => item.id !== listingId),
- };
+  if (typeof oldData === 'object' && oldData !== null && 'data' in oldData && Array.isArray((oldData as { data: unknown }).data)) {
+    const typedData = oldData as { data: ListingItem[] };
+    return {
+      ...typedData,
+      data: typedData.data.filter((item: ListingItem) => item.id !== listingId),
+    };
  }
  return oldData;
  });
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['myListings'] }, (oldData: any) => {
+ queryClient.setQueriesData({ queryKey: ['myListings'] }, (oldData: unknown) => {
  if (!oldData) return oldData;
  if (Array.isArray(oldData)) {
  return oldData.filter((item: ListingItem) => item.id !== listingId);

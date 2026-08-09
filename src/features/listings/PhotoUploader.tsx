@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '../../lib/supabase';
+import { stripExif, validateImageMagicBytes } from '../../utils/imageUtils';
 import { Camera, Image as ImageIcon, X, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 export interface PhotoItem {
@@ -45,8 +46,17 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
  const processAndUploadFile = async (file: File, photoId: string, currentPhotos: PhotoItem[]) => {
  try {
- // 1. Compress image to max 1600px long edge, convert to WebP
- let compressedFile: File | Blob = file;
+ // 1. Validate magic bytes to ensure it's a real image (P1 fix)
+ const isValid = await validateImageMagicBytes(file);
+ if (!isValid) {
+ throw new Error('Invalid image file format');
+ }
+
+ // 2. Strip EXIF and convert to WebP using Canvas (P1 privacy fix)
+ const safeFile = await stripExif(file);
+
+ // 3. Compress image if it's too large
+ let compressedFile: File | Blob = safeFile;
  try {
  const options = {
  maxSizeMB: 1.5,
@@ -54,7 +64,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  useWebWorker: true,
  fileType: 'image/webp',
  };
- compressedFile = await imageCompression(file, options);
+ compressedFile = await imageCompression(safeFile, options);
  } catch (cErr) {
  console.warn('Image compression fallback to raw file:', cErr);
  }

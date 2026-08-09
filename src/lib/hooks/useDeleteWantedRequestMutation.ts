@@ -13,25 +13,22 @@ export function useDeleteWantedRequestMutation() {
  await queryClient.cancelQueries({ queryKey: ['wantedRequests'] });
  await queryClient.cancelQueries({ queryKey: ['myWantedRequests'] });
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const optimisticFilterFn = (oldData: any) => {
+ const optimisticFilterFn = (oldData: unknown) => {
  if (!oldData) return oldData;
  if (Array.isArray(oldData)) {
  return oldData.filter((item: WantedRequestItem) => item.id !== requestId);
  }
- if (oldData.data && Array.isArray(oldData.data)) {
+ if (typeof oldData === 'object' && oldData !== null && 'data' in oldData && Array.isArray((oldData as { data: unknown }).data)) {
  return {
  ...oldData,
- data: oldData.data.filter((item: WantedRequestItem) => item.id !== requestId),
+ data: (oldData as { data: WantedRequestItem[] }).data.filter((item: WantedRequestItem) => item.id !== requestId),
  };
  }
  return oldData;
  };
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['wantedRequests'] }, optimisticFilterFn);
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['myWantedRequests'] }, optimisticFilterFn);
+ queryClient.setQueriesData({ queryKey: ['wantedRequests'] }, optimisticFilterFn);
+ queryClient.setQueriesData({ queryKey: ['myWantedRequests'] }, optimisticFilterFn);
 
  return { optimisticUpdated: true };
  },

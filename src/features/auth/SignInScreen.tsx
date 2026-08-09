@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { GoogleButton } from './GoogleButton';
@@ -14,6 +14,8 @@ import { AuthLayout } from '../../components/layout/AuthLayout';
 export const SignInScreen: React.FC = () => {
  const navigate = useNavigate();
  const { domainError, clearDomainError } = useAuth();
+ const [searchParams] = useSearchParams();
+ const isExpired = searchParams.get('expired') === '1';
  const [formError, setFormError] = useState<string | null>(null);
  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -59,6 +61,13 @@ export const SignInScreen: React.FC = () => {
  title="Sign In" 
  subtitle="Exclusively for IIT Kharagpur students (@kgpian.iitkgp.ac.in)"
  >
+
+ {isExpired && !domainError && !formError && (
+          <div className="mb-4 p-3 rounded-xl bg-danger-wash border border-danger/20 text-danger text-xs flex items-start gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            <p>Your session has expired. Please sign in again.</p>
+          </div>
+        )}
 
  {(domainError || formError) && (
  <div className="mb-4 p-3 rounded-xl bg-danger-wash border border-danger/20 text-danger text-xs flex items-start gap-2">

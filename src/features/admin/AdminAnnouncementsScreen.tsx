@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
  fetchAnnouncementsList,
  createAnnouncement,
@@ -29,18 +29,17 @@ export const AdminAnnouncementsScreen: React.FC = () => {
  const [type, setType] = useState<AnnouncementType>('info');
  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
- const loadAnnouncements = async () => {
- setLoading(true);
- fetchAnnouncementsList()
- .then((data) => setAnnouncements(data))
- .catch((err) => showToast(err.message, 'error'))
- .finally(() => setLoading(false));
- };
+  const loadAnnouncements = useCallback(async () => {
+    setLoading(true);
+    fetchAnnouncementsList()
+      .then((data) => setAnnouncements(data))
+      .catch((err) => showToast(err.message, 'error'))
+      .finally(() => setLoading(false));
+  }, [showToast]);
 
- useEffect(() => {
- loadAnnouncements();
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, []);
+  useEffect(() => {
+    loadAnnouncements();
+  }, [loadAnnouncements]);
 
  const handleCreate = async (e: React.FormEvent) => {
  e.preventDefault();

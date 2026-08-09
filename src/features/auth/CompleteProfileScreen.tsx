@@ -60,8 +60,7 @@ export const CompleteProfileScreen: React.FC = () => {
  });
 
  navigate('/');
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- } catch (err: any) {
+    } catch (err: unknown) {
  const msg = err instanceof Error ? err.message : 'Profile completion failed';
  setFormError(msg);
  } finally {

@@ -22,8 +22,7 @@ export function useToggleFulfilledMutation() {
  await queryClient.cancelQueries({ queryKey: ['wantedRequests'] });
  await queryClient.cancelQueries({ queryKey: ['myWantedRequests'] });
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const optimisticUpdateFn = (oldData: any) => {
+ const optimisticUpdateFn = (oldData: unknown) => {
  if (!oldData) return oldData;
  if (Array.isArray(oldData)) {
  return oldData.map((item: WantedRequestItem) =>
@@ -32,10 +31,10 @@ export function useToggleFulfilledMutation() {
  : item
  );
  }
- if (oldData.data && Array.isArray(oldData.data)) {
+ if (oldData && typeof oldData === 'object' && 'data' in oldData && Array.isArray((oldData as { data: unknown }).data)) {
  return {
  ...oldData,
- data: oldData.data.map((item: WantedRequestItem) =>
+ data: (oldData as { data: WantedRequestItem[] }).data.map((item: WantedRequestItem) =>
  item.id === variables.requestId
  ? { ...item, status: variables.isFulfilled ? 'open' : 'fulfilled' }
  : item
@@ -45,10 +44,8 @@ export function useToggleFulfilledMutation() {
  return oldData;
  };
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['wantedRequests'] }, optimisticUpdateFn);
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['myWantedRequests'] }, optimisticUpdateFn);
+ queryClient.setQueriesData({ queryKey: ['wantedRequests'] }, optimisticUpdateFn);
+ queryClient.setQueriesData({ queryKey: ['myWantedRequests'] }, optimisticUpdateFn);
 
  return { optimisticUpdated: true };
  },

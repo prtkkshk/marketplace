@@ -1,4 +1,34 @@
 import { defineConfig, devices } from '@playwright/test';
+import { readFileSync, existsSync } from 'node:fs';
+
+/**
+ * Load .env.test into process.env for the e2e run.
+ *
+ * The RLS suites each parse this file themselves, but Playwright specs had no access to it,
+ * so credentials were being hardcoded into specs — which is both a leak risk and the reason
+ * a spec kept signing in with a stale password and failing with a confusing
+ * "input[name=title] not found" twenty seconds later.
+ *
+ * .env.test is gitignored. Values already in the environment win, so CI secrets are not
+ * overwritten.
+ */
+if (existsSync('.env.test')) {
+  for (const line of readFileSync('.env.test', 'utf8').split('\n')) {
+    const match = /^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/.exec(line);
+    const key = match?.[1];
+    const rawValue = match?.[2];
+    if (!key || rawValue === undefined) continue;
+    if (process.env[key]) continue;
+    let value = rawValue.trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
 
 export default defineConfig({
   testDir: './tests/e2e',

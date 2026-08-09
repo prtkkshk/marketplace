@@ -26,8 +26,7 @@ export function useToggleSoldMutation() {
 
  // We can't easily snapshot all variations of ['listings', { ... }] because it's a paginated/filtered query.
  // Instead, we can use setQueriesData to update any cache entry that contains this listing.
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['listings'] }, (oldData: any) => {
+ queryClient.setQueriesData({ queryKey: ['listings'] }, (oldData: unknown) => {
  if (!oldData) return oldData;
  
  // If data is an array of listings (e.g. from useQuery)
@@ -40,10 +39,11 @@ export function useToggleSoldMutation() {
  }
  
  // If data is paginated { data: ListingItem[], count: number }
- if (oldData.data && Array.isArray(oldData.data)) {
+ if (typeof oldData === 'object' && oldData !== null && 'data' in oldData && Array.isArray((oldData as { data: unknown }).data)) {
+ const typedData = oldData as { data: ListingItem[] };
  return {
- ...oldData,
- data: oldData.data.map((item: ListingItem) =>
+ ...typedData,
+ data: typedData.data.map((item: ListingItem) =>
  item.id === variables.listingId
  ? { ...item, status: variables.isSold ? 'active' : 'sold' }
  : item
@@ -54,8 +54,7 @@ export function useToggleSoldMutation() {
  return oldData;
  });
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- queryClient.setQueriesData<any>({ queryKey: ['myListings'] }, (oldData: any) => {
+ queryClient.setQueriesData({ queryKey: ['myListings'] }, (oldData: unknown) => {
  if (!oldData) return oldData;
  if (Array.isArray(oldData)) {
  return oldData.map((item: ListingItem) =>

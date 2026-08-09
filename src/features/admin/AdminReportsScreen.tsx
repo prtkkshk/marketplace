@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
  fetchReportsQueue,
  resolveReportAction,
@@ -30,18 +30,17 @@ export const AdminReportsScreen: React.FC = () => {
  const [reasonNote, setReasonNote] = useState<string>('');
  const [actionLoading, setActionLoading] = useState<boolean>(false);
 
- const loadReports = async () => {
+ const loadReports = useCallback(async () => {
  setLoading(true);
  fetchReportsQueue(statusFilter, reasonFilter)
  .then((data) => setReports(data))
  .catch((err) => showToast(err.message, 'error'))
  .finally(() => setLoading(false));
- };
+ }, [statusFilter, reasonFilter, showToast]);
 
  useEffect(() => {
  loadReports();
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [statusFilter, reasonFilter]);
+ }, [loadReports]);
 
  const openActionModal = (report: AdminReportItem, type: 'hide' | 'delete' | 'dismiss' | 'ban') => {
  setActiveReport(report);

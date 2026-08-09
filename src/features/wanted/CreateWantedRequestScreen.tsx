@@ -37,9 +37,8 @@ export const CreateWantedRequestScreen: React.FC = () => {
  title: '',
  description: '',
  category: 'cycles',
- maxBudget: null,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- hallOfResidence: (profile?.hallOfResidence as any) || 'Patel',
+ maxBudget: undefined,
+ hallOfResidence: (profile?.hallOfResidence as WantedRequestFormInput['hallOfResidence']) || 'Patel',
  },
  });
 
@@ -56,10 +55,9 @@ export const CreateWantedRequestScreen: React.FC = () => {
  await createWantedRequest(session.user.id, {
  title: data.title,
  description: data.description || undefined,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- category: data.category as any,
+ category: data.category as import('../../lib/database.types').ListingCategory,
  maxBudget: data.maxBudget || undefined,
- hallOfResidence: profile?.hallOfResidence || 'Patel',
+ hallOfResidence: data.hallOfResidence,
  });
 
  confetti({ particleCount: 70, spread: 50, origin: { y: 0.6 } });
@@ -72,8 +70,7 @@ export const CreateWantedRequestScreen: React.FC = () => {
 
  showToast('Wanted request posted successfully!', 'success');
  navigate('/wanted');
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- } catch (err: any) {
+ } catch (err: unknown) {
  const msg = err instanceof Error ? err.message : 'Failed to post request';
  setFormError(msg);
  } finally {

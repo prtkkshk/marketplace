@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { fetchUsersList, updateUserAdminStatus, type AdminUserItem } from '../../lib/data/admin';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
@@ -27,21 +27,20 @@ export const AdminUsersScreen: React.FC = () => {
  const [reasonNote, setReasonNote] = useState<string>('');
  const [actionLoading, setActionLoading] = useState<boolean>(false);
 
- const loadUsers = async () => {
- setLoading(true);
- fetchUsersList(search, hallFilter)
- .then((data) => setUsers(data))
- .catch((err) => showToast(err.message, 'error'))
- .finally(() => setLoading(false));
- };
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    fetchUsersList(search, hallFilter)
+      .then((data) => setUsers(data))
+      .catch((err) => showToast(err.message, 'error'))
+      .finally(() => setLoading(false));
+  }, [search, hallFilter, showToast]);
 
- useEffect(() => {
- const timer = setTimeout(() => {
- loadUsers();
- }, 250);
- return () => clearTimeout(timer);
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [search, hallFilter]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadUsers();
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [loadUsers]);
 
  const openUserActionModal = (user: AdminUserItem, type: 'ban' | 'unban' | 'promote') => {
  if (user.isAdmin && (type === 'ban')) {

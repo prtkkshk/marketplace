@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { fetchAdminListings, updateListingAdminAction } from '../../lib/data/admin';
 import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
@@ -10,28 +10,28 @@ import { formatINR } from '../../lib/utils/formatINR';
 import { timeAgo } from '../../lib/utils/timeAgo';
 
 
+type AdminListingItem = Awaited<ReturnType<typeof fetchAdminListings>>[0];
+
 export const AdminListingsScreen: React.FC = () => {
  const { session } = useAuth();
  const { showToast } = useToast();
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const [items, setItems] = useState<any[]>([]);
+ const [items, setItems] = useState<AdminListingItem[]>([]);
  const [loading, setLoading] = useState<boolean>(true);
  const [statusFilter, setStatusFilter] = useState<string>('all');
  const [actionLoading, setActionLoading] = useState<boolean>(false);
 
- const loadListings = async () => {
+ const loadListings = useCallback(async () => {
  setLoading(true);
  fetchAdminListings(statusFilter)
  .then((data) => setItems(data))
  .catch((err) => showToast(err.message, 'error'))
  .finally(() => setLoading(false));
- };
+ }, [statusFilter, showToast]);
 
  useEffect(() => {
  loadListings();
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [statusFilter]);
+ }, [loadListings]);
 
  const handleAdminAction = async (
  id: string,

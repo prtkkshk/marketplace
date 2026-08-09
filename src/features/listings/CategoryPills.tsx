@@ -71,8 +71,7 @@ export const CategoryPills: React.FC<CategoryPillsProps> = ({ selectedCategory, 
  </button>
  {CATEGORIES.map((cat) => {
  const isSelected = selectedCategory === cat.id;
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const IconComp = (LucideIcons as any)[cat.icon];
+        const IconComp = (LucideIcons as unknown as Record<string, React.ElementType>)[cat.icon];
  return (
  <button
  key={cat.id}
@@ -85,7 +84,7 @@ export const CategoryPills: React.FC<CategoryPillsProps> = ({ selectedCategory, 
  : 'bg-surface border-line-strong text-ink hover:bg-surface-2 shadow-none'
  }`}
  >
- <IconComp className="w-3.5 h-3.5" />
+ {IconComp && <IconComp className="w-3.5 h-3.5" />}
  <span className="text-sm font-medium">{cat.label}</span>
  </button>
  );

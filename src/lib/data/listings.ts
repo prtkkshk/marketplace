@@ -2,6 +2,7 @@ import { supabase } from '../supabase';
 import type { Database, ListingCategory, ItemCondition, ListingStatus } from '../database.types';
 
 type ListingRow = Database['public']['Tables']['listings']['Row'];
+type SelectedListingRow = Pick<ListingRow, 'id' | 'user_id' | 'title' | 'description' | 'category' | 'price' | 'is_negotiable' | 'condition' | 'photo_paths' | 'hall_of_residence' | 'status' | 'is_pinned' | 'sold_at' | 'deleted_at' | 'expires_at' | 'created_at' | 'updated_at'>;
 
 export interface ListingItem {
  id: string;
@@ -57,7 +58,7 @@ export interface CreateListingData {
  hallOfResidence: string;
 }
 
-export function mapListingRow(row: ListingRow & { profiles?: { full_name: string | null; hall_of_residence: string | null } | null }): ListingItem {
+export function mapListingRow(row: SelectedListingRow & { profiles?: { full_name: string | null; hall_of_residence: string | null } | null }): ListingItem {
  return {
  id: row.id,
  userId: row.user_id,
@@ -94,7 +95,7 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  let query = supabase
  .from('listings')
  .select(
- 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)',
+ 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles(full_name, hall_of_residence)',
  { count: 'exact' }
  )
  .is('deleted_at', null);
@@ -149,8 +150,7 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  throw new Error(`Failed to fetch listings: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const listings = (data || []).map((row) => mapListingRow(row as any));
+ const listings = (data || []).map((row) => mapListingRow(row as unknown as Parameters<typeof mapListingRow>[0]));
  const hasMore = listings.length === limit;
 
  return { listings, hasMore, totalCount: count || 0 };
@@ -177,8 +177,7 @@ export async function fetchMyListings(userId: string, status?: 'active' | 'sold'
  throw new Error(`Failed to fetch my listings: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return (data || []).map((row) => mapListingRow(row as any));
+ return (data || []).map((row) => mapListingRow(row as unknown as Parameters<typeof mapListingRow>[0]));
 }
 
 /**
@@ -188,7 +187,7 @@ export async function fetchListingById(id: string): Promise<ListingItem | null> 
  const { data, error } = await supabase
  .from('listings')
  .select(
- 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)'
+ 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles(full_name, hall_of_residence)'
  )
  .eq('id', id)
  .is('deleted_at', null)
@@ -199,8 +198,7 @@ export async function fetchListingById(id: string): Promise<ListingItem | null> 
  throw new Error(`Failed to fetch listing: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapListingRow(data as any);
+ return mapListingRow(data as unknown as SelectedListingRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -228,8 +226,7 @@ export async function createListing(userId: string, input: CreateListingData): P
  throw new Error(`Failed to create listing: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapListingRow(data as any);
+ return mapListingRow(data as unknown as SelectedListingRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -256,8 +253,7 @@ export async function updateListing(id: string, updates: Partial<CreateListingDa
  throw new Error(`Failed to update listing: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapListingRow(data as any);
+ return mapListingRow(data as unknown as SelectedListingRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -275,8 +271,7 @@ export async function markListingSold(id: string): Promise<ListingItem> {
  throw new Error(`Failed to mark listing as sold: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapListingRow(data as any);
+ return mapListingRow(data as unknown as SelectedListingRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**
@@ -294,8 +289,7 @@ export async function unmarkListingSold(id: string): Promise<ListingItem> {
  throw new Error(`Failed to unmark listing: ${error.message}`);
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- return mapListingRow(data as any);
+ return mapListingRow(data as unknown as SelectedListingRow & { profiles: { full_name: string | null; hall_of_residence: string | null } | null });
 }
 
 /**

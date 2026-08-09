@@ -44,8 +44,7 @@ export const CreateListingScreen: React.FC = () => {
  price: 0,
  isNegotiable: false,
  condition: 'good',
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- hallOfResidence: (profile?.hallOfResidence as any) || 'Patel',
+ hallOfResidence: (profile?.hallOfResidence as ListingFormInput['hallOfResidence']) || 'Patel',
  photoPaths: [],
  },
  });
@@ -81,14 +80,12 @@ export const CreateListingScreen: React.FC = () => {
  const newListing = await createListing(session.user.id, {
  title: data.title,
  description: data.description || undefined,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- category: data.category as any,
+ category: data.category as import('../../lib/database.types').ListingCategory,
  price: data.price,
  isNegotiable: data.isNegotiable,
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- condition: data.condition as any,
+ condition: data.condition as import('../../lib/database.types').ItemCondition,
  photoPaths: uploadedPaths,
- hallOfResidence: profile?.hallOfResidence || 'Patel',
+ hallOfResidence: data.hallOfResidence,
  });
 
  // Confetti celebration
@@ -111,8 +108,7 @@ export const CreateListingScreen: React.FC = () => {
 
  showToast('Listing posted successfully!', 'success');
  navigate(`/listing/${newListing.id}`);
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- } catch (err: any) {
+ } catch (err: unknown) {
  const msg = err instanceof Error ? err.message : 'Failed to post listing';
  setFormError(msg);
  } finally {

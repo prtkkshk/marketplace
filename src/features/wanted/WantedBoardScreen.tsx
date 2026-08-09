@@ -69,20 +69,21 @@ export const WantedBoardScreen: React.FC = () => {
  All Categories
  </button>
  </li>
- {CATEGORIES.map(cat => (
- <li key={cat.id}>
- <button
- type="button"
- onClick={() => updateUrlParams({ cat: cat.id })}
- className={`w-full text-left rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
- selectedCategory === cat.id ? 'font-semibold text-accent bg-accent-wash' : 'text-muted hover:text-ink hover:bg-surface-2'
- }`}
- >
- {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
- {React.createElement((LucideIcons as any)[cat.icon], { className: 'w-4 h-4' })} {cat.label}
- </button>
- </li>
- ))}
+      {CATEGORIES.map(cat => {
+        const IconComp = (LucideIcons as unknown as Record<string, React.ElementType>)[cat.icon];
+        return (
+        <li key={cat.id}>
+          <button
+            type="button"
+            onClick={() => updateUrlParams({ cat: cat.id })}
+            className={`w-full flex items-center gap-2 text-left rounded-lg px-3 py-2 -mx-3 cursor-pointer transition-colors ${
+              selectedCategory === cat.id ? 'font-semibold text-accent bg-accent-wash' : 'text-muted hover:text-ink hover:bg-surface-2'
+            }`}
+          >
+            {IconComp && <IconComp className="w-4 h-4" />} {cat.label}
+          </button>
+        </li>
+      )})}
  </ul>
  </div>
  }

@@ -334,8 +334,7 @@ export async function updateUserAdminStatus(
  payload.is_admin = updates.isAdmin;
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const { error } = await supabase.from('profiles').update(payload as any).eq('id', targetUser.id);
+    const { error } = await supabase.from('profiles').update(payload as import('../database.types').Database['public']['Tables']['profiles']['Update']).eq('id', targetUser.id);
 
  if (error) throw new Error(error.message);
 
@@ -372,8 +371,7 @@ export async function updateListingAdminAction(
  payload.sold_at = new Date().toISOString();
  }
 
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- const { error } = await supabase.from('listings').update(payload as any).eq('id', listingId);
+  const { error } = await supabase.from('listings').update(payload as import('../database.types').Database['public']['Tables']['listings']['Update']).eq('id', listingId);
  if (error) throw new Error(error.message);
  }
 
@@ -497,11 +495,12 @@ export async function fetchAdminListings(statusFilter: string = 'all'): Promise<
  hall_of_residence: string;
  created_at: string;
  deleted_at: string | null;
+ profiles?: { full_name: string | null } | null;
 }>> {
- let query = supabase
- .from('listings')
- .select('id, title, category, price, status, is_pinned, hall_of_residence, created_at, deleted_at')
- .order('created_at', { ascending: false });
+  let query = supabase
+  .from('listings')
+  .select('id, title, category, price, status, is_pinned, hall_of_residence, created_at, deleted_at, profiles(full_name)')
+  .order('created_at', { ascending: false });
 
  if (statusFilter === 'active') query = query.eq('status', 'active').is('deleted_at', null);
  if (statusFilter === 'sold') query = query.eq('status', 'sold');
@@ -510,5 +509,16 @@ export async function fetchAdminListings(statusFilter: string = 'all'): Promise<
 
  const { data, error } = await query;
  if (error) throw new Error(error.message);
- return data || [];
+  return (data as unknown) as Array<{
+    id: string;
+    title: string;
+    category: string;
+    price: number;
+    status: string;
+    is_pinned: boolean;
+    hall_of_residence: string;
+    created_at: string;
+    deleted_at: string | null;
+    profiles?: { full_name: string | null } | null;
+  }> || [];
 }

@@ -31,6 +31,7 @@
     "framer-motion": "^11.0.8",
     "lucide-react": "^0.344.0",
     "mixpanel-browser": "^2.81.0",
+    "piexifjs": "^1.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.2",

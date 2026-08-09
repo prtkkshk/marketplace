@@ -95,8 +95,7 @@ export async function updateProfile(
  if (updates.isProfileComplete !== undefined) payload.is_profile_complete = updates.isProfileComplete;
 
  const { error } = await supabase.from('profiles')
- // eslint-disable-next-line @typescript-eslint/no-explicit-any
- .upsert(payload as any, { onConflict: 'id' });
+    .upsert(payload as import('../database.types').Database['public']['Tables']['profiles']['Insert'], { onConflict: 'id' });
 
  if (error) {
  throw new Error(`Failed to update profile: ${error.message}`);

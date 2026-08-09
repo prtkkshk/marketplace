@@ -17,8 +17,7 @@ export const AdminAuditScreen: React.FC = () => {
  .then((data) => setLogs(data))
  .catch((err) => showToast(err.message, 'error'))
  .finally(() => setLoading(false));
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, []);
+ }, [showToast]);
 
  return (
  <div className="flex flex-col gap-6 text-left">
