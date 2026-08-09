@@ -383,6 +383,42 @@ export interface Database {
           wanted_fulfillment_rate: number
         }
       }
+      get_my_profile: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          full_name: string | null
+          roll_number: string | null
+          hall_of_residence: string | null
+          whatsapp_number: string | null
+          is_profile_complete: boolean
+          is_admin: boolean
+          is_banned: boolean
+          banned_reason: string | null
+          last_active_at: string
+          created_at: string
+          updated_at: string
+        }
+      }
+      get_admin_user_list: {
+        Args: { p_search: string | null; p_limit: number; p_offset: number }
+        Returns: {
+          id: string
+          email: string
+          full_name: string | null
+          roll_number: string | null
+          hall_of_residence: string | null
+          whatsapp_number: string | null
+          is_profile_complete: boolean
+          is_admin: boolean
+          is_banned: boolean
+          banned_reason: string | null
+          last_active_at: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
       listing_category: ListingCategory

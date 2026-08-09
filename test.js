@@ -1,1 +1,1 @@
-import * as fs from 'fs';
+// Removed unused fs

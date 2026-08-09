@@ -25,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = async (userId: string) => {
     try {
-      const p = await fetchProfile(userId);
+      const p = await fetchProfile();
       setProfile(p);
       // Bump DAU activity timestamp
       supabase.from('profiles').update({ last_active_at: new Date().toISOString() }).eq('id', userId).then();

@@ -286,27 +286,17 @@ export async function resolveReportAction(
 }
 
 export async function fetchUsersList(searchQuery?: string, hallFilter?: string): Promise<AdminUserItem[]> {
-  let query = supabase
-    .from('profiles')
-    .select('id, full_name, email, roll_number, hall_of_residence, is_banned, is_admin, banned_reason, created_at')
-    .order('created_at', { ascending: false });
-
-  if (hallFilter && hallFilter !== 'all') {
-    query = query.eq('hall_of_residence', hallFilter);
-  }
-
-  if (searchQuery && searchQuery.trim() !== '') {
-    const term = `%${searchQuery.trim()}%`;
-    query = query.or(`full_name.ilike.${term},roll_number.ilike.${term},email.ilike.${term}`);
-  }
-
-  const { data, error } = await query;
+  const { data, error } = await supabase.rpc('get_admin_user_list', {
+    p_search: searchQuery ?? null,
+    p_limit: 1000,
+    p_offset: 0
+  });
 
   if (error) {
     throw new Error(`Failed to fetch users: ${error.message}`);
   }
 
-  return (data || []).map((row) => ({
+  let users = (data || []).map((row) => ({
     id: row.id,
     fullName: row.full_name,
     email: row.email,
@@ -317,6 +307,12 @@ export async function fetchUsersList(searchQuery?: string, hallFilter?: string):
     bannedReason: row.banned_reason,
     createdAt: row.created_at,
   }));
+
+  if (hallFilter && hallFilter !== 'all') {
+    users = users.filter((u) => u.hallOfResidence === hallFilter);
+  }
+
+  return users;
 }
 
 export async function updateUserAdminStatus(

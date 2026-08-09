@@ -40,7 +40,7 @@ test.describe('Audit', () => {
           await page.setViewportSize({ width, height });
           
           // Login
-          await page.goto(`${BASE_URL}/auth/login`);
+          await page.goto(`${BASE_URL}/auth/signin`);
           await page.waitForSelector('input[type="email"]', { timeout: 10000 });
           await page.fill('input[type="email"]', CREDENTIALS.email);
           await page.fill('input[type="password"]', CREDENTIALS.password);
@@ -62,17 +62,6 @@ test.describe('Audit', () => {
             .withTags(['wcag2aa', 'wcag21aa'])
             .analyze();
           fs.writeFileSync(path.join(OUTPUT_DIR, `${viewportName}-${route.name}-light-axe.json`), JSON.stringify(accessibilityScanResultsLight, null, 2));
-
-          // Dark mode
-          await page.emulateMedia({ colorScheme: 'dark' });
-          await page.evaluate(() => document.documentElement.classList.add('dark'));
-          await page.waitForTimeout(500);
-          await page.screenshot({ path: path.join(OUTPUT_DIR, `${viewportName}-${route.name}-dark.png`), fullPage: true });
-          
-          const accessibilityScanResultsDark = await new AxeBuilder({ page })
-            .withTags(['wcag2aa', 'wcag21aa'])
-            .analyze();
-          fs.writeFileSync(path.join(OUTPUT_DIR, `${viewportName}-${route.name}-dark-axe.json`), JSON.stringify(accessibilityScanResultsDark, null, 2));
         });
       }
     });

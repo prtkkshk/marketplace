@@ -30,8 +30,8 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
 const client = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 async function checkListings() {
-  const { data, error } = await client.from('listings').select('*');
-  console.log(data);
+  const { data } = await client.from('listings').select('*').limit(1);
+  console.log('Listings readable:', data ? 'yes' : 'no');
 }
 
 checkListings();

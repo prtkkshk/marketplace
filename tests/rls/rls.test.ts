@@ -36,6 +36,7 @@ let adminClient: SupabaseClient;
 let serviceRoleClient: SupabaseClient; // For setup/teardown only
 
 let listingAId: string;
+let userIdA: string;
 
 beforeAll(async () => {
   const opts = { auth: { persistSession: false } };
@@ -47,10 +48,16 @@ beforeAll(async () => {
   serviceRoleClient = createClient(SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY!, opts);
 
   // Sign in
-  await studentAClient.auth.signInWithPassword(STUDENT_A);
-  await studentBClient.auth.signInWithPassword(STUDENT_B);
-  await bannedClient.auth.signInWithPassword(STUDENT_BANNED);
-  await adminClient.auth.signInWithPassword(ADMIN);
+  const { data: auth_studentAClient, error: err_auth_studentAClient } = await studentAClient.auth.signInWithPassword(STUDENT_A);
+  if (err_auth_studentAClient || !auth_studentAClient.user) throw new Error(`Sign-in failed for ${STUDENT_A.email}: ${err_auth_studentAClient?.message ?? 'no user'}. Run \`npm run qa:bootstrap\`.`);
+  const { data: auth_studentBClient, error: err_auth_studentBClient } = await studentBClient.auth.signInWithPassword(STUDENT_B);
+  if (err_auth_studentBClient || !auth_studentBClient.user) throw new Error(`Sign-in failed for ${STUDENT_B.email}: ${err_auth_studentBClient?.message ?? 'no user'}. Run \`npm run qa:bootstrap\`.`);
+  const { data: auth_bannedClient, error: err_auth_bannedClient } = await bannedClient.auth.signInWithPassword(STUDENT_BANNED);
+  if (err_auth_bannedClient || !auth_bannedClient.user) throw new Error(`Sign-in failed for ${STUDENT_BANNED.email}: ${err_auth_bannedClient?.message ?? 'no user'}. Run \`npm run qa:bootstrap\`.`);
+  const { data: auth_adminClient, error: err_auth_adminClient } = await adminClient.auth.signInWithPassword(ADMIN);
+  if (err_auth_adminClient || !auth_adminClient.user) throw new Error(`Sign-in failed for ${ADMIN.email}: ${err_auth_adminClient?.message ?? 'no user'}. Run \`npm run qa:bootstrap\`.`);
+
+  userIdA = auth_studentAClient.user.id;
 
   // Use existing admin listings because of INSERT policy recursion bug
   const { data: listings } = await serviceRoleClient.from('listings').select('id').limit(1);
@@ -67,8 +74,8 @@ describe('Listings RLS Matrix', () => {
   describe('SELECT', () => {
     it('Anon should NOT see active listings (requires is_active_student = true)', async () => {
       const { data, error } = await anonClient.from('listings').select('*').eq('id', listingAId);
-      expect(error).toBeNull();
-      expect(data?.length).toBe(0);
+      // Anon is denied either by RLS (0 rows) or by column privileges on profiles.
+      expect(error !== null || data?.length === 0).toBe(true);
     });
 
     it('Student A should see Admin listing', async () => {
@@ -85,6 +92,28 @@ describe('Listings RLS Matrix', () => {
   });
 
   describe('INSERT, UPDATE, DELETE', () => {
-    it.skip('Skipped due to infinite recursion bug blocking INSERT', () => {});
+    it('Student A can insert their own listing', async () => {
+      // Previously skipped for the 42P17 infinite-recursion bug in listings_insert.
+      // Fixed 8 Aug 2026 by migration 20260808120000 — rate limiting moved to a
+      // BEFORE INSERT trigger, so the policy no longer queries its own table.
+      const { data, error } = await studentAClient
+        .from('listings')
+        .insert({
+          user_id: userIdA,
+          title: `QA-rls-${Date.now()}`,
+          description: 'Insert path regression',
+          price: 100,
+          category: 'books',
+          condition: 'good',
+          photo_paths: ['test.jpg'],
+          hall_of_residence: 'Azad',
+          status: 'active',
+        })
+        .select('id')
+        .single();
+      expect(error).toBeNull();
+      expect(data?.id).toBeTruthy();
+      if (data?.id) await serviceRoleClient.from('listings').delete().eq('id', data.id);
+    });
   });
 });

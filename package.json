@@ -15,7 +15,8 @@
     "qa:bootstrap": "node scripts/qa-bootstrap.mjs",
     "qa:teardown": "node scripts/qa-bootstrap.mjs --teardown",
     "qa:status": "node scripts/qa-bootstrap.mjs --status",
-    "qa:verify": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "test:qa": "npm run test && npm run test:e2e",
+    "qa:verify": "npm run lint && npm run typecheck && npm run test:qa && npm run build",
     "db:types": "supabase gen types typescript --local > src/lib/database.types.ts"
   },
   "dependencies": {
@@ -31,7 +32,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.2",
-    "react-router-dom": "^6.22.3",
+    "react-router": "^7.18.2",
+    "react-router-dom": "^7.18.2",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -54,11 +56,12 @@
     "jsdom": "^24.0.0",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
+    "supabase": "^2.113.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.3",
     "typescript-eslint": "^7.3.1",
-    "vite": "^5.1.6",
-    "vite-plugin-pwa": "^0.19.2",
-    "vitest": "^1.4.0"
+    "vite": "^7.3.6",
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^4.1.10"
   }
 }

@@ -37,13 +37,22 @@ export function mapProfileRow(row: ProfileRow): StudentProfile {
   };
 }
 
-/** Fetches a profile by user ID */
-export async function fetchProfile(userId: string): Promise<StudentProfile | null> {
+/**
+ * Fetches the CALLER'S OWN profile.
+ *
+ * Takes no user id, by design. Since the SEC-05 fix, `whatsapp_number`, `roll_number`,
+ * `email` and `banned_reason` are revoked from the `authenticated` role, and the only way
+ * to read them is `get_my_profile()` — a SECURITY DEFINER function hard-scoped to
+ * `auth.uid()`. There is deliberately no client path to fetch an arbitrary user's full
+ * profile any more. Admins use `get_admin_user_list()` instead.
+ *
+ * A parameter the function cannot honour is a lie in the signature, so it is removed rather
+ * than underscore-prefixed.
+ */
+export async function fetchProfile(): Promise<StudentProfile | null> {
   const { data, error } = await supabase
-    .from('profiles')
-    .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, last_active_at, created_at, updated_at')
-    .eq('id', userId)
-    .maybeSingle();
+    .rpc('get_my_profile')
+    .single();
 
   if (error) {
     if (error.code === 'PGRST116') {
@@ -57,7 +66,7 @@ export async function fetchProfile(userId: string): Promise<StudentProfile | nul
 
 /** Updates or inserts user profile fields safely using upsert and maybeSingle */
 export async function updateProfile(
-  userId: string,
+  _userId: string,
   updates: {
     fullName?: string;
     rollNumber?: string;
@@ -72,7 +81,7 @@ export async function updateProfile(
   const userEmail = updates.email || userData?.user?.email || sessionData?.session?.user?.email || '';
 
   const payload: Record<string, unknown> = {
-    id: userId,
+    id: _userId,
   };
 
   if (userEmail) {
@@ -85,28 +94,33 @@ export async function updateProfile(
   if (updates.whatsappNumber !== undefined) payload.whatsapp_number = updates.whatsappNumber;
   if (updates.isProfileComplete !== undefined) payload.is_profile_complete = updates.isProfileComplete;
 
-  const { data, error } = await supabase
-    .from('profiles')
+  const { error } = await supabase.from('profiles')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .upsert(payload as any, { onConflict: 'id' })
-    .select('id, email, full_name, roll_number, hall_of_residence, whatsapp_number, is_profile_complete, is_admin, is_banned, banned_reason, last_active_at, created_at, updated_at')
-    .maybeSingle();
+    .upsert(payload as any, { onConflict: 'id' });
 
   if (error) {
     throw new Error(`Failed to update profile: ${error.message}`);
   }
 
-  if (data) {
-    return mapProfileRow(data);
+  const { data: updatedData, error: fetchError } = await supabase
+    .rpc('get_my_profile')
+    .single();
+
+  if (fetchError) {
+    throw new Error(`Failed to fetch updated profile: ${fetchError.message}`);
   }
 
-  const fetched = await fetchProfile(userId);
+  if (updatedData) {
+    return mapProfileRow(updatedData);
+  }
+
+  const fetched = await fetchProfile();
   if (fetched) {
     return fetched;
   }
 
   return {
-    id: userId,
+    id: _userId,
     email: userEmail,
     fullName: updates.fullName || null,
     rollNumber: updates.rollNumber || null,
