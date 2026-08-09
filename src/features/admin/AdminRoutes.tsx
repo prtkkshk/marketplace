@@ -9,18 +9,18 @@ import { AdminAnnouncementsScreen } from './AdminAnnouncementsScreen';
 import { AdminAuditScreen } from './AdminAuditScreen';
 
 export const AdminRoutes: React.FC = () => {
-  return (
-    <Routes>
-      <Route element={<AdminLayout />}>
-        <Route path="/" element={<AdminDashboardScreen />} />
-        <Route path="/reports" element={<AdminReportsScreen />} />
-        <Route path="/users" element={<AdminUsersScreen />} />
-        <Route path="/listings" element={<AdminListingsScreen />} />
-        <Route path="/announcements" element={<AdminAnnouncementsScreen />} />
-        <Route path="/audit" element={<AdminAuditScreen />} />
-      </Route>
-    </Routes>
-  );
+ return (
+ <Routes>
+ <Route element={<AdminLayout />}>
+ <Route path="/" element={<AdminDashboardScreen />} />
+ <Route path="/reports" element={<AdminReportsScreen />} />
+ <Route path="/users" element={<AdminUsersScreen />} />
+ <Route path="/listings" element={<AdminListingsScreen />} />
+ <Route path="/announcements" element={<AdminAnnouncementsScreen />} />
+ <Route path="/audit" element={<AdminAuditScreen />} />
+ </Route>
+ </Routes>
+ );
 };
 
 export default AdminRoutes;

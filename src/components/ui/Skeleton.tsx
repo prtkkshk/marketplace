@@ -1,9 +1,12 @@
-import React from 'react';
+import { clsx } from 'clsx';
 
-export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string;
+export function Skeleton({ className }: { className?: string }) {
+ return (
+ <div
+ className={clsx(
+ 'bg-surface-2 rounded animate-pulse motion-reduce:animate-none',
+ className
+ )}
+ />
+ );
 }
-
-export const Skeleton: React.FC<SkeletonProps> = ({ className = '', ...props }) => {
-  return <div className={`skeleton rounded-xl ${className}`} {...props} />;
-};

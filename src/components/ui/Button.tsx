@@ -1,59 +1,44 @@
-import React from 'react';
+import { forwardRef } from 'react';
+import { clsx } from 'clsx';
 import { Loader2 } from 'lucide-react';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'whats' | 'brand-secondary';
-  size?: 'sm' | 'md' | 'lg';
-  isLoading?: boolean;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-}
-
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'md',
-  isLoading = false,
-  leftIcon,
-  rightIcon,
-  className = '',
-  disabled,
-  ...props
-}) => {
-  const baseStyles =
-    'inline-flex items-center justify-center font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed motion-safe:active:scale-95 rounded-full min-h-[44px] px-4';
-
-  const variantStyles = {
-    primary: 'bg-brand text-white hover:bg-brand-hover shadow-1',
-    whats: 'bg-whats text-white hover:bg-whats-hover shadow-1',
-    ghost: 'bg-transparent text-ink hover:bg-surface-alt',
-    danger: 'bg-danger text-white hover:bg-danger/90 shadow-1',
-    secondary: 'bg-transparent border-2 border-ink text-ink hover:bg-ink hover:text-paper',
-    outline: 'bg-transparent border-2 border-ink text-ink hover:bg-ink hover:text-paper',
-    'brand-secondary': 'bg-brand-wash text-brand border border-brand-line hover:bg-brand/10',
-  };
-
-  const sizeStyles = {
-    sm: 'text-xs min-h-[36px] px-3 py-1.5',
-    md: 'text-sm min-h-[44px] px-4 py-2.5',
-    lg: 'text-base min-h-[48px] px-6 py-3',
-  };
-
-  return (
-    <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`}
-      disabled={disabled || isLoading}
-      {...props}
-    >
-      {isLoading ? (
-        <Loader2 className="w-5 h-5 animate-spin mr-2" />
-      ) : leftIcon ? (
-        <span className="mr-2 inline-flex items-center">{leftIcon}</span>
-      ) : null}
-      <span>{children}</span>
-      {!isLoading && rightIcon && (
-        <span className="ml-2 inline-flex items-center">{rightIcon}</span>
-      )}
-    </button>
-  );
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+ variant?: 'primary' | 'secondary' | 'link';
+ size?: 'sm' | 'md' | 'lg';
+ loading?: boolean;
 };
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+ ({ className, variant = 'secondary', size = 'md', loading, children, disabled, ...props }, ref) => {
+ const isLink = variant === 'link';
+ const base = isLink 
+ ? 'inline-flex items-center justify-center font-bold text-accent hover:underline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-2 underline-offset-4 disabled:text-subtle disabled:no-underline min-h-[44px] min-w-[44px]'
+ : 'press inline-flex items-center justify-center font-extrabold text-[13.5px] rounded border-[1.5px] min-h-[44px] min-w-[44px] px-4 transition-colors focus-visible:outline-none disabled:bg-surface-2 disabled:border-line disabled:text-subtle disabled:cursor-not-allowed';
+ 
+ const variants = {
+ primary: 'bg-accent border-ink text-white',
+ secondary: 'bg-surface border-ink text-ink',
+ link: ''
+ };
+ 
+ const sizes = {
+ sm: isLink ? '' : 'h-[36px] min-h-[36px] text-xs px-3',
+ md: isLink ? '' : 'h-[44px]',
+ lg: isLink ? '' : 'h-[52px] text-sm px-6'
+ };
+
+ return (
+ <button
+ ref={ref}
+ disabled={disabled || loading}
+ aria-disabled={disabled || loading}
+ className={clsx(base, !isLink && variants[variant], sizes[size], className)}
+ {...props}
+ >
+ {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+ {children}
+ </button>
+ );
+ }
+);
+Button.displayName = 'Button';

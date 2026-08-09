@@ -10,6 +10,16 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   jsxA11y.flatConfigs.recommended,
   {
+    // One-off migration and QA helpers written as CommonJS. `require` IS correct in a .cjs
+    // file, so the TypeScript rule banning it does not apply there. This is configuration,
+    // not suppression — the rule stays fully enforced across src/ and tests/.
+    files: ['scripts/**/*.cjs'],
+    rules: {
+      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+    },
+  },
+  {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
     languageOptions: {
       globals: {

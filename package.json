@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint .",
+    "lint": "eslint . && node scripts/check-design-tokens.mjs",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -17,7 +17,8 @@
     "qa:status": "node scripts/qa-bootstrap.mjs --status",
     "test:qa": "npm run test && npm run test:e2e",
     "qa:verify": "npm run lint && npm run typecheck && npm run test:qa && npm run build",
-    "db:types": "supabase gen types typescript --local > src/lib/database.types.ts"
+    "db:types": "supabase gen types typescript --local > src/lib/database.types.ts",
+    "check:tokens": "node scripts/check-design-tokens.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -26,6 +27,7 @@
     "@types/mixpanel-browser": "^2.60.0",
     "browser-image-compression": "^2.0.2",
     "canvas-confetti": "^1.9.2",
+    "clsx": "^2.1.1",
     "framer-motion": "^11.0.8",
     "lucide-react": "^0.344.0",
     "mixpanel-browser": "^2.81.0",
@@ -54,6 +56,7 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "jsdom": "^24.0.0",
+    "playwright": "^1.62.1",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
     "supabase": "^2.113.0",

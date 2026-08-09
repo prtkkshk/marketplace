@@ -1,41 +1,38 @@
-import React from 'react';
+import { forwardRef } from 'react';
+import { clsx } from 'clsx';
 
-export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string;
-  error?: string;
-  helperText?: string;
-}
+export type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+ label: string;
+ error?: string;
+ hint?: string;
+};
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, helperText, className = '', id, rows = 4, ...props }, ref) => {
-    const textareaId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
-
-    return (
-      <div className="w-full flex flex-col gap-1.5 text-left">
-        {label && (
-          <label htmlFor={textareaId} className="text-sm font-medium text-ink">
-            {label}
-          </label>
-        )}
-        <textarea
-          id={textareaId}
-          ref={ref}
-          rows={rows}
-          className={`w-full px-3.5 py-2.5 rounded-md border bg-surface text-ink text-base md:text-[16px] transition-colors placeholder:text-ink-3/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/15 focus-visible:border-brand resize-y ${
-            error ? 'border-danger text-danger' : 'border-line hover:border-line-strong'
-          } ${className}`}
-          {...props}
-        />
-        <div className="min-h-[1.25rem] mt-0.5">
-          {error ? (
-            <span className="text-xs font-medium text-danger">{error}</span>
-          ) : helperText ? (
-            <span className="text-xs text-ink-3">{helperText}</span>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
+ ({ className, label, error, hint, id, ...props }, ref) => {
+ const uniqueId = id || label.replace(/\s+/g, '-').toLowerCase();
+ const errorId = `${uniqueId}-error`;
+ const hintId = `${uniqueId}-hint`;
+ 
+ return (
+ <div className="flex flex-col gap-1.5 w-full">
+ <label htmlFor={uniqueId} className="text-label text-ink uppercase tracking-wider font-extrabold">{label}</label>
+ <textarea
+ ref={ref}
+ id={uniqueId}
+ aria-invalid={!!error}
+ aria-describedby={clsx(error && errorId, hint && !error && hintId) || undefined}
+ className={clsx(
+ 'w-full rounded border-[1.5px] p-3 min-h-[100px] text-ink bg-surface placeholder:text-subtle text-base transition-shadow focus:border-ink focus:shadow-hard resize-y',
+ error ? 'border-danger bg-danger-wash' : 'border-line-strong',
+ 'disabled:bg-surface-2 disabled:border-line disabled:text-subtle disabled:cursor-not-allowed',
+ className
+ )}
+ {...props}
+ />
+ {error && <span id={errorId} className="text-xs text-danger font-medium">{error}</span>}
+ {hint && !error && <span id={hintId} className="text-xs text-subtle">{hint}</span>}
+ </div>
+ );
+ }
 );
-
 Textarea.displayName = 'Textarea';

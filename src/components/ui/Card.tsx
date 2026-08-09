@@ -1,20 +1,13 @@
-import React from 'react';
+import { forwardRef } from 'react';
+import { clsx } from 'clsx';
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  interactive?: boolean;
-}
-
-export const Card: React.FC<CardProps> = ({ children, interactive = false, className = '', ...props }) => {
-  const interactiveStyles = interactive
-    ? 'cursor-pointer motion-safe:hover:-translate-y-[3px] hover:border-line-strong hover:shadow-md transition-all motion-safe:active:scale-[0.99]'
-    : '';
-
-  return (
-    <div
-      className={`rounded-lg border border-line bg-surface shadow-sm overflow-hidden text-left ${interactiveStyles} ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
+export const Card = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+ ({ className, ...props }, ref) => (
+ <div
+ ref={ref}
+ className={clsx('bg-surface border-[1.5px] border-line-strong rounded-lg shadow-card overflow-hidden', className)}
+ {...props}
+ />
+ )
+);
+Card.displayName = 'Card';

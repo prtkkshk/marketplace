@@ -1,46 +1,38 @@
-import React from 'react';
+import { forwardRef } from 'react';
+import { clsx } from 'clsx';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
-  error?: string;
-  helperText?: string;
-}
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+ label: string;
+ error?: string;
+ hint?: string;
+};
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, helperText, className = '', id, onFocus, ...props }, ref) => {
-    const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
-
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-      e.target.select();
-      onFocus?.(e);
-    };
-
-    return (
-      <div className="w-full flex flex-col gap-1.5 text-left">
-        {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-ink">
-            {label}
-          </label>
-        )}
-        <input
-          id={inputId}
-          ref={ref}
-          onFocus={handleFocus}
-          className={`w-full min-h-[44px] px-3.5 py-2.5 rounded-md border bg-surface text-ink text-base md:text-[16px] transition-colors placeholder:text-ink-3/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/15 focus-visible:border-brand ${
-            error ? 'border-danger text-danger' : 'border-line hover:border-line-strong'
-          } ${className}`}
-          {...props}
-        />
-        <div className="min-h-[1.25rem] mt-0.5">
-          {error ? (
-            <span className="text-xs font-medium text-danger">{error}</span>
-          ) : helperText ? (
-            <span className="text-xs text-ink-3">{helperText}</span>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+ ({ className, label, error, hint, id, ...props }, ref) => {
+ const uniqueId = id || label.replace(/\s+/g, '-').toLowerCase();
+ const errorId = `${uniqueId}-error`;
+ const hintId = `${uniqueId}-hint`;
+ 
+ return (
+ <div className="flex flex-col gap-1.5 w-full">
+ <label htmlFor={uniqueId} className="text-label text-ink uppercase tracking-wider font-extrabold">{label}</label>
+ <input
+ ref={ref}
+ id={uniqueId}
+ aria-invalid={!!error}
+ aria-describedby={clsx(error && errorId, hint && !error && hintId) || undefined}
+ className={clsx(
+ 'w-full rounded border-[1.5px] h-[44px] px-3 text-ink bg-surface placeholder:text-subtle text-base transition-shadow focus:border-ink focus:shadow-hard',
+ error ? 'border-danger bg-danger-wash' : 'border-line-strong',
+ 'disabled:bg-surface-2 disabled:border-line disabled:text-subtle disabled:cursor-not-allowed',
+ className
+ )}
+ {...props}
+ />
+ {error && <span id={errorId} className="text-xs text-danger font-medium">{error}</span>}
+ {hint && !error && <span id={hintId} className="text-xs text-subtle">{hint}</span>}
+ </div>
+ );
+ }
 );
-
 Input.displayName = 'Input';
