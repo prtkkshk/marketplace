@@ -8,14 +8,17 @@ import { PWAInstaller } from './features/pwa/PWAInstaller';
 import { UpdateToast } from './features/pwa/UpdateToast';
 import { ErrorBoundary } from './components/layout/ErrorBoundary';
 import { AppShell } from './components/layout/AppShell';
-
-import { SignInScreen } from './features/auth/SignInScreen';
-import { SignUpScreen } from './features/auth/SignUpScreen';
-import { OtpScreen } from './features/auth/OtpScreen';
-import { ForgotPasswordScreen } from './features/auth/ForgotPasswordScreen';
-import { CompleteProfileScreen } from './features/auth/CompleteProfileScreen';
-import { BannedScreen } from './features/auth/BannedScreen';
 import { ProtectedRoute, AdminRoute } from './features/auth/Guards';
+
+// Auth screens — lazy loaded: returning users never visit these after first login.
+// Each is small but they were adding ~60-80kB to every initial page load parse.
+const SignInScreen = lazy(() => import('./features/auth/SignInScreen').then(m => ({ default: m.SignInScreen })));
+const SignUpScreen = lazy(() => import('./features/auth/SignUpScreen').then(m => ({ default: m.SignUpScreen })));
+const OtpScreen = lazy(() => import('./features/auth/OtpScreen').then(m => ({ default: m.OtpScreen })));
+const ForgotPasswordScreen = lazy(() => import('./features/auth/ForgotPasswordScreen').then(m => ({ default: m.ForgotPasswordScreen })));
+const CompleteProfileScreen = lazy(() => import('./features/auth/CompleteProfileScreen').then(m => ({ default: m.CompleteProfileScreen })));
+const BannedScreen = lazy(() => import('./features/auth/BannedScreen').then(m => ({ default: m.BannedScreen })));
+
 
 const FeedScreen = lazy(() => import('./features/listings/FeedScreen').then(m => ({ default: m.FeedScreen })));
 const ListingDetailScreen = lazy(() => import('./features/listings/ListingDetailScreen').then(m => ({ default: m.ListingDetailScreen })));

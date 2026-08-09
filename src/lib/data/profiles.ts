@@ -80,9 +80,7 @@ export async function updateProfile(
  const { data: sessionData } = await supabase.auth.getSession();
  const userEmail = updates.email || userData?.user?.email || sessionData?.session?.user?.email || '';
 
- const payload: Record<string, unknown> = {
- id: _userId,
- };
+ const payload: Record<string, unknown> = {};
 
  if (userEmail) {
  payload.email = userEmail;
@@ -95,7 +93,8 @@ export async function updateProfile(
  if (updates.isProfileComplete !== undefined) payload.is_profile_complete = updates.isProfileComplete;
 
  const { error } = await supabase.from('profiles')
-    .upsert(payload as import('../database.types').Database['public']['Tables']['profiles']['Insert'], { onConflict: 'id' });
+    .update(payload as any)
+    .eq('id', _userId);
 
  if (error) {
  throw new Error(`Failed to update profile: ${error.message}`);

@@ -79,8 +79,23 @@ export async function stripExif(file: File): Promise<File> {
       URL.revokeObjectURL(url);
 
       const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth || img.width;
-      canvas.height = img.naturalHeight || img.height;
+
+      // Resize while we are already re-encoding. A phone camera produces 3000-4000px
+      // images; the largest place a listing photo is ever rendered is the detail hero at
+      // roughly 800px CSS, so 1600px covers 2x DPR with room to spare.
+      //
+      // This is done HERE rather than with Supabase's image transform API because that API
+      // lives at /storage/v1/render/image/... (not /object/...) AND is a paid Pro feature.
+      // Appending ?width= to an /object/ URL is silently ignored, so the full-resolution
+      // file is still downloaded. Resizing on upload is free, works on any plan, and also
+      // keeps the 500MB free-tier storage cap from filling with 4MB originals.
+      const MAX_EDGE = 1600;
+      const srcW = img.naturalWidth || img.width;
+      const srcH = img.naturalHeight || img.height;
+      const scale = Math.min(1, MAX_EDGE / Math.max(srcW, srcH));
+
+      canvas.width = Math.round(srcW * scale);
+      canvas.height = Math.round(srcH * scale);
 
       const ctx = canvas.getContext('2d');
       if (!ctx) {
@@ -88,7 +103,7 @@ export async function stripExif(file: File): Promise<File> {
         return;
       }
 
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       canvas.toBlob(
         (blob) => {

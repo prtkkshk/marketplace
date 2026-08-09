@@ -236,8 +236,8 @@ export const FeedScreen: React.FC = () => {
  ) : (
  <>
  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5 lg:gap-5">
- {allListings.map((listing) => (
- <ListingCard key={listing.id} listing={listing} />
+ {allListings.map((listing, index) => (
+ <ListingCard key={listing.id} listing={listing} priority={index < 4} />
  ))}
  </div>
 

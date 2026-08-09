@@ -10,11 +10,20 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Button } from '../../components/ui/Button';
 import { useToast } from '../../components/ui/Toast';
-import { Megaphone, ArrowDownUp } from 'lucide-react';
-import * as LucideIcons from 'lucide-react';
+import { Megaphone, ArrowDownUp, Bike, BookOpen, Laptop, BedDouble, TestTube, Package } from 'lucide-react';
 import type { WantedRequestItem } from '../../lib/data/wantedRequests';
 import { CATEGORIES } from '../../lib/constants';
 import { DesktopFeedShell } from '../../components/layout/DesktopFeedShell';
+
+// Map category icon names to components — eliminates the `import * as` wildcard
+const CATEGORY_ICON_MAP: Record<string, React.ElementType> = {
+  Bike,
+  BookOpen,
+  Laptop,
+  BedDouble,
+  TestTube,
+  Package,
+};
 
 export const WantedBoardScreen: React.FC = () => {
  const [searchParams, setSearchParams] = useSearchParams();
@@ -70,7 +79,7 @@ export const WantedBoardScreen: React.FC = () => {
  </button>
  </li>
       {CATEGORIES.map(cat => {
-        const IconComp = (LucideIcons as unknown as Record<string, React.ElementType>)[cat.icon];
+        const IconComp = CATEGORY_ICON_MAP[cat.icon];
         return (
         <li key={cat.id}>
           <button

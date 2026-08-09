@@ -7,6 +7,12 @@
     <meta name="description" content="KGP Bazaar - Buy, sell, and request items on IIT Kharagpur campus." />
     <meta name="theme-color" content="#FAF4E8">
 
+    <!-- Preload self-hosted variable font — must be before stylesheets so the browser
+         fetches it during HTML parse rather than after CSS parse. Without this hint the
+         font is discovered late and causes FOUT on the Sign In heading (the LCP element
+         on that page). crossorigin is required for CORS preloading of font files. -->
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

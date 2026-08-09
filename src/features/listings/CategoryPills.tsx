@@ -1,7 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import { CATEGORIES } from '../../lib/constants';
-import * as LucideIcons from 'lucide-react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Bike, BookOpen, Laptop, BedDouble, TestTube, Package } from 'lucide-react';
+
+// Map category icon names to components — eliminates the `import * as` wildcard
+const CATEGORY_ICON_MAP: Record<string, React.ElementType> = {
+  Bike,
+  BookOpen,
+  Laptop,
+  BedDouble,
+  TestTube,
+  Package,
+};
 
 export interface CategoryPillsProps {
  selectedCategory: string;
@@ -71,7 +80,7 @@ export const CategoryPills: React.FC<CategoryPillsProps> = ({ selectedCategory, 
  </button>
  {CATEGORIES.map((cat) => {
  const isSelected = selectedCategory === cat.id;
-        const IconComp = (LucideIcons as unknown as Record<string, React.ElementType>)[cat.icon];
+        const IconComp = CATEGORY_ICON_MAP[cat.icon];
  return (
  <button
  key={cat.id}

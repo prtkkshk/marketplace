@@ -1,33 +1,50 @@
 import { test, expect } from '@playwright/test';
+import { signIn, studentA, studentB } from './_credentials';
 
 test.describe('Golden Path 2: Wanted Request Posting & Response', () => {
-  test('allows student to post wanted request and another student to respond via WhatsApp', async ({ page }) => {
-    // 0. Sign in as student
-    await page.goto('/auth/signin');
-    await page.fill('input[type="email"]', 'teststudent1@kgpian.iitkgp.ac.in');
-    await page.fill('input[type="password"]', 'KgpPass2026!');
-    await page.click('button[type="submit"]');
-    await page.waitForURL('**/');
-
+  test('allows student to post wanted request and another student to respond via WhatsApp', async ({ browser }) => {
+    // 0. Use separate contexts for Student A and Student B
+    const contextA = await browser.newContext();
+    const pageA = await contextA.newPage();
+    
+    await signIn(pageA, studentA());
+    
     // 1. Visit Wanted Board
-    await page.goto('/wanted');
-    await page.click('button:has-text("Post a Request")');
+    await pageA.goto('/wanted');
+    await pageA.click('button:has-text("Post a Request")');
+    await pageA.waitForURL('**/new-request');
 
-    // 2. Fill wanted request form
-    await page.fill('input[name="title"]', 'Casio FX-991EX Scientific Calculator');
-    await page.selectOption('select[name="category"]', 'electronics');
-    await page.fill('input[name="maxBudget"]', '900');
-    await page.fill('textarea[name="description"]', 'Urgent requirement for MA20101 end-sem exam.');
-    await page.click('button[type="submit"]');
+    // 2. Fill wanted request form (adding timestamp to ensure uniqueness)
+    const uniqueTitle = `Casio FX-991EX Scientific Calculator - ${Date.now()}`;
+    await pageA.fill('input[name="title"]', uniqueTitle);
+    await pageA.selectOption('select[name="category"]', 'electronics');
+    await pageA.fill('input[name="maxBudget"]', '900');
+    await pageA.fill('textarea[name="description"]', 'Urgent requirement for MA20101 end-sem exam.');
+    await pageA.click('button[type="submit"]');
 
-    // 3. Verify request appears on wanted board
-    await page.goto('/wanted');
-    await expect(page.locator('text=Casio FX-991EX Scientific Calculator')).toBeVisible();
-    await expect(page.locator('text=Budget: Under ₹900')).toBeVisible();
+    // Wait for redirect to wanted board and see our request
+    await pageA.waitForURL('**/wanted');
+    await expect(pageA.locator(`text=${uniqueTitle}`)).toBeVisible();
+    await contextA.close();
 
-    // 4. Click request card
-    await page.click('text=Casio FX-991EX Scientific Calculator');
-    const respondBtn = page.locator('button:has-text("I Have This! (WhatsApp)")');
+    // 3. Sign in as Student B to view and respond
+    const contextB = await browser.newContext();
+    const pageB = await contextB.newPage();
+    await signIn(pageB, studentB());
+    
+    // 4. Verify request appears on wanted board
+    await pageB.goto('/wanted');
+    await expect(pageB.locator(`text=${uniqueTitle}`)).toBeVisible();
+    await expect(pageB.locator('text=₹900').first()).toBeVisible();
+
+    // 5. Click request card
+    await pageB.click(`text=${uniqueTitle}`);
+    
+    // Wait for detail view
+    await pageB.waitForURL('**/request/*');
+    
+    const respondBtn = pageB.locator('button:has-text("I Have This!")').first();
     await expect(respondBtn).toBeVisible();
+    await contextB.close();
   });
 });

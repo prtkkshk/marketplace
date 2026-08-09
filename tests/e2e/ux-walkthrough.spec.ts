@@ -1,61 +1,53 @@
-import { test } from '@playwright/test';
-import * as fs from 'fs';
+import { test, expect } from '@playwright/test';
+import { signIn, studentA } from './_credentials';
 
 test.describe('Live UX Walkthrough', () => {
-  test('Primary Flow - Browse, Search, View, Edit Profile', async ({ page }) => {
-    // 1. Visit Home (unauth -> redirects to signin)
+  test('Primary Flow - Browse, Search, View, Edit Profile', async ({ page, isMobile }) => {
+    // 1. Visit Home
+    await signIn(page, studentA());
     await page.goto('/');
+
+    // 2. Search
+    const searchInput = page.locator('input[placeholder*="Search"]');
+    await expect(searchInput).toBeVisible();
+    await searchInput.fill('cycle');
+    await page.keyboard.press('Enter');
     
-    // 2. Sign In
-    await page.fill('input[type="email"]', 'pepperjet@kgpian.iitkgp.ac.in');
-    await page.fill('input[type="password"]', 'pepperjet@14627912');
-    await page.click('button[type="submit"]');
-    await page.waitForURL('/', { timeout: 15000 });
+    // Wait for the URL to update with search params
+    await page.waitForURL(/q=cycle/);
 
-    // 3. Search and filter
-    const searchInput = await page.$('input[placeholder*="Search"]');
-    if (searchInput) {
-      await searchInput.fill('cycle');
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(2000); // See results
-    }
-
-    // 4. Open filters
-    const filterBtn = await page.getByRole('button', { name: /Filters/i });
-    if (filterBtn) {
+    // 3. Open filters based on viewport
+    if (isMobile) {
+      // Mobile has a "Filters" button that opens a drawer
+      const filterBtn = page.getByRole('button', { name: /Filters/i });
       await filterBtn.click();
-      await page.waitForTimeout(1000);
       
-      const conditionRadio = await page.getByText('Good', { exact: true });
-      if (conditionRadio) await conditionRadio.click();
+      // The mobile filter sheet uses a native <select> for condition.
+      // Must use selectOption() — clicking <option> elements doesn't work.
+      await page.getByRole('dialog').locator('#item-condition').selectOption('good');
       
-      const applyBtn = await page.getByRole('button', { name: /Apply/i });
-      if (applyBtn) await applyBtn.click();
-      await page.waitForTimeout(2000);
+      // Apply filters
+      await page.getByRole('dialog').getByRole('button', { name: /Apply/i }).click();
+    } else {
+      // Desktop has a sidebar (<aside>) always visible
+      const conditionRadio = page.locator('aside').getByText('Good', { exact: true });
+      await conditionRadio.click();
     }
+    
+    await page.waitForURL(/cond=good/);
 
-    // 5. Open a category
-    const electronicsCat = page.getByText('Electronics', { exact: true }).first();
-    if (await electronicsCat.isVisible()) {
-      await electronicsCat.click();
-      await page.waitForTimeout(2000);
-    }
+    // 4. Open a category
+    // In v5, categories are a horizontal scrollable list or sidebar
+    const electronicsCat = page.locator('a, button').filter({ hasText: /^Electronics/i }).first();
+    await electronicsCat.click();
+    await page.waitForURL(/cat=electronics/);
 
-    // 6. Go to wanted board
+    // 5. Go to wanted board
     await page.goto('/wanted');
-    await page.waitForTimeout(2000);
+    await expect(page.locator('h1')).toContainText('Wanted Board');
 
-    // 7. Go to profile
+    // 6. Go to profile
     await page.goto('/profile');
-    await page.waitForTimeout(2000);
-
-    // 8. Go to create listing
-    await page.goto('/new');
-    await page.waitForTimeout(2000);
-
-    // Make sure artifact dir exists
-    if (!fs.existsSync('audit-artifacts')) {
-      fs.mkdirSync('audit-artifacts');
-    }
+    await expect(page.locator('h1')).toContainText('QA Student A');
   });
 });

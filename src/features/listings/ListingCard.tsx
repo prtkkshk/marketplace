@@ -10,7 +10,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { useToast } from '../../components/ui/Toast';
 // removed formatINR
 import { timeAgo } from '../../lib/utils/timeAgo';
-import { getPhotoPublicUrl, getCategoryFallback } from '../../lib/utils/image';
+import { getPhotoPublicUrlTransformed, getCategoryFallback } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
 import { Heart, Pin, MessageCircle } from 'lucide-react';
 import { analytics } from '../../lib/analytics';
@@ -21,6 +21,8 @@ export interface ListingCardProps {
  isOwner?: boolean;
  onEdit?: (e: React.MouseEvent) => void;
  onMarkSold?: (e: React.MouseEvent) => void;
+ /** Pass true for the first ~4 cards above the fold to hint fetchpriority=high */
+ priority?: boolean;
 }
 
 export const ListingCard: React.FC<ListingCardProps> = ({
@@ -28,6 +30,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  isOwner = false,
  onEdit,
  onMarkSold,
+ priority = false,
 }) => {
  const { session } = useAuth();
  const { showToast } = useToast();
@@ -46,7 +49,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  const isExpired = listing.status === 'expired';
  const isDisabled = isSold || isExpired;
 
- const photoUrl = getPhotoPublicUrl(listing.photoPaths?.[0], listing.category);
+ const photoUrl = getPhotoPublicUrlTransformed(listing.photoPaths?.[0], listing.category);
 
  const conditionLabels: Record<string, string> = {
  brand_new: 'Brand New',
@@ -158,7 +161,10 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  <img
  src={photoUrl}
  alt={listing.title}
- loading="lazy"
+ loading={priority ? 'eager' : 'lazy'}
+ fetchPriority={priority ? 'high' : 'auto'}
+ width={400}
+ height={400}
  className={`w-full h-full object-cover transition-transform duration-500 ease-out ${
  isSold ? 'grayscale' : 'group-hover:scale-[1.045]'
  }`}

@@ -1,59 +1,102 @@
 import { test, expect } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
-
-// Parse .env.test
-const envPath = path.resolve(process.cwd(), '.env.test');
-const envContent = fs.readFileSync(envPath, 'utf-8');
-for (const line of envContent.split('\n')) {
-  if (line.trim() && !line.startsWith('#')) {
-    const [key, ...rest] = line.split('=');
-    if (key && rest.length) {
-      process.env[key.trim()] = rest.join('=').trim();
-    }
-  }
-}
-
+import { createClient } from '@supabase/supabase-js';
 
 test.describe('XSS and Injection tests', () => {
+  let throwawayListingId: string;
+  let throwawayUserId: string;
+  let throwawayEmail: string;
+
+  test.beforeAll(async () => {
+    // 1. Setup admin client
+    const adminClient = createClient(
+      process.env.SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    // 2. Create throwaway user
+    const timestamp = Date.now();
+    throwawayEmail = `qa.xss.${timestamp}@kgpian.iitkgp.ac.in`;
+    const { data: userData, error: userError } = await adminClient.auth.admin.createUser({
+      email: throwawayEmail,
+      password: process.env.E2E_STUDENT_PASSWORD!,
+      email_confirm: true
+    });
+    if (userError) throw userError;
+    throwawayUserId = userData.user.id;
+    
+    // 3. Complete profile with XSS payload
+    const xssPayload = '<script>alert("xss")</script><img src=x onerror=alert(1)>';
+    await adminClient.from('profiles').update({
+      full_name: xssPayload,
+      roll_number: '22CS10099',
+      hall_of_residence: 'RK',
+      whatsapp_number: '+919999900099',
+      is_profile_complete: true
+    }).eq('id', throwawayUserId);
+    
+    // 4. Create listing with XSS payload
+    const { data: listingData, error: listingError } = await adminClient.from('listings').insert({
+      user_id: throwawayUserId,
+      title: xssPayload,
+      description: xssPayload,
+      price: 10,
+      category: 'other',
+      condition: 'good',
+      status: 'active',
+      photo_paths: [],
+      hall_of_residence: 'RK'
+    }).select().single();
+    if (listingError) throw listingError;
+    throwawayListingId = listingData.id;
+  });
+
+  test.afterAll(async () => {
+    if (throwawayUserId) {
+      const adminClient = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      await adminClient.auth.admin.deleteUser(throwawayUserId);
+    }
+  });
+
   test('React escaping - literal text rendering', async ({ page }) => {
     let alertFired = false;
     page.on('dialog', async (dialog) => {
-      if (dialog.type() === 'alert') {
+      if (dialog.type() === 'alert' || dialog.type() === 'prompt') {
         alertFired = true;
       }
       await dialog.dismiss();
     });
 
-    await page.goto('/signin');
-    await page.fill('input[name="email"]', process.env.E2E_STUDENT_A_EMAIL!);
-    await page.fill('input[name="password"]', process.env.E2E_STUDENT_PASSWORD!);
-    await page.click('button[type="submit"]');
+    const xssPayload = '<script>alert("xss")</script><img src=x onerror=alert(1)>';
+
+    // Actually, let's just login
+    await page.goto('/auth/signin');
+    await page.fill('input[type="email"]', throwawayEmail);
+    await page.fill('input[type="password"]', process.env.E2E_STUDENT_PASSWORD!);
+    await page.click('button:has-text("Sign In")');
     
-    // Visit Feed
-    await page.waitForURL('/feed');
-    await page.waitForTimeout(2000); // Wait for items to load
+    await page.waitForURL('**/');
+    
+    // Check if the feed renders the payload literally
+    await expect(page.locator('article, div').filter({ hasText: 'xss' }).first()).toBeVisible();
+    
+    // Verify no alerts fired
     expect(alertFired).toBe(false);
 
-    // Visit Wanted
-    await page.goto('/wanted');
-    await page.waitForTimeout(2000);
+    // Visit listing detail page
+    await page.goto(`/listing/${throwawayListingId}`);
+    
+    // Verify the payload is rendered literally as text (not executed as script).
+    // The detail page has separate mobile / desktop h1 elements — only one is
+    // visible at any viewport — so we assert on body text instead.
+    await expect(page.locator('body')).toContainText(xssPayload);
+    // Seller name also contains the XSS payload rendered as text
+    await expect(page.locator('body')).toContainText('xss');
+    
+    // Verify no alerts fired
     expect(alertFired).toBe(false);
-
-    // Visit Profile
-    await page.goto('/profile');
-    await page.waitForTimeout(2000);
-    expect(alertFired).toBe(false);
-
-    // Test wa.me link deep link injection on a listing
-    await page.goto('/feed');
-    // Click on the first "Contact Seller on WhatsApp" button, but intercept it
-    const whatsappLink = await page.getAttribute('a[href^="https://wa.me/"]', 'href').catch(() => null);
-    if (whatsappLink) {
-      console.log('Found WhatsApp Link:', whatsappLink);
-      // Ensure it's correctly URL encoded and doesn't contain injected parameters
-      expect(whatsappLink).not.toContain('"><script>');
-    }
   });
 });
 

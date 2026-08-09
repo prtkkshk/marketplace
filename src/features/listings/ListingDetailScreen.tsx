@@ -236,6 +236,8 @@ export const ListingDetailScreen: React.FC = () => {
  <img
  src={photoUrls[activePhotoIdx]}
  alt={listing.title}
+ fetchPriority={activePhotoIdx === 0 ? "high" : "auto"}
+ loading={activePhotoIdx === 0 ? "eager" : "lazy"}
  className={`w-full h-full object-contain ${isSold ? 'grayscale' : ''}`}
  onError={(e) => {
  const target = e.target as HTMLImageElement;

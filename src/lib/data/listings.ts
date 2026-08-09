@@ -95,7 +95,7 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  let query = supabase
  .from('listings')
  .select(
- 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles(full_name, hall_of_residence)',
+ 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)',
  { count: 'exact' }
  )
  .is('deleted_at', null);
@@ -187,7 +187,7 @@ export async function fetchListingById(id: string): Promise<ListingItem | null> 
  const { data, error } = await supabase
  .from('listings')
  .select(
- 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles(full_name, hall_of_residence)'
+ 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)'
  )
  .eq('id', id)
  .is('deleted_at', null)

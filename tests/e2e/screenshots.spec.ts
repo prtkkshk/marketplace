@@ -1,5 +1,6 @@
 import { test } from '@playwright/test';
 import * as fs from 'fs';
+import { signIn, studentA } from './_credentials';
 
 const ROUTES = [
   '/',
@@ -33,9 +34,7 @@ test.describe('Route Screenshots & Font Check', () => {
     // Login for protected routes
     await page.goto('/auth/signin');
     try {
-      await page.fill('input[type="email"]', 'pepperjet@kgpian.iitkgp.ac.in');
-      await page.fill('input[type="password"]', 'pepperjet@14627912');
-      await page.click('button[type="submit"]');
+      await signIn(page, studentA());
       await page.waitForURL('/', { timeout: 15000 });
     } catch(e) {
       console.log('Login failed or already logged in:', e);

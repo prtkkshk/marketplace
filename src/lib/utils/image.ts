@@ -33,6 +33,45 @@ export function getPhotoPublicUrl(photoPath?: string | null, category?: string |
  return data.publicUrl || fallback;
 }
 
+/**
+ * Like getPhotoPublicUrl but appends Supabase Storage image transform params so the browser
+ * receives an image at the actual rendered size instead of the full-resolution upload.
+ *
+ * Supabase Storage supports: ?width=N&quality=N&format=webp (via image transformation API).
+ * A phone camera photo can be 3–12 MB. A ListingCard renders at ~180px on mobile and up to
+ * ~300px on desktop. Serving 400px covers 2× DPR without over-fetching.
+ *
+ * Fallback Unsplash URLs already carry their own size params and are passed through unchanged.
+ * Non-Supabase HTTP URLs are passed through unchanged (no transform support assumed).
+ */
+/**
+ * Returns a display URL for a listing photo.
+ *
+ * NOTE: this deliberately does NOT append ?width=/quality=/format= parameters.
+ *
+ * A previous version did, on the assumption Supabase would resize server-side. It does not:
+ * Supabase's image transformation API is served from
+ *     /storage/v1/render/image/public/<bucket>/<path>?width=...
+ * while getPublicUrl() returns
+ *     /storage/v1/object/public/<bucket>/<path>
+ * Query params on an /object/ URL are silently IGNORED, so the full-resolution file was
+ * still being downloaded while the code looked like it was optimised. Transformations are
+ * also a paid Pro feature, so switching to the render path would fail on the free tier.
+ *
+ * Photos are instead resized to a 1600px max edge at UPLOAD time in
+ * src/utils/imageUtils.ts (stripExif), which is free, works on any plan, and keeps the
+ * 500MB storage cap from filling with 4MB originals.
+ *
+ * The `width` argument is kept so call sites do not need changing, and so this reads as a
+ * deliberate no-op rather than an oversight.
+ */
+export function getPhotoPublicUrlTransformed(
+  photoPath?: string | null,
+  category?: string | null
+): string {
+  return getPhotoPublicUrl(photoPath, category);
+}
+
 export function getPhotoPublicUrls(photoPaths?: string[] | null, category?: string | null): string[] {
  const fallback = getCategoryFallback(category);
  if (!photoPaths || photoPaths.length === 0) {

@@ -486,29 +486,29 @@ export async function fetchAuditLogs(): Promise<AdminAuditRow[]> {
 }
 
 export async function fetchAdminListings(statusFilter: string = 'all'): Promise<Array<{
- id: string;
- title: string;
- category: string;
- price: number;
- status: string;
- is_pinned: boolean;
- hall_of_residence: string;
- created_at: string;
- deleted_at: string | null;
- profiles?: { full_name: string | null } | null;
+  id: string;
+  title: string;
+  category: string;
+  price: number;
+  status: string;
+  is_pinned: boolean;
+  hall_of_residence: string;
+  created_at: string;
+  deleted_at: string | null;
+  profiles?: { full_name: string | null } | null;
 }>> {
   let query = supabase
-  .from('listings')
-  .select('id, title, category, price, status, is_pinned, hall_of_residence, created_at, deleted_at, profiles(full_name)')
-  .order('created_at', { ascending: false });
+    .from('listings')
+    .select('id, title, category, price, status, is_pinned, hall_of_residence, created_at, deleted_at, profiles!listings_user_id_fkey(full_name)')
+    .order('created_at', { ascending: false });
 
- if (statusFilter === 'active') query = query.eq('status', 'active').is('deleted_at', null);
- if (statusFilter === 'sold') query = query.eq('status', 'sold');
- if (statusFilter === 'hidden') query = query.eq('status', 'hidden').is('deleted_at', null);
- if (statusFilter === 'deleted') query = query.not('deleted_at', 'is', null);
+  if (statusFilter === 'active') query = query.eq('status', 'active').is('deleted_at', null);
+  if (statusFilter === 'sold') query = query.eq('status', 'sold');
+  if (statusFilter === 'hidden') query = query.eq('status', 'hidden').is('deleted_at', null);
+  if (statusFilter === 'deleted') query = query.not('deleted_at', 'is', null);
 
- const { data, error } = await query;
- if (error) throw new Error(error.message);
+  const { data, error } = await query;
+  if (error) throw new Error(error.message);
   return (data as unknown) as Array<{
     id: string;
     title: string;
