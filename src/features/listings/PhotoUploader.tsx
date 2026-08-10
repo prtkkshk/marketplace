@@ -48,7 +48,15 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  photosRef.current = photos;
  }, [photos]);
 
+ const updatePhotoState = (photoId: string, changes: Partial<PhotoItem>) => {
+ photosRef.current = photosRef.current.map((p) =>
+ p.id === photoId ? { ...p, ...changes } : p
+ );
+ onChange([...photosRef.current]);
+ };
+
  const processAndUploadFile = async (file: File, photoId: string) => {
+ let safePreviewUrl = '';
  try {
  // 1. Validate magic bytes to ensure it's a real image (P1 fix)
  const isValid = await validateImageMagicBytes(file);
@@ -74,27 +82,17 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  }
 
  // Update progress to 50% and fix preview URL for mobile
- const safePreviewUrl = URL.createObjectURL(compressedFile);
- onChange(
- photosRef.current.map((p) =>
- p.id === photoId ? { ...p, progress: 50, error: undefined, previewUrl: safePreviewUrl } : p
- )
- );
+ safePreviewUrl = URL.createObjectURL(compressedFile);
+ updatePhotoState(photoId, { progress: 50, error: undefined, previewUrl: safePreviewUrl });
 
  // 4. Upload to Supabase Storage
  const finalPath = await uploadToSupabase(compressedFile, userId, listingId, photoId);
 
  // 5. Success - update state with finalPath
- onChange(
- photosRef.current.map((p) =>
- p.id === photoId ? { ...p, storagePath: finalPath, progress: 100, error: undefined } : p
- )
- );
+ updatePhotoState(photoId, { storagePath: finalPath, progress: 100, error: undefined, previewUrl: safePreviewUrl });
  } catch (err: unknown) {
  const msg = err instanceof Error ? err.message : 'Processing failed';
- onChange(
- photosRef.current.map((p) => (p.id === photoId ? { ...p, progress: 0, error: msg } : p))
- );
+ updatePhotoState(photoId, { progress: 0, error: msg, ...(safePreviewUrl ? { previewUrl: safePreviewUrl } : {}) });
  }
  };
 
@@ -117,8 +115,8 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  };
  });
 
- const updatedList = [...photosRef.current, ...newPhotos];
- onChange(updatedList);
+ photosRef.current = [...photosRef.current, ...newPhotos];
+ onChange([...photosRef.current]);
 
  // Process each new photo independently without awaiting in loop
  // so they process concurrently and don't block the UI
@@ -134,16 +132,17 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
  const handleRetry = async (photo: PhotoItem) => {
  if (!photo.file) return;
- onChange(photosRef.current.map((p) => (p.id === photo.id ? { ...p, progress: 10, error: undefined } : p)));
+ updatePhotoState(photo.id, { progress: 10, error: undefined });
  processAndUploadFile(photo.file, photo.id);
  };
 
  const handleRemove = async (id: string) => {
- const target = photos.find((p) => p.id === id);
+ const target = photosRef.current.find((p) => p.id === id);
  if (target?.storagePath) {
  supabase.storage.from('listing-photos').remove([target.storagePath]).catch(console.error);
  }
- onChange(photos.filter((p) => p.id !== id));
+ photosRef.current = photosRef.current.filter((p) => p.id !== id);
+ onChange([...photosRef.current]);
  };
 
  return (
