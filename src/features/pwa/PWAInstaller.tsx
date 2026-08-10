@@ -14,12 +14,6 @@ export const PWAInstaller: React.FC = () => {
  const [showIosSheet, setShowIosSheet] = useState<boolean>(false);
 
  useEffect(() => {
- // Gate behind return visit
- const hasVisited = localStorage.getItem('pwa_has_visited');
- if (!hasVisited) {
- localStorage.setItem('pwa_has_visited', 'true');
- return;
- }
  // Check dismissal cooldown (30 days)
  const dismissedUntil = localStorage.getItem('pwa_install_dismissed_until');
  if (dismissedUntil && Date.now() < parseInt(dismissedUntil, 10)) {
