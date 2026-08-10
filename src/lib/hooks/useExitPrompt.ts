@@ -35,9 +35,10 @@ export function useExitPrompt() {
 
   const confirmExit = () => {
     setShowPrompt(false);
-    // User wants to exit. We go back twice (once to undo the trap we just pushed, once to actually exit).
-    // In a PWA, going back beyond the first page closes it or puts it in the background.
-    window.history.go(-2);
+    // Attempt to close the PWA window directly. 
+    // This is more reliable for exiting an installed PWA than navigating backwards,
+    // which can accidentally just take the user to a previous page they visited in the app.
+    window.close();
   };
 
   const cancelExit = () => {
