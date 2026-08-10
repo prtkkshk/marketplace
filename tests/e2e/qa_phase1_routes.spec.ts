@@ -3,8 +3,6 @@ import { test } from '@playwright/test';
 const ROUTES = [
   '/auth/signin',
   '/auth/signup',
-  '/auth/otp',
-  '/auth/forgot-password',
   '/banned',
   '/complete-profile',
   '/',

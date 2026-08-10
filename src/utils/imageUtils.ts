@@ -71,36 +71,36 @@ export async function validateImageMagicBytes(file: File): Promise<boolean> {
  * out is metadata-free by construction.
  */
 export async function stripExif(file: File): Promise<File> {
-  return new Promise(async (resolve, reject) => {
-    let imgWidth = 0;
-    let imgHeight = 0;
-    let canvas: HTMLCanvasElement;
-    let ctx: CanvasRenderingContext2D | null;
+  let imgWidth = 0;
+  let imgHeight = 0;
+  let canvas: HTMLCanvasElement;
+  let ctx: CanvasRenderingContext2D | null;
 
-    try {
-      // Modern, memory-efficient approach (supports EXIF orientation natively in most browsers)
-      if (typeof window.createImageBitmap === 'function') {
-        const bitmap = await window.createImageBitmap(file);
-        imgWidth = bitmap.width;
-        imgHeight = bitmap.height;
-        canvas = document.createElement('canvas');
-        const MAX_EDGE = 1600;
-        const scale = Math.min(1, MAX_EDGE / Math.max(imgWidth, imgHeight));
-        canvas.width = Math.round(imgWidth * scale);
-        canvas.height = Math.round(imgHeight * scale);
-        ctx = canvas.getContext('2d');
-        if (!ctx) throw new Error('Failed to get canvas context');
-        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-        bitmap.close();
-      } else {
-        throw new Error('createImageBitmap not supported');
-      }
-    } catch (err) {
-      // Fallback to traditional Image object if createImageBitmap fails or is unsupported
-      return fallbackStripExif(file).then(resolve).catch(reject);
+  try {
+    // Modern, memory-efficient approach (supports EXIF orientation natively in most browsers)
+    if (typeof window.createImageBitmap === 'function') {
+      const bitmap = await window.createImageBitmap(file);
+      imgWidth = bitmap.width;
+      imgHeight = bitmap.height;
+      canvas = document.createElement('canvas');
+      const MAX_EDGE = 1600;
+      const scale = Math.min(1, MAX_EDGE / Math.max(imgWidth, imgHeight));
+      canvas.width = Math.round(imgWidth * scale);
+      canvas.height = Math.round(imgHeight * scale);
+      ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Failed to get canvas context');
+      ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+    } else {
+      throw new Error('createImageBitmap not supported');
     }
+  } catch (err) {
+    // Fallback to traditional Image object if createImageBitmap fails or is unsupported
+    return fallbackStripExif(file);
+  }
 
-    // Export from canvas
+  // Export from canvas
+  return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
         if (!blob) {

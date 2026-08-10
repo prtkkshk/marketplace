@@ -70,7 +70,7 @@ const NOT_COLORS = new Set([
   'clip','ellipsis','top','bottom','middle','super','sub',
   // border / ring / outline widths and styles
   '0','1','2','3','4','8','solid','dashed','dotted','double','hidden','none','offset',
-  'collapse','separate','x','y','t','b','l','r','s','e','inset','spacing',
+  'collapse','separate','x','y','t','b','l','r','s','e','inset','spacing','radius',
   // bg-* non-colour
   'cover','contain','fixed','local','scroll','repeat','no','auto','opacity','blend',
   'origin','clip','position','size','gradient','image','norepeat',

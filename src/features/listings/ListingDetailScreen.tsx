@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '../../components/layout/PageContainer';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import {
  fetchListingById,
  type ListingItem} from '../../lib/data/listings';
@@ -31,9 +31,10 @@ import {
  ChevronRight,
  Trash2} from 'lucide-react';
 
-export const ListingDetailScreen: React.FC = () => {
+ export const ListingDetailScreen: React.FC = () => {
  const { id } = useParams<{ id: string }>();
  const navigate = useNavigate();
+ const location = useLocation();
  const { profile, isAdmin, session } = useAuth();
  const { showToast } = useToast();
 
@@ -138,7 +139,7 @@ export const ListingDetailScreen: React.FC = () => {
 
  const handleToggleSave = () => {
  if (!session?.user?.id || !listing) {
- showToast('Please sign in to save items', 'info');
+ navigate('/auth/signin', { state: { from: location } });
  return;
  }
  const previousState = isSaved;

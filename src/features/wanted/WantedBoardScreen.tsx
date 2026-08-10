@@ -14,6 +14,7 @@ import { Megaphone, ArrowDownUp, Bike, BookOpen, Laptop, BedDouble, TestTube, Pa
 import type { WantedRequestItem } from '../../lib/data/wantedRequests';
 import { CATEGORIES } from '../../lib/constants';
 import { DesktopFeedShell } from '../../components/layout/DesktopFeedShell';
+import { useAuth } from '../auth/AuthProvider';
 
 // Map category icon names to components — eliminates the `import * as` wildcard
 const CATEGORY_ICON_MAP: Record<string, React.ElementType> = {
@@ -29,6 +30,7 @@ export const WantedBoardScreen: React.FC = () => {
  const [searchParams, setSearchParams] = useSearchParams();
  const navigate = useNavigate();
  const { showToast } = useToast();
+ const { session } = useAuth();
 
  const [page, setPage] = useState<number>(1);
 
@@ -105,7 +107,13 @@ export const WantedBoardScreen: React.FC = () => {
  <h1 className="font-display text-3xl font-extrabold text-ink tracking-tight mb-2">Wanted Board</h1>
  <p className="text-sm text-subtle mt-1">Can't find it in the feed? Ask the campus.</p>
  </div>
- <Button variant="primary" className="w-full md:w-auto font-bold bg-accent hover:bg-accent" onClick={() => navigate('/new-request')}>
+ <Button variant="primary" className="w-full md:w-auto font-bold bg-accent hover:bg-accent" onClick={() => {
+ if (!session) {
+ navigate('/auth/signin', { state: { from: { pathname: '/new-request' } } });
+ } else {
+ navigate('/new-request');
+ }
+ }}>
  Post a Request
  </Button>
  </div>
@@ -157,7 +165,13 @@ export const WantedBoardScreen: React.FC = () => {
  icon={<Megaphone className="w-12 h-12 text-subtle" />}
  title="No wanted requests found"
  description="Be the first to post what item or textbook you are looking for on campus."
- action={<Button variant="secondary" onClick={() => navigate('/new-request')}>Post a Request</Button>}
+ action={<Button variant="secondary" onClick={() => {
+ if (!session) {
+ navigate('/auth/signin', { state: { from: { pathname: '/new-request' } } });
+ } else {
+ navigate('/new-request');
+ }
+ }}>Post a Request</Button>}
  />
  ) : (
  <>

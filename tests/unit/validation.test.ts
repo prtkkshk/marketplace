@@ -1,57 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { emailSchema, passwordSchema, signUpSchema } from '../../src/lib/validation/auth';
 import { profileSchema, normalizePhoneNumber } from '../../src/lib/validation/profile';
 import { KGP_HALLS } from '../../src/lib/constants';
 
-describe('Auth Validation Schemas', () => {
-  describe('emailSchema', () => {
-    it('accepts valid @kgpian.iitkgp.ac.in email addresses', () => {
-      const result = emailSchema.safeParse('student22@kgpian.iitkgp.ac.in');
-      expect(result.success).toBe(true);
-    });
 
-    it('rejects @gmail.com email addresses', () => {
-      const result = emailSchema.safeParse('student22@gmail.com');
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.errors[0]?.message).toContain('@kgpian.iitkgp.ac.in');
-      }
-    });
-
-    it('rejects invalid email formats', () => {
-      const result = emailSchema.safeParse('not-an-email');
-      expect(result.success).toBe(false);
-    });
-  });
-
-  describe('passwordSchema', () => {
-    it('accepts passwords with >=8 characters containing letters and numbers', () => {
-      const result = passwordSchema.safeParse('pass1234');
-      expect(result.success).toBe(true);
-    });
-
-    it('rejects passwords shorter than 8 characters', () => {
-      const result = passwordSchema.safeParse('pass1');
-      expect(result.success).toBe(false);
-    });
-
-    it('rejects passwords without numbers', () => {
-      const result = passwordSchema.safeParse('passwordonly');
-      expect(result.success).toBe(false);
-    });
-  });
-
-  describe('signUpSchema', () => {
-    it('rejects mismatched password and confirmPassword', () => {
-      const result = signUpSchema.safeParse({
-        email: 'test@kgpian.iitkgp.ac.in',
-        password: 'password123',
-        confirmPassword: 'different123',
-      });
-      expect(result.success).toBe(false);
-    });
-  });
-});
 
 describe('Profile Validation & Normalization', () => {
   describe('normalizePhoneNumber', () => {

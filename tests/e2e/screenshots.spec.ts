@@ -6,8 +6,6 @@ const ROUTES = [
   '/',
   '/auth/signin',
   '/auth/signup',
-  '/auth/otp',
-  '/auth/forgot-password',
   '/complete-profile',
   '/banned',
   '/404',

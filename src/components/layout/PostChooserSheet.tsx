@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sheet } from '../ui/Sheet';
 import { Card } from '../ui/Card';
 import { ShoppingBag, Megaphone, ChevronRight } from 'lucide-react';
+import { useAuth } from '../../features/auth/AuthProvider';
 
 export interface PostChooserSheetProps {
  isOpen: boolean;
@@ -11,10 +12,15 @@ export interface PostChooserSheetProps {
 
 export const PostChooserSheet: React.FC<PostChooserSheetProps> = ({ isOpen, onClose }) => {
  const navigate = useNavigate();
+ const { session } = useAuth();
 
  const handleChoice = (path: string) => {
  onClose();
+ if (!session) {
+ navigate('/auth/signin', { state: { from: { pathname: path } } });
+ } else {
  navigate(path);
+ }
  };
 
  return (

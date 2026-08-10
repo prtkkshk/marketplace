@@ -14,8 +14,6 @@ import { ProtectedRoute, AdminRoute } from './features/auth/Guards';
 // Each is small but they were adding ~60-80kB to every initial page load parse.
 const SignInScreen = lazy(() => import('./features/auth/SignInScreen').then(m => ({ default: m.SignInScreen })));
 const SignUpScreen = lazy(() => import('./features/auth/SignUpScreen').then(m => ({ default: m.SignUpScreen })));
-const OtpScreen = lazy(() => import('./features/auth/OtpScreen').then(m => ({ default: m.OtpScreen })));
-const ForgotPasswordScreen = lazy(() => import('./features/auth/ForgotPasswordScreen').then(m => ({ default: m.ForgotPasswordScreen })));
 const CompleteProfileScreen = lazy(() => import('./features/auth/CompleteProfileScreen').then(m => ({ default: m.CompleteProfileScreen })));
 const BannedScreen = lazy(() => import('./features/auth/BannedScreen').then(m => ({ default: m.BannedScreen })));
 
@@ -69,24 +67,25 @@ export default function App(): React.ReactElement {
  {/* Public Auth Routes */}
  <Route path="/auth/signin" element={<SignInScreen />} />
  <Route path="/auth/signup" element={<SignUpScreen />} />
- <Route path="/auth/otp" element={<OtpScreen />} />
- <Route path="/auth/forgot-password" element={<ForgotPasswordScreen />} />
  <Route path="/banned" element={<BannedScreen />} />
  <Route path="/complete-profile" element={<CompleteProfileScreen />} />
 
- {/* App Shell & Protected Student Routes */}
- <Route element={<ProtectedRoute />}>
+ {/* App Shell Routes */}
  <Route element={<AppShell />}>
+ {/* Public Routes inside AppShell */}
  <Route path="/" element={<FeedScreen />} />
  <Route path="/wanted" element={<WantedBoardScreen />} />
+ <Route path="/listing/:id" element={<ListingDetailScreen />} />
+ <Route path="/request/:id" element={<RequestDetailScreen />} />
+ <Route path="/rules" element={<RulesScreen />} />
+
+ {/* Protected Student Routes */}
+ <Route element={<ProtectedRoute />}>
  <Route path="/new" element={<CreateListingScreen />} />
  <Route path="/new-request" element={<CreateWantedRequestScreen />} />
- <Route path="/listing/:id" element={<ListingDetailScreen />} />
  <Route path="/listing/:id/edit" element={<EditListingScreen />} />
- <Route path="/request/:id" element={<RequestDetailScreen />} />
  <Route path="/profile" element={<ProfileScreen />} />
  <Route path="/profile/saved" element={<SavedItemsScreen />} />
- <Route path="/rules" element={<RulesScreen />} />
 
  {/* Admin Bundle (Lazy-loaded) */}
  <Route element={<AdminRoute />}>
@@ -97,10 +96,10 @@ export default function App(): React.ReactElement {
  }
  />
  </Route>
+ </Route>
 
  {/* 404 Route inside shell */}
  <Route path="*" element={<NotFoundScreen />} />
- </Route>
  </Route>
  </Routes>
  </Suspense>
