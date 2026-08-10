@@ -2,6 +2,7 @@ import { supabase } from '../supabase';
 import type { Database } from '../database.types';
 
 type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
 export interface StudentProfile {
  id: string;
@@ -80,7 +81,7 @@ export async function updateProfile(
  const { data: sessionData } = await supabase.auth.getSession();
  const userEmail = updates.email || userData?.user?.email || sessionData?.session?.user?.email || '';
 
- const payload: Record<string, unknown> = {};
+ const payload: ProfileUpdate = {};
 
  if (userEmail) {
  payload.email = userEmail;
@@ -93,7 +94,7 @@ export async function updateProfile(
  if (updates.isProfileComplete !== undefined) payload.is_profile_complete = updates.isProfileComplete;
 
  const { error } = await supabase.from('profiles')
-    .update(payload as any)
+    .update(payload)
     .eq('id', _userId);
 
  if (error) {

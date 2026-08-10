@@ -89,7 +89,7 @@ export const FeedScreen: React.FC = () => {
  observer.observe(observerTarget.current);
  }
  return () => observer.disconnect();
- }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+ }, [hasNextPage, isFetchingNextPage, fetchNextPage, searchParams]);
 
  const activeFilterCount = [condition, isNegotiable, hall, maxPrice].filter(Boolean).length;
 

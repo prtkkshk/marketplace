@@ -40,7 +40,7 @@ export const AdminLayout: React.FC = () => {
  </div>
  <Link
  to="/"
- className="md:hidden flex items-center gap-1 text-xs text-subtle hover:text-ink transition-colors bg-surface px-2 py-1 rounded-lg border border-line"
+ className="md:hidden flex items-center gap-1 text-xs text-muted hover:text-ink transition-colors bg-surface px-2 py-1 rounded-lg border border-line"
  >
  <ArrowLeft className="w-3.5 h-3.5" />
  <span>Feed</span>
@@ -59,7 +59,7 @@ export const AdminLayout: React.FC = () => {
  `flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors whitespace-nowrap text-xs font-semibold ${
  isActive
  ? 'bg-surface text-accent shadow-1 border border-line'
- : 'text-subtle hover:text-ink hover:bg-surface-2 border border-transparent'
+ : 'text-muted hover:text-ink hover:bg-surface-2 border border-transparent'
  }`
  }
  >
@@ -78,7 +78,7 @@ export const AdminLayout: React.FC = () => {
  <div className="hidden md:block p-4 border-t border-line mt-auto">
  <Link
  to="/"
- className="flex items-center gap-1.5 text-xs text-subtle hover:text-ink transition-colors"
+ className="flex items-center gap-1.5 text-xs text-muted hover:text-ink transition-colors"
  >
  <ArrowLeft className="w-4 h-4" />
  <span>Return to Student Feed</span>

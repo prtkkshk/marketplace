@@ -79,6 +79,7 @@ export const FilterRail: React.FC<FilterRailProps> = ({
  value={hall || ''} 
  onChange={(e) => onSelectHall(e.target.value || undefined)}
  className="w-full bg-surface-2 border border-line rounded-lg px-2.5 py-1.5 text-sm text-ink focus:ring-accent/30 appearance-none"
+ aria-label="Filter by Hall of Residence"
  >
  <option value="">All Halls</option>
  {KGP_HALLS.map(h => (

@@ -235,7 +235,7 @@ export const ListingDetailScreen: React.FC = () => {
  <div className="relative w-full aspect-[4/3] bg-surface-2 overflow-hidden">
  <img
  src={photoUrls[activePhotoIdx]}
- alt={listing.title}
+ alt={photoUrls.length > 1 ? `${listing.title} - Photo ${activePhotoIdx + 1} of ${photoUrls.length}` : listing.title}
  fetchPriority={activePhotoIdx === 0 ? "high" : "auto"}
  loading={activePhotoIdx === 0 ? "eager" : "lazy"}
  className={`w-full h-full object-contain ${isSold ? 'grayscale' : ''}`}

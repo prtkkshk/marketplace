@@ -11,7 +11,9 @@ interface State {
  error: Error | null;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
+ import { analytics } from '../../lib/analytics';
+
+ export class ErrorBoundary extends Component<Props, State> {
  public override state: State = {
  hasError: false,
  error: null};
@@ -22,6 +24,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
  public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
  console.error('Uncaught error caught by ErrorBoundary:', error, errorInfo);
+ 
+ analytics.track('error_occurred', {
+ type: 'react_render',
+ message: error.message,
+ stack: errorInfo.componentStack,
+ route: window.location.pathname,
+ });
  }
 
  private handleReset = () => {

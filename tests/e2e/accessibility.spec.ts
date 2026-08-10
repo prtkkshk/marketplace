@@ -8,7 +8,7 @@ test.describe('Phase C: Accessibility Validation', () => {
     await page.goto('/');
     
     // Wait for the feed to load
-    await expect(page.locator('h1:has-text("KGP Bazaar")')).toBeVisible();
+    await expect(page.locator('h1:has-text("The Campus Feed")')).toBeVisible();
     
     const accessibilityScanResults = await new AxeBuilder({ page })
       .exclude('.ignore-axe') // Exclude specific components if known and documented
@@ -22,7 +22,7 @@ test.describe('Phase C: Accessibility Validation', () => {
     await page.goto('/new');
     
     // Wait for the form to load
-    await expect(page.locator('h1:has-text("Post a Listing")')).toBeVisible();
+    await expect(page.locator('h1:has-text("Sell an Item")')).toBeVisible();
     
     const accessibilityScanResults = await new AxeBuilder({ page })
       .analyze();

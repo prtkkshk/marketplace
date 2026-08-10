@@ -100,7 +100,7 @@ export const DesktopHeader: React.FC = () => {
  Sell
  </Button>
 
- <button className="w-[33px] h-[33px] rounded border border-line bg-surface flex items-center justify-center text-muted hover:text-ink hover:border-line-strong transition-colors">
+ <button aria-label="Notifications" className="relative after:absolute after:-inset-[5.5px] w-[33px] h-[33px] rounded border border-line bg-surface flex items-center justify-center text-muted hover:text-ink hover:border-line-strong transition-colors">
  <Bell className="w-4 h-4" />
  </button>
 
@@ -111,7 +111,7 @@ export const DesktopHeader: React.FC = () => {
  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
  className="flex items-center gap-2.5 pl-3.5 border-l border-line "
  >
- <div className="w-[33px] h-[33px] rounded bg-accent-wash text-accent font-bold text-[12.5px] flex items-center justify-center border border-ink">
+ <div className="relative after:absolute after:-inset-[5.5px] w-[33px] h-[33px] rounded bg-accent-wash text-accent font-bold text-[12.5px] flex items-center justify-center border border-ink">
  {profile.fullName ? profile.fullName[0]?.toUpperCase() : 'U'}
  </div>
  <div className="text-left hidden lg:block">

@@ -138,7 +138,7 @@ export const CreateListingScreen: React.FC = () => {
  <button
  type="button"
  onClick={() => navigate('/new-request')}
- className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-subtle hover:text-ink transition-colors text-center"
+ className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-muted hover:text-ink transition-colors text-center"
  >
  Wanted Request
  </button>

@@ -94,7 +94,7 @@ export const CreateWantedRequestScreen: React.FC = () => {
  <button
  type="button"
  onClick={() => navigate('/new')}
- className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-subtle hover:text-ink transition-colors text-center"
+ className="flex-1 py-1.5 text-xs font-semibold rounded-lg text-muted hover:text-ink transition-colors text-center"
  >
  Sell an Item
  </button>

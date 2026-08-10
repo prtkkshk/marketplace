@@ -59,6 +59,11 @@ export async function signIn(
   await page.fill('input[type="password"]', who.password);
   await page.click('button[type="submit"]');
   await page.waitForURL((url) => !url.pathname.startsWith('/auth'), { timeout: 20000 });
+  
+  // Prevent the PWA install dialog from popping up (it has a 3s delay and blocks clicks)
+  await page.evaluate(() => {
+    window.localStorage.setItem('pwa_install_dismissed_until', '9999999999999');
+  });
 }
 
 export async function createThrowawayStudent(email: string, completeProfile: boolean = false) {

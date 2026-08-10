@@ -92,6 +92,27 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  const from = (page - 1) * limit;
  const to = page * limit - 1;
 
+ // Full-text search: a leading-wildcard `ilike '%term%'` can never use a B-tree index,
+ // and idx_listings_fts (a GIN index on to_tsvector('english', title || ' ' ||
+ // description)) sat unused since it was added — the app never reached it. PostgREST's
+ // `.textSearch()` only targets a single column, not that concatenation, so
+ // search_listing_ids() (sql/PERF_add_search_fts_function.sql) runs the matching
+ // expression server-side and returns ids; RLS applies to it exactly as it does to the
+ // main query below, since the function is SECURITY INVOKER (the default), not DEFINER.
+ let matchingIds: string[] | null = null;
+ if (params.search && params.search.trim() !== '') {
+ const { data: idRows, error: searchError } = await supabase.rpc('search_listing_ids', {
+ search_term: params.search.trim(),
+ });
+ if (searchError) {
+ throw new Error(`Search failed: ${searchError.message}`);
+ }
+ matchingIds = (idRows || []).map((r: { id: string }) => r.id);
+ if (matchingIds.length === 0) {
+ return { listings: [], hasMore: false, totalCount: 0 };
+ }
+ }
+
  let query = supabase
  .from('listings')
  .select(
@@ -100,13 +121,12 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  )
  .is('deleted_at', null);
 
- if (params.category && params.category !== 'all') {
- query = query.eq('category', params.category as ListingCategory);
+ if (matchingIds) {
+ query = query.in('id', matchingIds);
  }
 
- if (params.search && params.search.trim() !== '') {
- const term = `%${params.search.trim()}%`;
- query = query.or(`title.ilike.${term},description.ilike.${term}`);
+ if (params.category && params.category !== 'all') {
+ query = query.eq('category', params.category as ListingCategory);
  }
 
  if (params.condition && params.condition !== 'all') {

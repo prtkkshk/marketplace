@@ -16,6 +16,8 @@ test.describe('Live UX Walkthrough', () => {
     // Wait for the URL to update with search params
     await page.waitForURL(/q=cycle/);
 
+
+
     // 3. Open filters based on viewport
     if (isMobile) {
       // Mobile has a "Filters" button that opens a drawer

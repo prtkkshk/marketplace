@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 export interface SheetProps {
@@ -9,19 +9,60 @@ export interface SheetProps {
 }
 
 export const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, title, children }) => {
+ const sheetRef = useRef<HTMLDivElement>(null);
+
  useEffect(() => {
+ if (!isOpen) return;
+
+ const previousFocus = document.activeElement as HTMLElement;
+
  const handleKeyDown = (e: KeyboardEvent) => {
- if (e.key === 'Escape') onClose();
+ if (e.key === 'Escape') {
+ onClose();
+ return;
+ }
+
+ if (e.key === 'Tab') {
+ if (!sheetRef.current) return;
+ const focusableElements = sheetRef.current.querySelectorAll<HTMLElement>(
+ 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+ );
+ if (focusableElements.length === 0) return;
+
+ const firstElement = focusableElements[0];
+ const lastElement = focusableElements[focusableElements.length - 1];
+ if (!firstElement || !lastElement) return;
+
+ if (e.shiftKey) {
+ if (document.activeElement === firstElement) {
+ e.preventDefault();
+ lastElement.focus();
+ }
+ } else {
+ if (document.activeElement === lastElement) {
+ e.preventDefault();
+ firstElement.focus();
+ }
+ }
+ }
  };
 
- if (isOpen) {
  document.body.style.overflow = 'hidden';
  window.addEventListener('keydown', handleKeyDown);
+
+ // Initial focus
+ if (sheetRef.current) {
+ const firstFocusable = sheetRef.current.querySelector<HTMLElement>(
+ 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+ );
+ if (firstFocusable) firstFocusable.focus();
  }
 
  return () => {
  document.body.style.overflow = '';
  window.removeEventListener('keydown', handleKeyDown);
+ // Restore focus
+ if (previousFocus) previousFocus.focus();
  };
  }, [isOpen, onClose]);
 
@@ -32,6 +73,7 @@ export const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, title, children }
  <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
  
  <div
+ ref={sheetRef}
  className="relative w-full max-w-lg bg-surface border-[1.5px] border-ink rounded-t-lg p-6 shadow-hard z-10 max-h-[90vh] overflow-y-auto transform transition-transform duration-220 ease-[cubic-bezier(0.2,0.9,0.3,1)] translate-y-0"
  role="dialog"
  aria-modal="true"

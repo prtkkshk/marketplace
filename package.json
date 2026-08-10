@@ -18,7 +18,13 @@
     "test:qa": "npm run test && npm run test:e2e",
     "qa:verify": "npm run lint && npm run typecheck && npm run test:qa && npm run build",
     "db:types": "supabase gen types typescript --local > src/lib/database.types.ts",
-    "check:tokens": "node scripts/check-design-tokens.mjs"
+    "check:tokens": "node scripts/check-design-tokens.mjs",
+    "gate:perf": "node scripts/gate-perf.mjs",
+    "gate:a11y": "node scripts/gate-a11y.mjs",
+    "gate:e2e": "node scripts/gate-e2e.mjs",
+    "gate:headers": "node scripts/gate-headers.mjs",
+    "gate:responsive": "node scripts/gate-responsive.mjs",
+    "gates": "node scripts/gate-perf.mjs && node scripts/gate-a11y.mjs && node scripts/gate-e2e.mjs && node scripts/gate-headers.mjs && node scripts/gate-responsive.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

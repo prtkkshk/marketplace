@@ -15,7 +15,6 @@
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ENV_PATH = join(ROOT, '.env.test');
@@ -49,26 +48,25 @@ const FORM_FACTORS = ['mobile', 'desktop'];
 const RUNS_PER_PAGE = 3;
 
 function median(arr) {
+  if (arr.length === 0) return 0;
   const sorted = [...arr].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 }
 
 async function getAuthCookies() {
-  // Use Playwright to sign in and get cookies
-  const { chromium } = await import('playwright');
+  const { chromium } = await import('@playwright/test');
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
   const page = await context.newPage();
   
   await page.goto(`${BASE_URL}/auth/signin`);
-  await page.fill('input[type="email"]', env.E2E_STUDENT_EMAIL);
+  await page.fill('input[type="email"]', env.E2E_STUDENT_A_EMAIL);
   await page.fill('input[type="password"]', env.E2E_STUDENT_PASSWORD);
   await page.click('button:has-text("Sign In")');
   
   // Wait for redirect to feed
   await page.waitForURL('**/', { timeout: 15000 });
-  // Wait for feed content to load
   await page.waitForTimeout(2000);
   
   const cookies = await context.cookies();
@@ -85,45 +83,6 @@ async function getAuthCookies() {
   
   await browser.close();
   return { cookies, localStorage };
-}
-
-async function runLighthouse(url, formFactor, extraHeaders = '') {
-  const formFactorFlag = formFactor === 'mobile' 
-    ? '--preset=perf --emulated-form-factor=mobile --throttling-method=simulate'
-    : '--preset=desktop --emulated-form-factor=desktop --throttling-method=simulate';
-  
-  const outputPath = join(RESULTS_DIR, `lh-${Date.now()}.json`);
-  
-  const cmd = [
-    'npx lighthouse',
-    `"${url}"`,
-    '--output=json',
-    `--output-path="${outputPath}"`,
-    '--only-categories=performance',
-    '--chrome-flags="--headless=new --no-sandbox --disable-gpu"',
-    formFactorFlag,
-    extraHeaders,
-    '--quiet',
-  ].filter(Boolean).join(' ');
-  
-  try {
-    execSync(cmd, { cwd: ROOT, timeout: 120000, stdio: 'pipe' });
-  } catch (e) {
-    console.error(`  Lighthouse error: ${e.message?.slice(0, 200)}`);
-    return null;
-  }
-  
-  if (!existsSync(outputPath)) return null;
-  
-  const result = JSON.parse(readFileSync(outputPath, 'utf8'));
-  const lcp = result.audits?.['largest-contentful-paint']?.numericValue;
-  const perf = result.categories?.performance?.score;
-  const fcp = result.audits?.['first-contentful-paint']?.numericValue;
-  const tbt = result.audits?.['total-blocking-time']?.numericValue;
-  const cls = result.audits?.['cumulative-layout-shift']?.numericValue;
-  const si = result.audits?.['speed-index']?.numericValue;
-  
-  return { lcp, perf, fcp, tbt, cls, si };
 }
 
 async function main() {
@@ -146,8 +105,31 @@ async function main() {
     authData = null;
   }
   
-  // For authenticated pages, we need to use Playwright + CDP to measure LCP
-  // because Lighthouse can't use Supabase auth tokens easily
+  // Find a listing URL dynamically
+  if (authData) {
+    const { chromium } = await import('@playwright/test');
+    const browser = await chromium.launch({ headless: true });
+    const context = await browser.newContext();
+    await context.addCookies(authData.cookies);
+    const page = await context.newPage();
+    if (authData.localStorage) {
+      await page.goto(`${BASE_URL}/auth/signin`, { waitUntil: 'domcontentloaded' });
+      await page.evaluate((items) => {
+        for (const [key, value] of Object.entries(items)) {
+          window.localStorage.setItem(key, value);
+        }
+      }, authData.localStorage);
+    }
+    
+    await page.goto(`${BASE_URL}/`, { waitUntil: 'load' });
+    const listingHref = await page.getAttribute('a[href^="/listing/"]', 'href');
+    if (listingHref) {
+      PAGES.push({ name: 'listing-detail', path: listingHref, needsAuth: true });
+      console.log(`Discovered listing URL to measure: ${listingHref}`);
+    }
+    await browser.close();
+  }
+  
   const allResults = [];
   
   for (const page of PAGES) {
@@ -159,59 +141,19 @@ async function main() {
     for (const ff of FORM_FACTORS) {
       console.log(`\n--- ${page.name} (${ff}) ---`);
       
-      if (page.needsAuth) {
-        // For auth pages, use Playwright to measure LCP via PerformanceObserver
-        const results = await measureWithPlaywright(page, ff, authData);
-        allResults.push({ page: page.name, formFactor: ff, ...results });
-      } else {
-        // For public pages, use Lighthouse directly
-        const lcpValues = [];
-        const perfValues = [];
-        const fcpValues = [];
-        const tbtValues = [];
-        
-        for (let run = 1; run <= RUNS_PER_PAGE; run++) {
-          const url = `${BASE_URL}${page.path}`;
-          console.log(`  Run ${run}/${RUNS_PER_PAGE}...`);
-          const result = await runLighthouse(url, ff);
-          if (result) {
-            console.log(`    LCP: ${(result.lcp / 1000).toFixed(2)}s, Perf: ${Math.round(result.perf * 100)}`);
-            lcpValues.push(result.lcp);
-            perfValues.push(result.perf);
-            fcpValues.push(result.fcp);
-            tbtValues.push(result.tbt);
-          } else {
-            console.log('    FAILED');
-          }
-        }
-        
-        if (lcpValues.length >= 3) {
-          const medLcp = median(lcpValues);
-          const medPerf = median(perfValues);
-          console.log(`  Median LCP: ${(medLcp / 1000).toFixed(2)}s, Median Perf: ${Math.round(medPerf * 100)}`);
-          allResults.push({
-            page: page.name,
-            formFactor: ff,
-            medianLcp: medLcp,
-            medianPerf: medPerf,
-            medianFcp: median(fcpValues),
-            medianTbt: median(tbtValues),
-            runs: lcpValues,
-          });
-        }
-      }
+      const results = await measureWithPlaywright(page, ff, authData || { cookies: [] });
+      allResults.push({ page: page.name, formFactor: ff, ...results });
     }
   }
   
   // Print summary table
   console.log('\n\n=== SUMMARY ===\n');
-  console.log('| Page | Form Factor | Median LCP (s) | Perf Score | Pass? |');
-  console.log('|------|-------------|----------------|------------|-------|');
+  console.log('| Page | Form Factor | Median LCP (s) | Pass? |');
+  console.log('|------|-------------|----------------|-------|');
   for (const r of allResults) {
     const lcpS = (r.medianLcp / 1000).toFixed(2);
     const pass = r.medianLcp <= 2500 ? '✅' : '❌';
-    const perf = r.medianPerf ? Math.round(r.medianPerf * 100) : 'N/A';
-    console.log(`| ${r.page} | ${r.formFactor} | ${lcpS} | ${perf} | ${pass} |`);
+    console.log(`| ${r.page} | ${r.formFactor} | ${lcpS} | ${pass} |`);
   }
   
   // Write results to file
@@ -223,7 +165,7 @@ async function main() {
 }
 
 async function measureWithPlaywright(pageInfo, formFactor, authData) {
-  const { chromium } = await import('playwright');
+  const { chromium } = await import('@playwright/test');
   
   const viewport = formFactor === 'mobile' 
     ? { width: 375, height: 812 }
@@ -242,14 +184,12 @@ async function measureWithPlaywright(pageInfo, formFactor, authData) {
         : undefined,
     });
     
-    // Restore auth state
     if (authData.cookies.length > 0) {
       await context.addCookies(authData.cookies);
     }
     
     const page = await context.newPage();
     
-    // Restore localStorage
     if (authData.localStorage) {
       await page.goto(`${BASE_URL}/auth/signin`, { waitUntil: 'domcontentloaded' });
       await page.evaluate((items) => {
@@ -259,8 +199,11 @@ async function measureWithPlaywright(pageInfo, formFactor, authData) {
       }, authData.localStorage);
     }
     
-    // Set up LCP observer before navigation
-    const lcpPromise = page.evaluate(() => {
+    // Navigate to the target page first
+    await page.goto(`${BASE_URL}${pageInfo.path}`, { waitUntil: 'load' });
+    
+    // Evaluate LCP using buffered entries
+    const lcp = await page.evaluate(() => {
       return new Promise((resolve) => {
         let lastLcp = 0;
         const observer = new PerformanceObserver((list) => {
@@ -270,18 +213,13 @@ async function measureWithPlaywright(pageInfo, formFactor, authData) {
         });
         observer.observe({ type: 'largest-contentful-paint', buffered: true });
         
-        // Wait for page to settle then report
         setTimeout(() => {
           observer.disconnect();
           resolve(lastLcp);
-        }, 10000);
+        }, 1000); // 1 second to settle
       });
     });
     
-    // Navigate to the target page
-    await page.goto(`${BASE_URL}${pageInfo.path}`, { waitUntil: 'load' });
-    
-    const lcp = await lcpPromise;
     console.log(`    LCP: ${(lcp / 1000).toFixed(2)}s`);
     lcpValues.push(lcp);
     

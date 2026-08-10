@@ -46,6 +46,11 @@ test.describe('Audit', () => {
           await page.fill('input[type="password"]', CREDENTIALS.password);
           await page.click('button[type="submit"]');
           await page.waitForURL(BASE_URL + '/', { timeout: 10000 });
+          
+          // Prevent PWA dialog
+          await page.evaluate(() => {
+            window.localStorage.setItem('pwa_install_dismissed_until', '9999999999999');
+          });
 
           // Navigate to route
           await page.goto(`${BASE_URL}${route.path}`);

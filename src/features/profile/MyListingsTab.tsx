@@ -50,7 +50,7 @@ export const MyListingsTab: React.FC<{ userId: string }> = ({ userId }) => {
  : 'bg-surface border border-line text-subtle hover:text-ink hover:border-line-strong'
  }`}
  >
- Active <span className="opacity-60 font-normal">&middot; {activeCount}</span>
+ Active <span className="font-normal">&middot; {activeCount}</span>
  </button>
  <button
  onClick={() => setSegment('sold')}
@@ -60,7 +60,7 @@ export const MyListingsTab: React.FC<{ userId: string }> = ({ userId }) => {
  : 'bg-surface border border-line text-subtle hover:text-ink hover:border-line-strong'
  }`}
  >
- Sold <span className="opacity-60 font-normal">&middot; {soldCount}</span>
+ Sold <span className="font-normal">&middot; {soldCount}</span>
  </button>
  <button
  onClick={() => setSegment('expired')}
@@ -70,7 +70,7 @@ export const MyListingsTab: React.FC<{ userId: string }> = ({ userId }) => {
  : 'bg-surface border border-line text-subtle hover:text-ink hover:border-line-strong'
  }`}
  >
- Expired <span className="opacity-60 font-normal">&middot; {expiredCount}</span>
+ Expired <span className="font-normal">&middot; {expiredCount}</span>
  </button>
  </div>
 

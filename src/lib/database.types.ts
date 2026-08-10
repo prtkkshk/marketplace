@@ -383,6 +383,15 @@ export interface Database {
  wanted_fulfillment_rate: number
  }
  }
+ search_listing_ids: {
+ // Not yet applied to the live schema — sql/PERF_add_search_fts_function.sql is
+ // hand-run SQL waiting on the owner (see this project's convention: new SQL goes
+ // to sql/, never a direct migration). Added by hand rather than via
+ // `supabase gen types` because that command reads the LIVE schema, which doesn't
+ // have this function yet. Keep this in sync with the .sql file's signature.
+ Args: { search_term: string }
+ Returns: { id: string }[]
+ }
  get_my_profile: {
  Args: Record<PropertyKey, never>
  Returns: {

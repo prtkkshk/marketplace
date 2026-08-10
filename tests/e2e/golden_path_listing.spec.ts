@@ -3,6 +3,7 @@ import { signIn, createThrowawayStudent, deleteThrowawayStudent } from './_crede
 import path from 'node:path';
 
 test.describe('Golden Path 1: Student Registration, Post Listing & Contact', () => {
+  test.setTimeout(60000); // Flow with sign up and photo upload
   let throwawayUser: { id: string; email: string; password: string };
 
   test.beforeAll(async () => {
@@ -55,9 +56,9 @@ test.describe('Golden Path 1: Student Registration, Post Listing & Contact', () 
     await page.selectOption('select[name="condition"]', 'good');
     await page.fill('textarea[name="description"]', 'Well maintained cycle, brand new tires.');
 
-    // Upload real photo
+    const uploadPromise = page.waitForResponse(r => r.url().includes('/storage/v1/object/listing-photos/') && r.request().method() === 'POST', { timeout: 15000 });
     await page.setInputFiles('input[type="file"]', FIXTURE);
-    await expect(page.locator('.animate-spin').first()).toBeHidden({ timeout: 15000 });
+    await uploadPromise;
     
     // Wait for upload preview
     await expect(page.locator('img[alt="Preview"]')).toBeVisible({ timeout: 15000 });

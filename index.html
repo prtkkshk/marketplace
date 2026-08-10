@@ -13,6 +13,17 @@
          on that page). crossorigin is required for CORS preloading of font files. -->
     <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
 
+    <!-- Preconnect to Supabase (API + storage share this origin). This is a
+         client-rendered app: the browser has no idea this origin exists until JS
+         executes and fetches listing data, so without this hint the DNS/TCP/TLS
+         handshake to it only starts after JS parse — which, on the feed/profile/detail
+         pages, is directly on the critical path to the LCP element (a listing photo
+         served from this same origin; confirmed via LargestContentfulPaint entry.url
+         during measurement, not assumed). Preconnect lets that handshake happen in
+         parallel with JS download/parse instead of after it. -->
+    <link rel="preconnect" href="https://mxvgzdmxdrevxcjiyvqt.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://mxvgzdmxdrevxcjiyvqt.supabase.co" />
+
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

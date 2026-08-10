@@ -83,7 +83,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
  initAuth();
 
- const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+ const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+ // supabase-js v2 fires INITIAL_SESSION synchronously on subscribe, with the same
+ // session initAuth() above just fetched via getSession(). Without this guard both
+ // paths call loadUserProfile() concurrently for the same user on every page load —
+ // confirmed in a throttled network trace as two near-simultaneous get_my_profile RPC
+ // calls plus two last_active_at updates, competing for bandwidth on the same
+ // connection the feed's own data fetch needs. initAuth() already handles this exact
+ // case, so INITIAL_SESSION here is redundant work, not a second real event.
+ if (event === 'INITIAL_SESSION') return;
+
  if (newSession?.user) {
  const userEmail = newSession.user.email ?? '';
  if (!userEmail.endsWith(ALLOWED_EMAIL_DOMAIN)) {

@@ -204,16 +204,16 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
  {/* Upload Progress Overlay */}
  {photo.progress < 100 && !photo.error && (
- <div className="absolute inset-0 bg-ink/40  flex flex-col items-center justify-center text-white">
- <Loader2 className="w-5 h-5 animate-spin mb-1" />
- <span className="text-[10px] font-medium">{photo.progress}%</span>
+ <div aria-live="polite" aria-atomic="true" className="absolute inset-0 bg-ink/40  flex flex-col items-center justify-center text-white">
+ <Loader2 className="w-5 h-5 animate-spin mb-1" aria-hidden="true" />
+ <span className="text-[10px] font-medium">Uploading: {photo.progress}%</span>
  </div>
  )}
 
  {/* Upload Error Overlay & Retry */}
  {photo.error && (
- <div className="absolute inset-0 bg-danger/80 p-2 flex flex-col items-center justify-center text-white text-center">
- <AlertCircle className="w-5 h-5 text-danger-wash mb-1" />
+ <div aria-live="assertive" aria-atomic="true" className="absolute inset-0 bg-danger/80 p-2 flex flex-col items-center justify-center text-white text-center">
+ <AlertCircle className="w-5 h-5 text-danger-wash mb-1" aria-hidden="true" />
  <span className="text-[10px] line-clamp-2 leading-tight mb-1.5">{photo.error}</span>
  {photo.file && (
  <button
