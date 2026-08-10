@@ -122,8 +122,10 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
  // Process each new photo independently without awaiting in loop
  // so they process concurrently and don't block the UI
- selectedFiles.forEach((file, idx) => {
- processAndUploadFile(file, newPhotos[idx].id);
+ newPhotos.forEach((photo) => {
+ if (photo.file) {
+ processAndUploadFile(photo.file, photo.id);
+ }
  });
 
  setIsCompressing(false);
