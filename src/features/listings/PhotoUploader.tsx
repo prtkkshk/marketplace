@@ -20,6 +20,15 @@ export interface PhotoUploaderProps {
  onChange: (photos: PhotoItem[]) => void;
 }
 
+async function fileToDataURL(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('Failed to read file as Data URL'));
+    reader.readAsDataURL(file);
+  });
+}
+
 async function uploadToSupabase(file: Blob, userId: string, listingId: string, photoId: string): Promise<string> {
  const path = `${userId}/${listingId}/${photoId}.webp`;
  const { data, error } = await supabase.storage.from('listing-photos').upload(path, file, {
@@ -81,9 +90,9 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  console.warn('Image compression fallback to raw file:', cErr);
  }
 
- // Update progress to 50% and fix preview URL for mobile
- safePreviewUrl = URL.createObjectURL(compressedFile);
- updatePhotoState(photoId, { progress: 50, error: undefined, previewUrl: safePreviewUrl });
+  // Update progress to 50% and fix preview URL for mobile
+  safePreviewUrl = await fileToDataURL(compressedFile);
+  updatePhotoState(photoId, { progress: 50, error: undefined, previewUrl: safePreviewUrl });
 
  // 4. Upload to Supabase Storage
  const finalPath = await uploadToSupabase(compressedFile, userId, listingId, photoId);
@@ -105,15 +114,23 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
  setIsCompressing(true);
 
- const newPhotos: PhotoItem[] = selectedFiles.map((file, idx) => {
- const id = `${Date.now()}_${idx}`;
- return {
- id,
- file,
- previewUrl: URL.createObjectURL(file),
- progress: 10,
- };
- });
+  const newPhotos: PhotoItem[] = await Promise.all(
+    selectedFiles.map(async (file, idx) => {
+      const id = `${Date.now()}_${idx}`;
+      let previewUrl = '';
+      try {
+        previewUrl = await fileToDataURL(file);
+      } catch (err) {
+        console.warn('Failed to generate preview URL', err);
+      }
+      return {
+        id,
+        file,
+        previewUrl,
+        progress: 10,
+      };
+    })
+  );
 
  photosRef.current = [...photosRef.current, ...newPhotos];
  onChange([...photosRef.current]);

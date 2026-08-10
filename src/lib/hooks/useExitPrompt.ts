@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export function useExitPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const location = useLocation();
+  // Set right before we intentionally navigate past the trap on confirmed exit,
+  // so the popstate handler below knows not to re-arm the trap for that pop.
+  const isExitingRef = useRef(false);
 
   useEffect(() => {
     // Only apply the trap on the root feed screen
@@ -17,6 +20,11 @@ export function useExitPrompt() {
     }
 
     const handlePopState = (event: PopStateEvent) => {
+      // If this pop is the one we triggered from confirmExit, let it proceed
+      // (don't show the prompt again, don't re-arm the trap).
+      if (isExitingRef.current) {
+        return;
+      }
       // When the user presses back, the browser pops the exitTrap state.
       // Now the state no longer has exitTrap.
       if (!event.state?.exitTrap) {
@@ -35,10 +43,20 @@ export function useExitPrompt() {
 
   const confirmExit = () => {
     setShowPrompt(false);
-    // Attempt to close the PWA window directly. 
-    // This is more reliable for exiting an installed PWA than navigating backwards,
-    // which can accidentally just take the user to a previous page they visited in the app.
-    window.close();
+    isExitingRef.current = true;
+    // window.close() only works on a window/tab that was opened via script
+    // (window.open). A tab the user navigated to directly, or a PWA launched
+    // from the home screen, was never opened that way, so browsers silently
+    // block window.close() there - that was the bug: "Leave" did nothing.
+    //
+    // Instead, pop past our own history trap (the trap entry + the entry
+    // before it) so the back navigation actually leaves the app's history.
+    // On Android this exits/minimizes an installed PWA to the home screen;
+    // on iOS it exits the standalone PWA the same way. We still try
+    // window.close() afterwards as a harmless best-effort for the contexts
+    // where it does work (e.g. a script-opened window).
+    window.history.go(-2);
+    setTimeout(() => window.close(), 50);
   };
 
   const cancelExit = () => {
