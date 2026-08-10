@@ -80,10 +80,10 @@ export async function fetchWantedRequests(
  query = query.eq('category', params.category as ListingCategory);
  }
 
- if (params.search && params.search.trim() !== '') {
- const term = `%${params.search.trim()}%`;
- query = query.or(`title.ilike.${term},description.ilike.${term}`);
- }
+  if (params.search && params.search.trim() !== '') {
+    const term = `%${params.search.trim()}%`;
+    query = query.or(`title.ilike.${term},category.ilike.${term}`);
+  }
 
  // Primary order by status to put 'open' before 'fulfilled'
  query = query.order('status', { ascending: false });
