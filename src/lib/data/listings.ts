@@ -101,8 +101,16 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  .is('deleted_at', null);
 
  if (params.search && params.search.trim() !== '') {
-    const term = `%${params.search.trim()}%`;
-    query = query.or(`title.ilike.${term},category.ilike.${term}`);
+    const term = params.search.trim();
+    const termLower = term.toLowerCase();
+    const allCats = ['cycles', 'books', 'electronics', 'room_essentials', 'lab_gear', 'other'];
+    const matchingCats = allCats.filter(c => c.includes(termLower));
+    
+    const titleFilter = `title.ilike.%${term}%`;
+    const catFilter = matchingCats.length > 0 ? `category.in.(${matchingCats.join(',')})` : '';
+    const orFilter = catFilter ? `${titleFilter},${catFilter}` : titleFilter;
+    
+    query = query.or(orFilter);
  }
 
  if (params.category && params.category !== 'all') {
