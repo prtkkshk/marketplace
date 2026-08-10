@@ -58,7 +58,7 @@ export const MyRequestsTab: React.FC<{ userId: string }> = ({ userId }) => {
  ? 'You have no open requests on the Wanted Board.'
  : 'Requests you mark as fulfilled will appear here.'
  }
- action={<Button variant="secondary" onClick={() => (window.location.href = '/new-request')}>segment === 'open' ? 'Post a Request' : undefined</Button>}
+ action={segment === 'open' ? <Button variant="secondary" onClick={() => (window.location.href = '/new-request')}>Post a Request</Button> : undefined}
  />
  ) : (
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

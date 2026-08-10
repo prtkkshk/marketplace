@@ -98,7 +98,7 @@ export const MyListingsTab: React.FC<{ userId: string }> = ({ userId }) => {
  key={item.id} 
  listing={item}
  isOwner={true}
- onEdit={() => navigate(`/edit-listing/${item.id}`)}
+ onEdit={() => navigate(`/listing/${item.id}/edit`)}
  onMarkSold={async () => {
  try {
  await markListingSold(item.id);
