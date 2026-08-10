@@ -45,11 +45,14 @@ export const DesktopHeader: React.FC = () => {
  <>
  <header className="hidden md:flex sticky top-0 z-40 bg-bg/85  border-b border-line h-16 w-full justify-center">
  <div className="max-w-[1280px] mx-auto w-full px-[34px] flex items-center gap-6">
- {/* Brand */}
- <Link to="/" className="flex items-baseline gap-1.5 hover:opacity-90 transition-opacity">
- <span className="font-display text-[24px] tracking-tight text-ink">KGP</span>
- <span className="font-display text-[24px] text-accent">Bazaar</span>
- </Link>
+  {/* Brand */}
+  <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+  <img src="/logo.svg" alt="KGP Bazaar Logo" className="w-8 h-8 rounded-xl" />
+  <div className="flex items-baseline gap-1.5 hidden sm:flex">
+    <span className="font-display text-[24px] tracking-tight text-ink">KGP</span>
+    <span className="font-display text-[24px] text-accent">Bazaar</span>
+  </div>
+  </Link>
 
  {/* Navigation destinations */}
  <nav className="flex items-center gap-0.5 ml-2" aria-label="Desktop main navigation">

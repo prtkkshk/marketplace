@@ -1,21 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#8C2F39"/>
-      <stop offset="1" stop-color="#752530"/>
-    </linearGradient>
-    <linearGradient id="bag" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#FBF9F6"/>
-    </linearGradient>
-  </defs>
-  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
-  <circle cx="470" cy="440" r="360" fill="#FFFFFF" opacity="0.06"/>
-  <!-- bag handle -->
-  <path d="M512 150c-101 0-183 82-183 183v54h84v-54c0-55 44-99 99-99s99 44 99 99v54h84v-54c0-101-82-183-183-183z" fill="#E9C8CC"/>
-  <!-- bag body -->
-  <path d="M291 367h442l-38 419c-4 44-41 78-85 78H414c-44 0-81-34-85-78L291 367z" fill="url(#bag)"/>
-  <!-- check badge -->
-  <circle cx="512" cy="611" r="96" fill="#8C2F39"/>
-  <path d="M466 611l32 34 66-78" fill="none" stroke="#FFFFFF" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect x="2" y="2" width="116" height="116" rx="24" fill="#FAF4E8" stroke="#201B14" stroke-width="4"/>
+  <path d="M33 47h54l-4 44a8 8 0 0 1-8 7.2H45a8 8 0 0 1-8-7.2Z" fill="#BC3908" stroke="#201B14" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M46 47V39a14 14 0 0 1 28 0v8" fill="none" stroke="#201B14" stroke-width="6.5" stroke-linecap="round"/>
 </svg>

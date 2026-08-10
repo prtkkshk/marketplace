@@ -71,6 +71,59 @@ export async function validateImageMagicBytes(file: File): Promise<boolean> {
  * out is metadata-free by construction.
  */
 export async function stripExif(file: File): Promise<File> {
+  return new Promise(async (resolve, reject) => {
+    let imgWidth = 0;
+    let imgHeight = 0;
+    let canvas: HTMLCanvasElement;
+    let ctx: CanvasRenderingContext2D | null;
+
+    try {
+      // Modern, memory-efficient approach (supports EXIF orientation natively in most browsers)
+      if (typeof window.createImageBitmap === 'function') {
+        const bitmap = await window.createImageBitmap(file);
+        imgWidth = bitmap.width;
+        imgHeight = bitmap.height;
+        canvas = document.createElement('canvas');
+        const MAX_EDGE = 1600;
+        const scale = Math.min(1, MAX_EDGE / Math.max(imgWidth, imgHeight));
+        canvas.width = Math.round(imgWidth * scale);
+        canvas.height = Math.round(imgHeight * scale);
+        ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('Failed to get canvas context');
+        ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        bitmap.close();
+      } else {
+        throw new Error('createImageBitmap not supported');
+      }
+    } catch (err) {
+      // Fallback to traditional Image object if createImageBitmap fails or is unsupported
+      return fallbackStripExif(file).then(resolve).catch(reject);
+    }
+
+    // Export from canvas
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error('Canvas toBlob failed'));
+          return;
+        }
+        const actualType = blob.type || 'image/png';
+        const ext = actualType === 'image/webp' ? 'webp' : 'png';
+        const base = file.name.replace(/\.[^/.]+$/, '');
+        resolve(
+          new File([blob], `${base}.${ext}`, {
+            type: actualType,
+            lastModified: Date.now(),
+          })
+        );
+      },
+      'image/webp',
+      0.9
+    );
+  });
+}
+
+async function fallbackStripExif(file: File): Promise<File> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -79,16 +132,6 @@ export async function stripExif(file: File): Promise<File> {
       URL.revokeObjectURL(url);
 
       const canvas = document.createElement('canvas');
-
-      // Resize while we are already re-encoding. A phone camera produces 3000-4000px
-      // images; the largest place a listing photo is ever rendered is the detail hero at
-      // roughly 800px CSS, so 1600px covers 2x DPR with room to spare.
-      //
-      // This is done HERE rather than with Supabase's image transform API because that API
-      // lives at /storage/v1/render/image/... (not /object/...) AND is a paid Pro feature.
-      // Appending ?width= to an /object/ URL is silently ignored, so the full-resolution
-      // file is still downloaded. Resizing on upload is free, works on any plan, and also
-      // keeps the 500MB free-tier storage cap from filling with 4MB originals.
       const MAX_EDGE = 1600;
       const srcW = img.naturalWidth || img.width;
       const srcH = img.naturalHeight || img.height;
@@ -112,12 +155,6 @@ export async function stripExif(file: File): Promise<File> {
             return;
           }
 
-          // Trust the blob's ACTUAL type, not the type we asked for. Browsers that cannot
-          // encode WebP (Safari below 14, some Android WebViews) silently fall back to PNG
-          // while toBlob still succeeds. Labelling that blob "image/webp" would ship a file
-          // whose extension, MIME type and real contents disagree — which the storage
-          // bucket's allowed_mime_types check would then reject, or worse, accept and serve
-          // incorrectly.
           const actualType = blob.type || 'image/png';
           const ext = actualType === 'image/webp' ? 'webp' : 'png';
           const base = file.name.replace(/\.[^/.]+$/, '');
