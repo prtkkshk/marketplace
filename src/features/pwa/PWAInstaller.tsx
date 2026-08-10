@@ -14,12 +14,6 @@ export const PWAInstaller: React.FC = () => {
  const [showIosSheet, setShowIosSheet] = useState<boolean>(false);
 
  useEffect(() => {
- // Check dismissal cooldown (30 days)
- const dismissedUntil = localStorage.getItem('pwa_install_dismissed_until');
- if (dismissedUntil && Date.now() < parseInt(dismissedUntil, 10)) {
- return;
- }
-
  // Android / Chrome beforeinstallprompt handler
  const handleBeforeInstallPrompt = (e: Event) => {
  e.preventDefault();
@@ -59,9 +53,6 @@ export const PWAInstaller: React.FC = () => {
  const handleDismiss = () => {
  setShowAndroidBanner(false);
  setShowIosSheet(false);
- // Dismiss for 30 days
- const thirtyDays = Date.now() + 30 * 24 * 60 * 60 * 1000;
- localStorage.setItem('pwa_install_dismissed_until', String(thirtyDays));
  };
 
  return (
