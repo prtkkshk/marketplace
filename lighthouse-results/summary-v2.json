@@ -1,0 +1,434 @@
+[
+  {
+    "env": "Localhost",
+    "page": "signin",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 184,
+    "runs": [
+      164,
+      184,
+      216
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "signin",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 1188,
+    "runs": [
+      1260,
+      1188,
+      1108
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "signin",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 152,
+    "runs": [
+      152,
+      152,
+      136
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "signin",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 1076,
+    "runs": [
+      1076,
+      1068,
+      1132
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "feed",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 1188,
+    "runs": [
+      1468,
+      1188,
+      1116
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "feed",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 4032,
+    "runs": [
+      0,
+      4188,
+      4032
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "feed",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 1204,
+    "runs": [
+      1204,
+      1212,
+      1148
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "feed",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 2696,
+    "runs": [
+      4468,
+      2696,
+      2660
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "wanted",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 792,
+    "runs": [
+      792,
+      776,
+      900
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "wanted",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 2148,
+    "runs": [
+      0,
+      2148,
+      2288
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "wanted",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 832,
+    "runs": [
+      804,
+      840,
+      832
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "wanted",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 2212,
+    "runs": [
+      0,
+      2212,
+      2268
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "profile",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 1316,
+    "runs": [
+      1944,
+      1316,
+      1308
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "profile",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 3684,
+    "runs": [
+      3244,
+      3684,
+      3768
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "profile",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 1312,
+    "runs": [
+      1312,
+      1312,
+      1380
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "profile",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 0,
+    "runs": [
+      0,
+      0,
+      2524
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "listing-detail",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 768,
+    "runs": [
+      768,
+      840,
+      756
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "listing-detail",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 2352,
+    "runs": [
+      2452,
+      2352,
+      2316
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "listing-detail",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 524,
+    "runs": [
+      524,
+      516,
+      560
+    ]
+  },
+  {
+    "env": "Localhost",
+    "page": "listing-detail",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 2224,
+    "runs": [
+      2276,
+      2188,
+      2224
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "signin",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 312,
+    "runs": [
+      264,
+      312,
+      316
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "signin",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 404,
+    "runs": [
+      764,
+      404,
+      392
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "signin",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 104,
+    "runs": [
+      96,
+      108,
+      104
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "signin",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 412,
+    "runs": [
+      404,
+      428,
+      412
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "feed",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 76,
+    "runs": [
+      92,
+      76,
+      64
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "feed",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 388,
+    "runs": [
+      388,
+      400,
+      372
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "feed",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 116,
+    "runs": [
+      116,
+      104,
+      124
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "feed",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 428,
+    "runs": [
+      412,
+      428,
+      432
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "wanted",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 108,
+    "runs": [
+      108,
+      104,
+      112
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "wanted",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 416,
+    "runs": [
+      440,
+      416,
+      400
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "wanted",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 116,
+    "runs": [
+      120,
+      116,
+      96
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "wanted",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 404,
+    "runs": [
+      404,
+      416,
+      400
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "profile",
+    "formFactor": "mobile",
+    "throttled": false,
+    "medianLcp": 100,
+    "runs": [
+      100,
+      100,
+      100
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "profile",
+    "formFactor": "mobile",
+    "throttled": true,
+    "medianLcp": 412,
+    "runs": [
+      400,
+      416,
+      412
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "profile",
+    "formFactor": "desktop",
+    "throttled": false,
+    "medianLcp": 100,
+    "runs": [
+      116,
+      96,
+      100
+    ]
+  },
+  {
+    "env": "Production",
+    "page": "profile",
+    "formFactor": "desktop",
+    "throttled": true,
+    "medianLcp": 408,
+    "runs": [
+      408,
+      396,
+      408
+    ]
+  }
+]

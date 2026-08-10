@@ -41,7 +41,7 @@ export const CreateListingScreen: React.FC = () => {
  title: '',
  description: '',
  category: 'cycles',
- price: '' as unknown as number,
+ price: 0,
  isNegotiable: false,
  condition: 'good',
  hallOfResidence: (profile?.hallOfResidence as ListingFormInput['hallOfResidence']) || 'Patel',

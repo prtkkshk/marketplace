@@ -89,7 +89,7 @@ export const MyListingsTab: React.FC<{ userId: string }> = ({ userId }) => {
  ? 'Items you mark as sold will appear here.'
  : 'Listings expire automatically after 30 days.'
  }
- action={<Button variant="secondary" onClick={() => (window.location.href = '/new')}>segment === 'active' ? 'Post a Listing' : undefined</Button>}
+ action={segment === 'active' ? <Button variant="secondary" onClick={() => (window.location.href = '/new')}>Post a Listing</Button> : undefined}
  />
  ) : (
  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

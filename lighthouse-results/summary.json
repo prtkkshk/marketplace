@@ -1,0 +1,112 @@
+[
+  {
+    "page": "signin",
+    "formFactor": "mobile",
+    "medianLcp": 112,
+    "medianPerf": null,
+    "runs": [
+      140,
+      112,
+      100
+    ]
+  },
+  {
+    "page": "signin",
+    "formFactor": "desktop",
+    "medianLcp": 116,
+    "medianPerf": null,
+    "runs": [
+      116,
+      104,
+      116
+    ]
+  },
+  {
+    "page": "feed",
+    "formFactor": "mobile",
+    "medianLcp": 892,
+    "medianPerf": null,
+    "runs": [
+      892,
+      892,
+      1020
+    ]
+  },
+  {
+    "page": "feed",
+    "formFactor": "desktop",
+    "medianLcp": 976,
+    "medianPerf": null,
+    "runs": [
+      1080,
+      928,
+      976
+    ]
+  },
+  {
+    "page": "wanted",
+    "formFactor": "mobile",
+    "medianLcp": 824,
+    "medianPerf": null,
+    "runs": [
+      840,
+      760,
+      824
+    ]
+  },
+  {
+    "page": "wanted",
+    "formFactor": "desktop",
+    "medianLcp": 904,
+    "medianPerf": null,
+    "runs": [
+      944,
+      900,
+      904
+    ]
+  },
+  {
+    "page": "profile",
+    "formFactor": "mobile",
+    "medianLcp": 840,
+    "medianPerf": null,
+    "runs": [
+      752,
+      852,
+      840
+    ]
+  },
+  {
+    "page": "profile",
+    "formFactor": "desktop",
+    "medianLcp": 488,
+    "medianPerf": null,
+    "runs": [
+      492,
+      488,
+      476
+    ]
+  },
+  {
+    "page": "listing-detail",
+    "formFactor": "mobile",
+    "medianLcp": 772,
+    "medianPerf": null,
+    "runs": [
+      772,
+      696,
+      788
+    ]
+  },
+  {
+    "page": "listing-detail",
+    "formFactor": "desktop",
+    "medianLcp": 484,
+    "medianPerf": null,
+    "runs": [
+      484,
+      488,
+      460
+    ]
+  }
+]
