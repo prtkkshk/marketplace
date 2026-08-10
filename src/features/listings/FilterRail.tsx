@@ -50,7 +50,7 @@ export const FilterRail: React.FC<FilterRailProps> = ({
  selectedCategory === cat.id ? 'font-semibold text-accent bg-accent-wash' : 'text-muted hover:text-ink hover:bg-surface-2'
  }`}
  >
- {cat.icon} {cat.label}
+ {cat.label}
  </button>
  </li>
  ))}

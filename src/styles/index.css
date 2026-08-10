@@ -155,3 +155,35 @@
   }
 }
 
+/* =============================================================================
+   Scrollbar Styling
+   ============================================================================= */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Global thin & themed scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--subtle) / 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(var(--subtle) / 0.5);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--subtle) / 0.3) transparent;
+}
