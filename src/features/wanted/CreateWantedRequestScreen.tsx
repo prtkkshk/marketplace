@@ -131,7 +131,7 @@ export const CreateWantedRequestScreen: React.FC = () => {
  <Select
  label="Category"
  disabled={isSubmitting}
- options={CATEGORIES.map((c) => ({ value: c.id, label: `${c.icon} ${c.label}` }))}
+ options={CATEGORIES.map((c) => ({ value: c.id, label: c.label }))}
  error={errors.category?.message}
  {...register('category')}
  />

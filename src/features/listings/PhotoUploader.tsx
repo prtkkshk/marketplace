@@ -43,8 +43,12 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  const [isCompressing, setIsCompressing] = useState<boolean>(false);
  const cameraInputRef = useRef<HTMLInputElement>(null);
  const galleryInputRef = useRef<HTMLInputElement>(null);
+ const photosRef = useRef<PhotoItem[]>(photos);
+ React.useEffect(() => {
+ photosRef.current = photos;
+ }, [photos]);
 
- const processAndUploadFile = async (file: File, photoId: string, currentPhotos: PhotoItem[]) => {
+ const processAndUploadFile = async (file: File, photoId: string) => {
  try {
  // 1. Validate magic bytes to ensure it's a real image (P1 fix)
  const isValid = await validateImageMagicBytes(file);
@@ -69,24 +73,27 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  console.warn('Image compression fallback to raw file:', cErr);
  }
 
- // Update progress to 50%
+ // Update progress to 50% and fix preview URL for mobile
+ const safePreviewUrl = URL.createObjectURL(compressedFile);
  onChange(
- currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 50, error: undefined } : p))
+ photosRef.current.map((p) =>
+ p.id === photoId ? { ...p, progress: 50, error: undefined, previewUrl: safePreviewUrl } : p
+ )
  );
 
- // 2. Upload to Supabase Storage
+ // 4. Upload to Supabase Storage
  const finalPath = await uploadToSupabase(compressedFile, userId, listingId, photoId);
 
- // 3. Success - update state with finalPath
+ // 5. Success - update state with finalPath
  onChange(
- currentPhotos.map((p) =>
+ photosRef.current.map((p) =>
  p.id === photoId ? { ...p, storagePath: finalPath, progress: 100, error: undefined } : p
  )
  );
  } catch (err: unknown) {
  const msg = err instanceof Error ? err.message : 'Processing failed';
  onChange(
- currentPhotos.map((p) => (p.id === photoId ? { ...p, progress: 0, error: msg } : p))
+ photosRef.current.map((p) => (p.id === photoId ? { ...p, progress: 0, error: msg } : p))
  );
  }
  };
@@ -95,7 +102,7 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  const files = Array.from(e.target.files || []);
  if (!files.length) return;
 
- const availableSlots = 4 - photos.length;
+ const availableSlots = 4 - photosRef.current.length;
  const selectedFiles = files.slice(0, availableSlots);
 
  setIsCompressing(true);
@@ -110,19 +117,14 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
  };
  });
 
- let updatedList = [...photos, ...newPhotos];
+ const updatedList = [...photosRef.current, ...newPhotos];
  onChange(updatedList);
 
- // Process each new photo independently
- for (const photo of newPhotos) {
- if (photo.file) {
- await processAndUploadFile(photo.file, photo.id, updatedList);
- // Keep updated state in sync
- updatedList = updatedList.map((p) =>
- p.id === photo.id && p.progress === 100 ? { ...p } : p
- );
- }
- }
+ // Process each new photo independently without awaiting in loop
+ // so they process concurrently and don't block the UI
+ selectedFiles.forEach((file, idx) => {
+ processAndUploadFile(file, newPhotos[idx].id);
+ });
 
  setIsCompressing(false);
  e.target.value = '';
@@ -130,8 +132,8 @@ export const PhotoUploader: React.FC<PhotoUploaderProps> = ({
 
  const handleRetry = async (photo: PhotoItem) => {
  if (!photo.file) return;
- onChange(photos.map((p) => (p.id === photo.id ? { ...p, progress: 10, error: undefined } : p)));
- await processAndUploadFile(photo.file, photo.id, photos);
+ onChange(photosRef.current.map((p) => (p.id === photo.id ? { ...p, progress: 10, error: undefined } : p)));
+ processAndUploadFile(photo.file, photo.id);
  };
 
  const handleRemove = async (id: string) => {
