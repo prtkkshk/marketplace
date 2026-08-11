@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export interface SheetProps {
@@ -68,13 +69,13 @@ export const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, title, children }
 
  if (!isOpen) return null;
 
- return (
+ return createPortal(
  <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 transition-opacity duration-160">
  <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
  
  <div
  ref={sheetRef}
- className="relative w-full max-w-lg bg-surface border-[1.5px] border-ink rounded-t-lg p-6 shadow-hard z-10 max-h-[90vh] overflow-y-auto transform transition-transform duration-220 ease-[cubic-bezier(0.2,0.9,0.3,1)] translate-y-0"
+ className="relative w-full max-w-lg bg-surface border-[1.5px] border-ink rounded-t-lg p-6 shadow-hard z-10 max-h-[90dvh] overflow-y-auto transform transition-transform duration-220 ease-[cubic-bezier(0.2,0.9,0.3,1)] translate-y-0"
  role="dialog"
  aria-modal="true"
  aria-label={title || 'Sheet dialog'}
@@ -98,6 +99,7 @@ export const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, title, children }
  </div>
  {children}
  </div>
- </div>
+ </div>,
+ document.body
  );
 };

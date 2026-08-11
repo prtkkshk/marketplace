@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { SheetProps } from './Sheet';
 
@@ -23,12 +24,12 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
 
  if (!isOpen) return null;
 
- return (
+ return createPortal(
  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/40 transition-opacity duration-160">
  <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
  
  <div
- className="relative w-full max-w-lg bg-surface border-[1.5px] border-ink rounded-lg p-6 shadow-hard z-10 max-h-[90vh] overflow-y-auto"
+ className="relative w-full max-w-lg bg-surface border-[1.5px] border-ink rounded-lg p-6 shadow-hard z-10 max-h-[90dvh] overflow-y-auto"
  role="dialog"
  aria-modal="true"
  aria-label={title || 'Dialog'}
@@ -47,6 +48,7 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
  </div>
  {children}
  </div>
- </div>
+ </div>,
+ document.body
  );
 };
