@@ -196,7 +196,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  ₹{listing.price.toLocaleString('en-IN')}
  </div>
  {!isSold && !isOwner && (
- <div className="flex items-center gap-2">
+ <div className="relative z-20 flex items-center gap-2">
  <button
  onClick={handleContactTap}
  disabled={isContacting}

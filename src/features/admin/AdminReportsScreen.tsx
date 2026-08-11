@@ -91,7 +91,7 @@ export const AdminReportsScreen: React.FC = () => {
  className="px-3 py-1.5 bg-surface border border-line rounded-xl text-xs font-semibold text-ink"
  >
  <option value="pending">Pending Reports</option>
- <option value="resolved">Resolved</option>
+ <option value="actioned">Actioned</option>
  <option value="dismissed">Dismissed</option>
  <option value="all">All Statuses</option>
  </select>
@@ -102,12 +102,12 @@ export const AdminReportsScreen: React.FC = () => {
  className="px-3 py-1.5 bg-surface border border-line rounded-xl text-xs font-semibold text-ink"
  >
  <option value="all">All Reasons</option>
- <option value="prohibited_item">Prohibited Item</option>
- <option value="misleading">Misleading</option>
- <option value="overpriced">Overpriced</option>
- <option value="spam">Spam</option>
+ <option value="prohibited">Prohibited Item</option>
+ <option value="spam_scam">Spam/Scam</option>
+ <option value="offensive">Offensive</option>
  <option value="wrong_category">Wrong Category</option>
- <option value="inappropriate">Inappropriate</option>
+ <option value="already_sold">Already Sold</option>
+ <option value="harassment">Harassment</option>
  <option value="other">Other</option>
  </select>
  </div>
