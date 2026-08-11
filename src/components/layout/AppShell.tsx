@@ -3,11 +3,8 @@ import { Outlet } from 'react-router-dom';
 import { DesktopHeader } from './DesktopHeader';
 import { BottomNav } from './BottomNav';
 import { ThemeProvider } from '../../lib/theme';
-import { useExitPrompt } from '../../lib/hooks/useExitPrompt';
-import { ExitPromptSheet } from './ExitPromptSheet';
 
 export const AppShell: React.FC = () => {
- const { showPrompt, exitFallback, confirmExit, cancelExit } = useExitPrompt();
  return (
  <ThemeProvider>
  <div className="min-h-screen bg-bg flex flex-col antialiased">
@@ -16,12 +13,6 @@ export const AppShell: React.FC = () => {
  <Outlet />
  </main>
  <BottomNav />
- <ExitPromptSheet 
- isOpen={showPrompt}
- isFallback={exitFallback}
- onClose={cancelExit}
- onConfirm={confirmExit}
- />
  </div>
  </ThemeProvider>
  );
