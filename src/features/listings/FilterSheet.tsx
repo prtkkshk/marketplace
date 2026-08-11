@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sheet } from '../../components/ui/Sheet';
+import { Dialog } from '../../components/ui/Dialog';
 import { Select } from '../../components/ui/Select';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -59,7 +59,7 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
  };
 
  return (
- <Sheet isOpen={isOpen} onClose={onClose} title="Filter Listings">
+ <Dialog isOpen={isOpen} onClose={onClose} title="Filter Listings">
  <div className="flex flex-col gap-4 py-2">
  <Select
  label="Item Condition"
@@ -107,6 +107,6 @@ export const FilterSheet: React.FC<FilterSheetProps> = ({
  </Button>
  </div>
  </div>
- </Sheet>
+ </Dialog>
  );
 };
