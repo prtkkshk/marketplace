@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 export function useExitPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
+  const [exitFallback, setExitFallback] = useState(false);
   const location = useLocation();
   // Set right before we intentionally navigate past the trap on confirmed exit,
   // so the popstate handler below knows not to re-arm the trap for that pop.
@@ -43,25 +44,41 @@ export function useExitPrompt() {
 
   const confirmExit = () => {
     setShowPrompt(false);
+    setExitFallback(false);
     isExitingRef.current = true;
-    // window.close() only works on a window/tab that was opened via script
-    // (window.open). A tab the user navigated to directly, or a PWA launched
-    // from the home screen, was never opened that way, so browsers silently
-    // block window.close() there - that was the bug: "Leave" did nothing.
-    //
-    // Instead, pop past our own history trap (the trap entry + the entry
-    // before it) so the back navigation actually leaves the app's history.
-    // On Android this exits/minimizes an installed PWA to the home screen;
-    // on iOS it exits the standalone PWA the same way. We still try
-    // window.close() afterwards as a harmless best-effort for the contexts
-    // where it does work (e.g. a script-opened window).
-    window.history.go(-2);
-    setTimeout(() => window.close(), 50);
+    
+    console.debug('Exit flow: trap armed, first back() firing');
+    window.history.back(); // Pop the trap
+
+    // Wait for the first pop to process, then pop again to exit
+    setTimeout(() => {
+      console.debug('Exit flow: second back() firing');
+      window.history.back();
+
+      // Fallback: try window.close() as a harmless best-effort
+      setTimeout(() => {
+        console.debug('Exit flow: close() attempted');
+        window.close();
+        
+        // Visible fallback if app is still open
+        setTimeout(() => {
+          if (document.visibilityState !== 'hidden') {
+            console.debug('Exit flow: fallback triggered');
+            setExitFallback(true);
+            setShowPrompt(true);
+            isExitingRef.current = false;
+            // The history state might be at the root now, so we re-arm the trap
+            window.history.pushState({ ...window.history.state, exitTrap: true }, '');
+          }
+        }, 300);
+      }, 50);
+    }, 100);
   };
 
   const cancelExit = () => {
     setShowPrompt(false);
+    setExitFallback(false);
   };
 
-  return { showPrompt, confirmExit, cancelExit };
+  return { showPrompt, exitFallback, confirmExit, cancelExit };
 }

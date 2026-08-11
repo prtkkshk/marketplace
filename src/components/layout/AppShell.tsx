@@ -7,7 +7,7 @@ import { useExitPrompt } from '../../lib/hooks/useExitPrompt';
 import { ExitPromptSheet } from './ExitPromptSheet';
 
 export const AppShell: React.FC = () => {
- const { showPrompt, confirmExit, cancelExit } = useExitPrompt();
+ const { showPrompt, exitFallback, confirmExit, cancelExit } = useExitPrompt();
  return (
  <ThemeProvider>
  <div className="min-h-screen bg-bg flex flex-col antialiased">
@@ -18,6 +18,7 @@ export const AppShell: React.FC = () => {
  <BottomNav />
  <ExitPromptSheet 
  isOpen={showPrompt}
+ isFallback={exitFallback}
  onClose={cancelExit}
  onConfirm={confirmExit}
  />
