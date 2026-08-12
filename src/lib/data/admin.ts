@@ -108,6 +108,13 @@ export async function fetchAdminStats(): Promise<AdminStats> {
  supabase.from('listings').select('id, category, hall_of_residence, created_at, title').is('deleted_at', null).order('created_at', { ascending: false }).limit(50),
  ]);
 
+ if (studentsRes.error) console.error("studentsRes error:", studentsRes.error);
+ if (activeListingsRes.error) console.error("activeListingsRes error:", activeListingsRes.error);
+ if (soldListingsRes.error) console.error("soldListingsRes error:", soldListingsRes.error);
+ if (openRequestsRes.error) console.error("openRequestsRes error:", openRequestsRes.error);
+ if (pendingReportsRes.error) console.error("pendingReportsRes error:", pendingReportsRes.error);
+ if (allListingsRes.error) console.error("allListingsRes error:", allListingsRes.error);
+
  const profiles = studentsRes.data || [];
  const now = new Date();
  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -151,6 +158,8 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
  supabase.rpc('get_admin_kpis'),
  ]);
  
+ if (kpiRes.error) console.error("kpiRes error:", kpiRes.error);
+
  const categoryDistribution = Object.entries(stats.categoryBreakdown).map(([category, count]) => ({
  category,
  count,

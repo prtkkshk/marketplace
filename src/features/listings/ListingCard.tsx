@@ -197,14 +197,14 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  </div>
  {!isSold && !isOwner && (
  <div className="relative z-20 flex items-center gap-2">
- <button
+ {/* <button
  onClick={handleContactTap}
  disabled={isContacting}
  className="press inline-flex min-h-tap min-w-tap items-center justify-center rounded-sm border-[1.5px] border-line-strong bg-surface text-muted transition-colors hover:border-ink hover:text-ink active:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-50"
  aria-label={`Contact seller on WhatsApp`}
  >
  <MessageCircle className="w-4 h-4" />
- </button>
+ </button> */}
  <button
  onClick={handleToggleSave}
  className="press inline-flex min-h-tap min-w-tap items-center justify-center rounded-sm border-[1.5px] border-line-strong bg-surface text-muted transition-colors hover:border-ink hover:text-ink active:bg-surface-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-50"
