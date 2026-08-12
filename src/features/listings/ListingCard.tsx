@@ -1,8 +1,7 @@
 import { SoldStamp } from '../../components/ui/SoldStamp';
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import type { ListingItem } from '../../lib/data/listings';
-import { fetchContactNumber } from '../../lib/data/contact';
 import { useToggleSaveMutation } from '../../lib/hooks/useToggleSaveMutation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchSavedListings } from '../../lib/data/saved_items';
@@ -12,7 +11,7 @@ import { useToast } from '../../components/ui/Toast';
 import { timeAgo } from '../../lib/utils/timeAgo';
 import { getPhotoPublicUrlTransformed, getCategoryFallback } from '../../lib/utils/image';
 import { Badge } from '../../components/ui/Badge';
-import { Heart, Pin, MessageCircle } from 'lucide-react';
+import { Heart, Pin } from 'lucide-react';
 import { analytics } from '../../lib/analytics';
 
 export interface ListingCardProps {
@@ -43,11 +42,8 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  });
 
  const isSaved = savedItems.some(item => item.id === listing.id);
- const [isContacting, setIsContacting] = useState<boolean>(false);
 
  const isSold = listing.status === 'sold';
- const isExpired = listing.status === 'expired';
- const isDisabled = isSold || isExpired;
 
  const photoUrl = getPhotoPublicUrlTransformed(listing.photoPaths?.[0], listing.category);
 
@@ -56,28 +52,6 @@ export const ListingCard: React.FC<ListingCardProps> = ({
  like_new: 'Like New',
  good: 'Good',
  fair: 'Fair',
- };
-
- const handleContactTap = async (e: React.MouseEvent) => {
- e.preventDefault();
- e.stopPropagation();
- if (isDisabled || isContacting) return;
- setIsContacting(true);
- 
- analytics.track('contact_click', {
- category: listing.category,
- price: listing.price,
- });
-
- try {
- const result = await fetchContactNumber(listing.id, listing.title, listing.price);
- window.open(result.whatsappDeepLink, '_blank', 'noopener,noreferrer');
- } catch (err: unknown) {
- const msg = err instanceof Error ? err.message : 'Failed to contact seller';
- showToast(msg, 'error');
- } finally {
- setIsContacting(false);
- }
  };
 
  const handleToggleSave = (e: React.MouseEvent) => {
