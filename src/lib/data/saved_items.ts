@@ -19,7 +19,7 @@ export async function fetchSavedListings(userId: string): Promise<ListingItem[]>
  const { data, error } = await supabase
  .from('saved_items')
  .select(
- 'listing_id, listings!inner(id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence))'
+ 'listing_id, listings!inner(id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence))'
  )
  .eq('user_id', userId)
  .is('listings.deleted_at', null)

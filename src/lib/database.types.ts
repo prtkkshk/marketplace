@@ -101,7 +101,6 @@ export interface Database {
  view_count: number
  sold_at: string | null
  deleted_at: string | null
- expires_at: string
  created_at: string
  updated_at: string
  }
@@ -121,7 +120,6 @@ export interface Database {
  view_count?: number
  sold_at?: string | null
  deleted_at?: string | null
- expires_at?: string
  created_at?: string
  updated_at?: string
  }
@@ -141,7 +139,6 @@ export interface Database {
  view_count?: number
  sold_at?: string | null
  deleted_at?: string | null
- expires_at?: string
  created_at?: string
  updated_at?: string
  }
@@ -160,7 +157,6 @@ export interface Database {
  is_pinned: boolean
  fulfilled_at: string | null
  deleted_at: string | null
- expires_at: string
  created_at: string
  updated_at: string
  }
@@ -176,7 +172,6 @@ export interface Database {
  is_pinned?: boolean
  fulfilled_at?: string | null
  deleted_at?: string | null
- expires_at?: string
  created_at?: string
  updated_at?: string
  }
@@ -192,7 +187,6 @@ export interface Database {
  is_pinned?: boolean
  fulfilled_at?: string | null
  deleted_at?: string | null
- expires_at?: string
  created_at?: string
  updated_at?: string
  }

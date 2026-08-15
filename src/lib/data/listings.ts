@@ -2,7 +2,7 @@ import { supabase } from '../supabase';
 import type { Database, ListingCategory, ItemCondition, ListingStatus } from '../database.types';
 
 type ListingRow = Database['public']['Tables']['listings']['Row'];
-type SelectedListingRow = Pick<ListingRow, 'id' | 'user_id' | 'title' | 'description' | 'category' | 'price' | 'is_negotiable' | 'condition' | 'photo_paths' | 'hall_of_residence' | 'status' | 'is_pinned' | 'sold_at' | 'deleted_at' | 'expires_at' | 'created_at' | 'updated_at'>;
+type SelectedListingRow = Pick<ListingRow, 'id' | 'user_id' | 'title' | 'description' | 'category' | 'price' | 'is_negotiable' | 'condition' | 'photo_paths' | 'hall_of_residence' | 'status' | 'is_pinned' | 'sold_at' | 'deleted_at' | 'created_at' | 'updated_at'>;
 
 export interface ListingItem {
  id: string;
@@ -19,7 +19,6 @@ export interface ListingItem {
  isPinned: boolean;
  soldAt: string | null;
  deletedAt: string | null;
- expiresAt: string;
  createdAt: string;
  updatedAt: string;
  sellerName?: string;
@@ -74,7 +73,6 @@ export function mapListingRow(row: SelectedListingRow & { profiles?: { full_name
  isPinned: row.is_pinned,
  soldAt: row.sold_at,
  deletedAt: row.deleted_at,
- expiresAt: row.expires_at,
  createdAt: row.created_at,
  updatedAt: row.updated_at,
  sellerName: row.profiles?.full_name || 'KGP Student',
@@ -95,7 +93,7 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
  let query = supabase
  .from('listings')
  .select(
- 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)',
+ 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)',
  { count: 'exact' }
  )
  .is('deleted_at', null);
@@ -170,7 +168,7 @@ export async function fetchListings(params: FetchListingsParams = {}): Promise<{
 export async function fetchMyListings(userId: string, status?: 'active' | 'sold'): Promise<ListingItem[]> {
  let query = supabase
  .from('listings')
- .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at')
+ .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at')
  .eq('user_id', userId)
  .is('deleted_at', null)
  .order('created_at', { ascending: false });
@@ -195,7 +193,7 @@ export async function fetchListingById(id: string): Promise<ListingItem | null> 
  const { data, error } = await supabase
  .from('listings')
  .select(
- 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)'
+ 'id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at, profiles!listings_user_id_fkey(full_name, hall_of_residence)'
  )
  .eq('id', id)
  .is('deleted_at', null)
@@ -227,7 +225,7 @@ export async function createListing(userId: string, input: CreateListingData): P
  hall_of_residence: input.hallOfResidence,
  status: 'active',
  })
- .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at')
+ .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at')
  .single();
 
  if (error) {
@@ -254,7 +252,7 @@ export async function updateListing(id: string, updates: Partial<CreateListingDa
  .from('listings')
  .update(payload)
  .eq('id', id)
- .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at')
+ .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at')
  .single();
 
  if (error) {
@@ -272,7 +270,7 @@ export async function markListingSold(id: string): Promise<ListingItem> {
  .from('listings')
  .update({ status: 'sold', sold_at: new Date().toISOString() })
  .eq('id', id)
- .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at')
+ .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at')
  .single();
 
  if (error) {
@@ -290,7 +288,7 @@ export async function unmarkListingSold(id: string): Promise<ListingItem> {
  .from('listings')
  .update({ status: 'active', sold_at: null })
  .eq('id', id)
- .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, expires_at, created_at, updated_at')
+ .select('id, user_id, title, description, category, price, is_negotiable, condition, photo_paths, hall_of_residence, status, is_pinned, sold_at, deleted_at, created_at, updated_at')
  .single();
 
  if (error) {

@@ -340,10 +340,6 @@ import {
  <span className="text-[10px] font-bold text-subtle uppercase tracking-wider block mb-1">Posted</span>
  <span className="text-[14px] font-medium text-ink">{timeAgo(listing.createdAt)}</span>
  </div>
- <div>
- <span className="text-[10px] font-bold text-subtle uppercase tracking-wider block mb-1">Expires</span>
- <span className="text-[14px] font-medium text-ink">{timeAgo(listing.expiresAt)}</span>
- </div>
  </div>
 
  {/* Description (Mobile only) */}

@@ -20,6 +20,7 @@ export const KGP_HALLS = [
  'Rani Laxmibai',
  'BCR',
  'Vikramshila Residency',
+ 'LBS',
  'Other',
 ] as const;
 
