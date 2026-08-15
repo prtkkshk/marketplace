@@ -56,7 +56,7 @@ beforeAll(async () => {
   const resListingB = await serviceRoleClient.from('listings').insert({ user_id: userIdB, title: `Contact-QA-${ts}`, description: 'Test', price: 100, category: 'books', condition: 'good', photo_paths: ['test.jpg'], hall_of_residence: 'Patel', status: 'active' }).select().single();
   listingB = resListingB.data.id;
 
-  const resReqB = await serviceRoleClient.from('wanted_requests').insert({ user_id: userIdB, title: `Contact-Req-${ts}`, description: 'Test', category: 'books', hall_of_residence: 'Patel', status: 'open', expires_at: new Date(Date.now() + 86400000).toISOString() }).select().single();
+  const resReqB = await serviceRoleClient.from('wanted_requests').insert({ user_id: userIdB, title: `Contact-Req-${ts}`, description: 'Test', category: 'books', hall_of_residence: 'Patel', status: 'open' }).select().single();
   requestB = resReqB.data.id;
 
   // get_contact_number counts contact_events.actor_id (NOT viewer_id — that column does

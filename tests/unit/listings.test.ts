@@ -22,7 +22,6 @@ describe('Listings Data Layer & Privacy Audit', () => {
       view_count: 0,
       sold_at: null,
       deleted_at: null,
-      expires_at: '2026-09-01T00:00:00Z',
       created_at: '2026-08-01T00:00:00Z',
       updated_at: '2026-08-01T00:00:00Z',
       profiles: {

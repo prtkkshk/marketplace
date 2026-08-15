@@ -64,9 +64,9 @@ beforeAll(async () => {
   const resListingB = await serviceRoleClient.from('listings').insert({ user_id: userIdB, title: `QA-${ts}-B`, description: 'Test', price: 100, category: 'books', condition: 'good', photo_paths: ['test.jpg'], hall_of_residence: 'Patel', status: 'active' }).select().single();
   listingB = resListingB.data.id;
 
-  const resReqA = await serviceRoleClient.from('wanted_requests').insert({ user_id: userIdA, title: `Req-${ts}-A`, description: 'Test', category: 'books', hall_of_residence: 'Azad', status: 'open', expires_at: new Date(Date.now() + 86400000).toISOString() }).select().single();
+  const resReqA = await serviceRoleClient.from('wanted_requests').insert({ user_id: userIdA, title: `Req-${ts}-A`, description: 'Test', category: 'books', hall_of_residence: 'Azad', status: 'open' }).select().single();
   if (resReqA.error) console.log("resReqA ERROR:", resReqA.error);
-  const resReqB = await serviceRoleClient.from('wanted_requests').insert({ user_id: userIdB, title: `Req-${ts}-B`, description: 'Test', category: 'books', hall_of_residence: 'Patel', status: 'open', expires_at: new Date(Date.now() + 86400000).toISOString() }).select().single();
+  const resReqB = await serviceRoleClient.from('wanted_requests').insert({ user_id: userIdB, title: `Req-${ts}-B`, description: 'Test', category: 'books', hall_of_residence: 'Patel', status: 'open' }).select().single();
   requestB = resReqB.data.id;
 });
 
